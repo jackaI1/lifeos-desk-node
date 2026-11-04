@@ -1,0 +1,68 @@
+(define-module (desk scenario)
+  #:use-module (ice-9 format)
+  #:export (compile-scenario write-scenario))
+
+;; Work in exact integers so sensor quantization is reproducible across hosts.
+(define (bounded-integer? x lo hi)
+  (and (integer? x) (exact? x) (<= lo x hi)))
+
+(define (crc8 bytes)
+  (let byte-loop ((bytes bytes) (crc #xff))
+    (if (null? bytes) crc
+        (byte-loop
+         (cdr bytes)
+         (let bit-loop ((n 8) (value (logxor crc (car bytes))))
+           (if (= n 0) value
+               (bit-loop (- n 1)
+                         (logand #xff
+                                 (logxor (ash value 1)
+                                         (if (logbit? 7 value) #x31 0))))))))))
+
+(define (sensor-word value offset span)
+  (let* ((raw (quotient (+ (* (+ value offset) 65535) (quotient span 2)) span))
+         (bytes (list (ash raw -8) (logand raw #xff))))
+    (append bytes (list (crc8 bytes)))))
+
+(define (sensor-command temp humidity corrupt?)
+  (let* ((t (sensor-word temp 45000 175000))
+         (h (sensor-word humidity 0 100000))
+         (bytes (append (if corrupt? (list (car t) (cadr t) (logxor 1 (caddr t))) t) h)))
+    (string-append "S " (apply string-append (map (lambda (b) (format #f "~2,'0x" b)) bytes)))))
+
+(define (compile-scenario datum)
+  (unless (and (list? datum) (pair? datum) (eq? (car datum) 'scenario) (pair? (cdr datum)))
+    (error "expected (scenario command ...)"))
+  (let ((commands '()) (count 0))
+    (define (emit! command)
+      (when (>= count 4096) (error "scenario exceeds 4096 expanded commands"))
+      (set! count (+ count 1))
+      (set! commands (cons command commands)))
+    (define (visit command depth)
+      (unless (and (list? command) (pair? command)) (error "invalid command" command))
+      (case (car command)
+        ((sample fault)
+         (unless (and (= (length command) 3)
+                      (bounded-integer? (cadr command) -45000 130000)
+                      (bounded-integer? (caddr command) 0 100000))
+           (error "sample/fault needs integer temperature [-45000,130000] and humidity [0,100000]"))
+         (emit! (sensor-command (cadr command) (caddr command) (eq? (car command) 'fault))))
+        ((upload)
+         (unless (= (length command) 1) (error "upload takes no arguments"))
+         (emit! "U"))
+        ((repeat)
+         (unless (and (< depth 8) (>= (length command) 3)
+                      (bounded-integer? (cadr command) 1 4096))
+           (error "repeat needs count [1,4096], a body and at most eight nested repeats"))
+         (let loop ((remaining (cadr command)))
+           (unless (= remaining 0)
+             (for-each (lambda (child) (visit child (+ depth 1))) (cddr command))
+             (loop (- remaining 1)))))
+        (else (error "unknown scenario command" (car command)))))
+    (for-each (lambda (command) (visit command 0)) (cdr datum))
+    (reverse commands)))
+
+(define (write-scenario datum port)
+  ;; Validate the entire expansion before writing any output.
+  (let ((commands (compile-scenario datum)))
+    (display "DESK_REPLAY_V1\n" port)
+    (for-each (lambda (command) (display command port) (newline port)) commands)))
