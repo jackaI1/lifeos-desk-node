@@ -1,0 +1,6 @@
+# Synthetic compile-only settings. These are public fixtures, not credentials.
+# No hardware runs in CI; example.invalid cannot resolve to a real desk API.
+CONFIG_DESK_WIFI_SSID="CI-compile-only"
+CONFIG_DESK_WIFI_PASSWORD=""
+CONFIG_DESK_API_TOKEN="compile-only-not-a-secret-00000000"
+CONFIG_DESK_API_URL="https://desk.example.invalid"

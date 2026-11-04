@@ -58,14 +58,15 @@ TLS validation. SSID length ≤32, password ≤63, device token 32–128 URL-saf
 
 `sdkconfig`, local builds, SQLite logs and `.env` are ignored. Wi-Fi credentials and
 the device token are compiled into local binaries: **never publish configured
-binaries or sdkconfig**. CI uses empty credential defaults; its artifacts require
+binaries or sdkconfig**. CI uses public synthetic compile-only settings to retain Wi-Fi/TLS paths;
+its artifacts require
 local configuration/rebuild before deployment. It never connects to an account.
 
 Reproduce the CI firmware build with Docker (no server launched):
 
 ```sh
 docker run --rm -v "$PWD:/project" -w /project/firmware espressif/idf:v5.4.2 \
-  bash -c '. "$IDF_PATH/export.sh" && idf.py set-target esp32 && idf.py build && idf.py size'
+  bash -c '. "$IDF_PATH/export.sh" && idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.defaults" set-target esp32 && idf.py build && idf.py size'
 ```
 
 ## LifeOS API adapter
