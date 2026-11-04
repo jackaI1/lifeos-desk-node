@@ -1,6 +1,6 @@
-# Desk node pinout contract — revision 2
+# Desk node pinout contract - revision 2
 
-Firmware owns this contract; PCB layout on `skills/pcb` follows it.
+Wiring, voltage and connector assignments used by the firmware.
 
 ## Controller and programming
 
@@ -17,15 +17,15 @@ Firmware owns this contract; PCB layout on `skills/pcb` follows it.
 | --- | --- | --- |
 | I2C_SDA | 21 | SHT31 SDA + J2 expansion SDA |
 | I2C_SCL | 22 | SHT31 SCL + J2 expansion SCL |
-| 3V3 | — | SHT31 VDD + peripheral power |
-| GND | — | Common ground |
+| 3V3 | - | SHT31 VDD + peripheral power |
+| GND | - | Common ground |
 
 - I²C controller 0, 100 kHz; one effective pair of 4.7 kΩ pull-ups to 3V3 (account for breakout pull-ups).
 - SHT31-DIS: 7-bit address **0x44**, ADDR tied low, ALERT unused, nRESET pulled high; decouple VDD with 100 nF. Firmware uses single-shot high repeatability, no clock stretching (`0x2400`).
 - J2 expansion / optional legacy display: **1 GND, 2 3V3, 3 SCL, 4 SDA**. Legacy SSD1306 I²C address **0x3C** is supported only when selected in firmware menuconfig. Do not connect both display variants simultaneously.
 - No power-gating GPIO. OLED remains powered and displays its last frame while ESP32 deep-sleeps. On-chip RTC memory preserves the offline ring only across deep sleep; full power loss clears it.
 
-## Default SPI display — J4
+## Default SPI display - J4
 
 SSD1306 128×64 **seven-pin, 4-wire SPI module**, internal charge pump. Select its
 4-wire SPI interface straps per module datasheet; a four-pin I²C-only module is
@@ -34,8 +34,8 @@ charge-pump capacitors. SPI2 host, mode 0, MSB first, **4 MHz**, write only (no 
 
 | J4 pin | Net | ESP32 GPIO |
 | --- | --- | --- |
-| 1 | GND | — |
-| 2 | 3V3 | — |
+| 1 | GND | - |
+| 2 | 3V3 | - |
 | 3 | SCLK | 18 |
 | 4 | MOSI / display DIN | 23 |
 | 5 | RESET, active low | 25 |
@@ -46,9 +46,9 @@ Use a 10 kΩ pull-up on RESET and CS, and a 10 kΩ pull-down on D/C so the power
 OLED retains its frame when ESP32 GPIOs become high impedance during deep sleep.
 Firmware pulses RESET only before drawing a fresh frame, then leaves RESET high
 and CS inactive before releasing its GPIOs. Keep the display powered in sleep.
-PCB agent confirmed these pins have no conflicts. Existing J2 expansion stays.
+The J2 expansion connector uses the separate I²C bus pins.
 
-## UART logging — J3
+## UART logging - J3
 
 UART0 **115200 baud, 8 data bits, no parity, 1 stop bit, no flow control**.
 TX GPIO1 goes to USB–UART RX; RX GPIO3 goes to USB–UART TX; common GND is required.

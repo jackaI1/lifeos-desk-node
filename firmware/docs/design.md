@@ -1,8 +1,6 @@
 # Firmware design
 
-ESP-IDF 5.4.2, C11, ESP32-WROOM-32E; hardware contract: ../../docs/pinout.md.
-The owner's build prompt authorizes implementation and merge. Existing checkout is
-an isolated worktree on skills/firmware. No earlier firmware or tests exist.
+ESP-IDF 5.4.2, C11, ESP32-WROOM-32E; hardware contract: [pinout](../../docs/pinout.md).
 
 A sample task reads SHT31 once per wake. The coordinator exclusively owns an RTC
 ring of 64 readings, device session/sequence IDs and the cached next event.
@@ -30,13 +28,13 @@ version and mutation protocol. These are new dedicated daily notes only. SQLite
 on the adapter deduplicates readings by device/session/sequence across retries;
 ESP32 credentials grant access only to this adapter. Account credentials stay on
 the host. No private data or secrets are committed, and tests use synthetic data.
-The adapter must be configured and run by the owner; this task does not touch a
-live LifeOS account. Demo mode provides an isolated runnable contract fixture.
+The adapter needs its own configuration and a running host. Demo mode provides
+an isolated example without connecting to a LifeOS account.
 
 Validation: strict host compilation + sanitizers, protocol/queue/CRC/render tests,
 adapter tests including actual HTTP and upstream error paths, ESP-IDF Docker CI
 build and size report. No physical device is connected, so radio, sensor accuracy,
 screen appearance and power consumption require the documented bench checklist.
 
-Revision 2 follows Jack's required I²C sensor / SPI display / UART logging scope.
-See spi-uart-plan.md and ../../docs/pinout.md for the coordinated pin contract.
+The current wiring uses the I²C sensor, SPI display and UART logging. See the
+[wiring guide](../../docs/pinout.md) for pins and voltage requirements.
