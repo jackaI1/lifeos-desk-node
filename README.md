@@ -1,6 +1,6 @@
 # LifeOS Desk Node
 
-I built software for a small desk screen and room sensor because I wanted to see my next class and keep room readings in LifeOS.
+I built a program for a small desk screen and room sensor because I wanted to see my next class and keep room readings in LifeOS.
 
 ## Overview
 
