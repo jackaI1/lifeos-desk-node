@@ -1,0 +1,14 @@
+# Local firmware builds contain Wi-Fi and API credentials.
+firmware/build/
+firmware/sdkconfig
+firmware/sdkconfig.old
+firmware/sdkconfig.ci
+firmware/managed_components/
+firmware/dependencies.lock
+__pycache__/
+*.pyc
+*.sqlite3
+*.sqlite3-*
+.env
+*.pem
+.superpowers/
