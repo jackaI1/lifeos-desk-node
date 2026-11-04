@@ -50,9 +50,11 @@ static void sleep_now(void) {
     ESP_LOGW(TAG,"Sleeping %d s; queued=%lu lost=%lu",CONFIG_DESK_UPDATE_SECONDS,
         (unsigned long)retained.ring.count,(unsigned long)retained.ring.dropped);
     ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup((uint64_t)CONFIG_DESK_UPDATE_SECONDS*1000000ULL));
+    desk_uart_drain();
     esp_deep_sleep_start();
 }
 void app_main(void) {
+    if (desk_uart_init()!=ESP_OK) ESP_LOGE(TAG,"UART0 driver unavailable; using boot console");
     if (esp_reset_reason()!=ESP_RST_DEEPSLEEP || retained.magic!=RTC_MAGIC ||
         !desk_ring_valid(&retained.ring) || retained.next_sequence==0 ||
         !memchr(retained.event.title,0,sizeof retained.event.title) ||
@@ -70,10 +72,10 @@ void app_main(void) {
     }
     esp_err_t nvs=nvs_flash_init();
     if (nvs!=ESP_OK) { ESP_LOGE(TAG,"NVS unavailable; flash erase needed for provisioning"); sleep_now(); }
-    esp_err_t bus=desk_drivers_init(&drivers);
+    if (desk_drivers_init(&drivers)!=ESP_OK) ESP_LOGW(TAG,"One or more peripherals unavailable");
     sample_result_t sample={0};
     QueueHandle_t samples=xQueueCreate(1,sizeof sample);
-    if (samples && bus==ESP_OK && xTaskCreate(sample_task,"sht31",3072,samples,4,NULL)==pdPASS) {
+    if (samples && drivers.sensor && xTaskCreate(sample_task,"sht31",3072,samples,4,NULL)==pdPASS) {
         if (xQueueReceive(samples,&sample,pdMS_TO_TICKS(2000))!=pdTRUE) {
             ESP_LOGE(TAG,"Sensor task deadline reached"); sleep_now();
         }
@@ -105,5 +107,7 @@ void app_main(void) {
     uint8_t frame[DESK_FRAME_SIZE];
     desk_render(frame,&retained.event,sample.valid?&sample.reading:NULL,result.event_valid,retained.ring.dropped);
     if (desk_display_frame(&drivers,frame)!=ESP_OK) ESP_LOGW(TAG,"Display unavailable");
+    if (desk_uart_log_cycle(sample.valid?&sample.reading:NULL,retained.ring.count,
+                            retained.ring.dropped,result.upload_acked)!=ESP_OK) ESP_LOGW(TAG,"Cycle log unavailable");
     sleep_now();
 }

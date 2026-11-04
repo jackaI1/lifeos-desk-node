@@ -14,6 +14,10 @@ jobs:
       - name: Pure C sanitizer and API adapter tests
         run: firmware/tests/run_host_tests.sh
   esp-idf-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        display: [spi, i2c]
     runs-on: ubuntu-latest
     container: espressif/idf:v5.4.2
     steps:
@@ -23,13 +27,18 @@ jobs:
         working-directory: firmware
         run: |
           . "$IDF_PATH/export.sh"
-          idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.defaults" set-target esp32
+          idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.defaults;sdkconfig.${{ matrix.display }}.defaults" set-target esp32
+          if [ "${{ matrix.display }}" = "spi" ]; then
+            grep -q '^CONFIG_DESK_DISPLAY_SPI=y$' sdkconfig
+          else
+            grep -q '^CONFIG_DESK_DISPLAY_I2C=y$' sdkconfig
+          fi
           idf.py build
           idf.py size
       - name: Upload flashable firmware (no credentials)
         uses: actions/upload-artifact@v4
         with:
-          name: lifeos-desk-node-esp32
+          name: lifeos-desk-node-esp32-${{ matrix.display }}
           path: |
             firmware/build/lifeos_desk_node.bin
             firmware/build/bootloader/bootloader.bin
