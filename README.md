@@ -1,6 +1,6 @@
 # LifeOS Desk Node
 
-A small ESP32 desk gadget that shows my next class or deadline and logs room temperature and humidity in LifeOS.
+I built a design for a small desk gadget because I wanted to see my next class or deadline without opening LifeOS and keep a record of the room conditions.
 
 ## Overview
 

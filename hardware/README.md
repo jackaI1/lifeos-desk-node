@@ -1,6 +1,6 @@
 # Desk node board
 
-The circuit board for a small desk gadget that shows the next LifeOS class or deadline and records room temperature and humidity.
+I built a circuit-board design for my LifeOS desk gadget because I wanted its controller, room sensor and screen connections in one place.
 
 ## Overview
 
@@ -41,4 +41,4 @@ The board is 50 × 55 mm. The antenna extends past its top edge, and slots separ
 
 These views show KiCad's available models. The exact USB-C socket, sensor and pushbuttons have no stock model, so their pads appear without the component bodies. Check their manufacturer drawings for physical fit.
 
-The [design notes](docs/design.md) cover the circuit, pin assignments, electrical limits, routing, regeneration and the ordering checklist. The [shared pinout](../docs/pinout.md) keeps the board and firmware connections in agreement.
+The [board walkthrough](docs/walkthrough.md) explains the power and data connections and the project files in plain language. The [design notes](docs/design.md) cover the circuit, pin assignments, electrical limits, routing, regeneration and the ordering checklist. The [shared pinout](../docs/pinout.md) keeps the board and firmware connections in agreement.
