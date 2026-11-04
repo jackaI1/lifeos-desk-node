@@ -72,6 +72,11 @@ move slightly after conversion to and from the sensor's 16-bit wire format:
 
 ## Boundaries and design
 
+I chose a Scheme compiler and a host C replay program so I can exercise the
+firmware's existing decoder, queue and screen renderer. A separate Python
+simulator would duplicate that behavior, while running Scheme on the ESP32
+would add a device dependency. I keep Scheme on the computer instead.
+
 The compiler reads data with Scheme's `read`, never `eval` or `load`. It accepts
 only `scenario`, `sample`, `fault`, `repeat` and `upload`, validates the complete
 expansion before writing, and rejects extra top-level expressions. Values must
