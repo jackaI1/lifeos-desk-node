@@ -23,7 +23,7 @@ jobs:
         working-directory: firmware
         run: |
           . "$IDF_PATH/export.sh"
-          idf.py set-target esp32
+          idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.defaults" set-target esp32
           idf.py build
           idf.py size
       - name: Upload flashable firmware (no credentials)
