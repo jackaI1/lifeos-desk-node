@@ -119,8 +119,8 @@ the normal LifeOS API. A reading's device/session/sequence tuple deduplicates
 retries, including restart and lost-response cases. A changed payload reusing an
 identity is rejected. Acknowledgment is returned only after all relevant notes
 reach LifeOS. Note writes use version checks and stable mutation IDs, retrying up
-to three conflicts. If an owner manually edits a managed note, syncing refuses to
-overwrite it; export/preserve that note and resolve the managed note deliberately.
+to three conflicts. Owner changes to title, folder, pin state and image attachments are preserved.
+If an owner edits note text or document formatting, syncing refuses to overwrite it; export/preserve that note and resolve the managed note deliberately.
 Do not delete the adapter database while continuing the same device history: it
 contains dedup and generated-note ownership fingerprints. Back it up and monitor
 its size. A day over 90 KiB stops uploads rather than silently truncating data;

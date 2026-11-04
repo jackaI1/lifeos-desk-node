@@ -3,6 +3,8 @@
 #include "desk_network.h"
 #include "sdkconfig.h"
 #include "esp_log.h"
+#include "esp_attr.h"
+#include "bootloader_random.h"
 #include "esp_mac.h"
 #include "esp_random.h"
 #include "esp_sleep.h"
@@ -22,6 +24,15 @@ static RTC_DATA_ATTR struct {
     desk_event_t event;
 } retained;
 static desk_drivers_t drivers;
+static void new_session(void) {
+    uint32_t random[2];
+    /* Supply hardware entropy while Wi-Fi/ADC are inactive, including cold boot. */
+    bootloader_random_enable();
+    esp_fill_random(random,sizeof random);
+    bootloader_random_disable();
+    snprintf(retained.session,sizeof retained.session,"%08lx%08lx",
+        (unsigned long)random[0],(unsigned long)random[1]);
+}
 typedef struct { bool valid; desk_reading_t reading; } sample_result_t;
 static void sample_task(void *arg) {
     QueueHandle_t queue=(QueueHandle_t)arg;
@@ -49,14 +60,12 @@ void app_main(void) {
         !memchr(retained.event.kind,0,sizeof retained.event.kind)) {
         memset(&retained,0,sizeof retained);
         retained.magic=RTC_MAGIC; retained.next_sequence=1;
-        uint32_t random[2]; esp_fill_random(random,sizeof random);
-        snprintf(retained.session,sizeof retained.session,"%08lx%08lx",(unsigned long)random[0],(unsigned long)random[1]);
+        new_session();
         strcpy(retained.event.title,"Waiting for LifeOS");
     }
     /* Sequence wrap gets a fresh session only after the old FIFO drains. */
     if (retained.next_sequence==UINT32_MAX && !retained.ring.count) {
-        uint32_t random[2]; esp_fill_random(random,sizeof random);
-        snprintf(retained.session,sizeof retained.session,"%08lx%08lx",(unsigned long)random[0],(unsigned long)random[1]);
+        new_session();
         retained.next_sequence=1;
     }
     esp_err_t nvs=nvs_flash_init();

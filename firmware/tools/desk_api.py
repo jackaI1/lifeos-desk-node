@@ -195,9 +195,17 @@ class Gateway:
                 return
             if item:
                 old_hash = hashlib.sha256(item['data'].get('text','').encode()).hexdigest()
+                old_text = item['data'].get('text','')
+                plain_doc = {'type':'doc','content':[
+                    {'type':'paragraph', **({'content':[{'type':'text','text':line}]} if line else {})}
+                    for line in old_text.split('\n')]}
+                if item['data'].get('document',plain_doc) != plain_doc:
+                    raise ConflictError('Managed room note formatting was edited; preserve owner changes')
                 if not self.db.execute('SELECT 1 FROM generated_notes WHERE path=? AND hash=?',(path,old_hash)).fetchone():
                     raise ConflictError('Managed room note was edited; preserve owner changes')
-            data = {'title':'Desk room '+day+' '+device, 'text':text}
+            data = ({key:item['data'][key] for key in ('title','folderId','pinned','imageIds')
+                     if key in item['data']} if item else {'title':'Desk room '+day+' '+device})
+            data['text'] = text
             version = item['version'] if item else 0
             digest = hashlib.sha256((path+str(version)+text).encode()).hexdigest()
             # Persist the generated content fingerprint before the write. If the

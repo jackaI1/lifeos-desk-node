@@ -54,6 +54,10 @@ int main(void) {
     ring.head=0;
     CHECK(desk_encode_readings(max_payload,sizeof max_payload,"aabbccddeeff","0123456789abcdef",&ring));
 
+    CHECK(!desk_parse_event("{\"next\":null,\"x\":[[[[[[[[[0]]]]]]]]]}",&event));
+    CHECK(!desk_ack_matches("{\"accepted\":1,\"last_sequence\":42,\"x\":[[[[[[[[[0]]]]]]]]]}",1,42));
+    CHECK(desk_parse_event("{\"next\":{\"kind\":\"class\",\"title\":\"Text [ ] { }\",\"when\":\"Wed 10:30\"}}",&event));
+
     char response[8]; desk_body_t body;
     desk_body_init(&body,response,sizeof response);
     CHECK(desk_body_append(&body,"1234",4));

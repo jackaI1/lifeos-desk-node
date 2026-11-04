@@ -44,7 +44,20 @@ bool desk_ring_pop(desk_ring_t *r,uint32_t expected_sequence) {
 }
 /* Parse exactly one object, including whitespace, with no ignored tail or NUL escape. */
 static cJSON *object(const char *json) {
-    if (strstr(json,"\\u0000")) return NULL;
+    if (strlen(json)>2047 || strstr(json,"\\u0000")) return NULL;
+    /* cJSON is recursive. Bound nesting before entering it on a small RTOS stack.
+       Brackets inside strings (including escaped quotes) do not count. */
+    unsigned depth=0; bool quoted=false, escaped=false;
+    for (const char *p=json;*p;++p) {
+        if (quoted) {
+            if (escaped) escaped=false;
+            else if (*p=='\\') escaped=true;
+            else if (*p=='"') quoted=false;
+        } else if (*p=='"') quoted=true;
+        else if (*p=='{' || *p=='[') { if (++depth>8) return NULL; }
+        else if (*p=='}' || *p==']') { if (!depth) return NULL; --depth; }
+    }
+    if (quoted || depth) return NULL;
     cJSON *root=cJSON_ParseWithOpts(json,NULL,true);
     if (!cJSON_IsObject(root)) { cJSON_Delete(root); return NULL; }
     /* Duplicate keys are ambiguous: reject them at every object boundary we consume. */

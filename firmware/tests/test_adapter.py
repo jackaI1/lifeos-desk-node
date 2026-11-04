@@ -2,13 +2,14 @@
 import contextlib
 import importlib.util
 import json
+import os
 import pathlib
 import tempfile
 import threading
 import unittest
 import urllib.error
 import urllib.request
-from http.server import ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from datetime import datetime, timezone
 
 spec = importlib.util.spec_from_file_location('desk_api', pathlib.Path(__file__).parents[1] / 'tools/desk_api.py')
@@ -43,6 +44,7 @@ class LifeOSFixture:
 @contextlib.contextmanager
 def running(server):
     port = server.server_port
+    started = datetime.now(timezone.utc).isoformat()
     t = threading.Thread(target=server.serve_forever)
     t.start()
     try:
@@ -53,6 +55,7 @@ def running(server):
         import socket
         with socket.socket() as s:
             assert s.connect_ex(('127.0.0.1', port)) != 0, 'owned test port still open'
+        print(f'Closed test_adapter fixture: PID {os.getpid()}, start {started}, port {port}; cleanup server.shutdown()/server_close()/thread.join(); listener verified closed')
 
 class AdapterTests(unittest.TestCase):
     def setUp(self):
@@ -121,6 +124,24 @@ class AdapterTests(unittest.TestCase):
         self.payload['readings'][0]['sequence']=2
         with self.assertRaises(api.ConflictError): self.gateway.ingest(self.payload)
         self.assertIn('Owner annotation to preserve',note['data']['text'])
+    def test_owner_metadata_is_preserved_on_next_upload(self):
+        self.gateway.ingest(self.payload)
+        note=next(iter(self.lifeos.notes.values()))
+        note['data'].update(title='Owner room title',folderId='owner-folder',pinned=True,imageIds=['owner-photo'])
+        self.payload['readings'][0]['sequence']=2
+        self.gateway.ingest(self.payload)
+        data=next(iter(self.lifeos.notes.values()))['data']
+        self.assertEqual(data['title'],'Owner room title')
+        self.assertEqual(data['folderId'],'owner-folder')
+        self.assertTrue(data['pinned'])
+        self.assertEqual(data['imageIds'],['owner-photo'])
+    def test_owner_document_formatting_is_preserved(self):
+        self.gateway.ingest(self.payload)
+        note=next(iter(self.lifeos.notes.values()))
+        note['data']['document']={'type':'doc','content':[{'type':'paragraph','content':[{'type':'text','text':note['data']['text'],'marks':[{'type':'italic'}]}]}]}
+        self.payload['readings'][0]['sequence']=2
+        with self.assertRaises(api.ConflictError): self.gateway.ingest(self.payload)
+        self.assertEqual(note['data']['document']['content'][0]['content'][0]['marks'],[{'type':'italic'}])
     def test_same_id_different_reading_is_rejected(self):
         self.gateway.ingest(self.payload)
         self.payload['readings'][0]['temperature_mc']=23000
@@ -142,5 +163,51 @@ class AdapterTests(unittest.TestCase):
         body={**self.payload,'readings':[{**self.payload['readings'][0],'timestamp':999999999999}]}
         with self.assertRaises(ValueError): self.gateway.ingest(body)
         with self.assertRaises(ValueError): self.gateway.ingest({**self.payload,'extra':'x'})
+
+class UpstreamHTTPTests(unittest.TestCase):
+    def test_authenticated_upstream_note_write_and_missing_note(self):
+        saved={}
+        class Upstream(BaseHTTPRequestHandler):
+            def log_message(self,*args): pass
+            def send_json(self,status,data):
+                raw=json.dumps(data).encode()
+                self.send_response(status); self.end_headers(); self.wfile.write(raw)
+            def do_GET(self):
+                if self.headers.get('Cookie') != 'lifeos-local=synthetic-test':
+                    return self.send_json(401,{})
+                if self.path == '/api/session': return self.send_json(200,{'csrf':'synthetic-csrf'})
+                return self.send_json(404,{})
+            def do_PUT(self):
+                expected_origin='http://127.0.0.1:'+str(self.server.server_port)
+                if self.headers.get('X-LifeOS-CSRF') != 'synthetic-csrf' or self.headers.get('Origin') != expected_origin or self.headers.get('Cookie') != 'lifeos-local=synthetic-test':
+                    return self.send_json(403,{})
+                saved.update(json.loads(self.rfile.read(int(self.headers['Content-Length']))))
+                return self.send_json(200,{'item':saved})
+        with tempfile.TemporaryDirectory() as tmp, running(ThreadingHTTPServer(('127.0.0.1',0),Upstream)) as url:
+            cookie=pathlib.Path(tmp)/'cookie'; cookie.write_text('lifeos-local=synthetic-test')
+            client=api.LifeOS(url,cookie)
+            self.assertIsNone(client.request('GET','/api/private-notes/new'))
+            result=client.request('PUT','/api/private-notes/new',{'version':0,'mutationId':'synthetic-test-12345','data':{'title':'Desk room','text':'22.500 C'}})
+            self.assertEqual(result['item']['data']['text'],'22.500 C')
+            self.assertEqual(saved['version'],0)
+            with self.assertRaises(api.UpstreamError): client.request('GET','/api/bootstrap')
+    def test_redirect_and_malformed_response_fail_closed(self):
+        class Upstream(BaseHTTPRequestHandler):
+            def log_message(self,*args): pass
+            def do_GET(self):
+                if self.path == '/redirect':
+                    self.send_response(302); self.send_header('Location','/sink'); self.end_headers()
+                elif self.path == '/sink':
+                    self.server.leaked=True
+                    self.send_response(200); self.end_headers(); self.wfile.write(b'{}')
+                else:
+                    self.send_response(200); self.end_headers(); self.wfile.write(b'{broken')
+        server=ThreadingHTTPServer(('127.0.0.1',0),Upstream); server.leaked=False
+        with tempfile.TemporaryDirectory() as tmp, running(server) as url:
+            cookie=pathlib.Path(tmp)/'cookie'; cookie.write_text('synthetic-test')
+            client=api.LifeOS(url,cookie)
+            with self.assertRaises(api.UpstreamError): client.request('GET','/redirect')
+            self.assertFalse(server.leaked)
+            with self.assertRaises(api.UpstreamError): client.request('GET','/malformed')
 
 if __name__ == '__main__': unittest.main()
