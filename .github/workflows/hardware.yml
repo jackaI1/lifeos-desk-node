@@ -1,0 +1,39 @@
+name: hardware
+
+on:
+  push:
+    branches: [main]
+    paths: ["hardware/**", ".github/workflows/hardware.yml"]
+  pull_request:
+    paths: ["hardware/**", ".github/workflows/hardware.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kicad:
+    name: ERC, DRC and fab outputs (KiCad 8)
+    runs-on: ubuntu-latest
+    container:
+      image: kicad/kicad:8.0
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: KiCad version
+        run: kicad-cli version
+
+      - name: Schematic is reproducible from design.py
+        run: |
+          python3 hardware/scripts/gen_schematic.py --symbols /usr/share/kicad/symbols --out /tmp/regen.kicad_sch
+          diff -q hardware/desk-node.kicad_sch /tmp/regen.kicad_sch
+
+      - name: ERC, DRC (+ schematic parity), Gerbers, drill, BOM, CPL
+        run: hardware/scripts/export_fab.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desk-node-fab
+          path: hardware/fab/
+          if-no-files-found: error
