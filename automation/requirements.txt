@@ -1,0 +1,5 @@
+# Protocol APIs are pinned because their datastore/object interfaces change.
+pymodbus==3.11.4
+bacpypes3==0.0.106
+rdflib==7.1.4
+pyparsing==3.3.3
