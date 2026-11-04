@@ -1,14 +1,15 @@
 # LifeOS desk-node firmware
 
 ESP-IDF **v5.4.2**, embedded C, target **esp32**, ESP32-WROOM-32E (4 MB).
-SHT31 and SSD1306 128×64 OLED share I²C. Follow [the pinout contract](../docs/pinout.md)
+SHT31 uses I²C; SSD1306 128×64 OLED uses 4-wire SPI by default. UART0 emits
+cycle diagnostics at 115200 baud. The original I²C OLED remains selectable in menuconfig. Follow [the pinout contract](../docs/pinout.md)
 for exact wiring, pull-ups, programming and power assumptions.
 
 ## What runs
 
 Each timer wake reads temperature/RH in a FreeRTOS sensor task, queues the reading,
 and launches a separate Wi-Fi/API task. The coordinator owns the FIFO and cached
-event, renders the display, shuts down Wi-Fi/I²C and enters timer deep sleep.
+event, renders the display, shuts down Wi-Fi/I²C/SPI, drains UART output and enters timer deep sleep.
 There is no concurrent mutation of the retained FIFO. Defaults:
 
 | Item | Bound |
@@ -43,10 +44,30 @@ with the ESP32 toolchain, then in an activated IDF shell:
 ```sh
 cd firmware
 idf.py set-target esp32
-idf.py menuconfig  # LifeOS Desk Node: SSID, password, desk API origin, device token
+idf.py menuconfig  # LifeOS Desk Node: display interface, SSID, password, API origin/token
 idf.py build
 idf.py -p /dev/cu.YOUR_USB_UART flash monitor
 ```
+
+Default display is the revision 2 seven-pin **SPI** module on J4: SCLK18, MOSI23,
+RESET25, D/C26, CS27, plus 3V3 and GND. A four-pin I²C module is not a substitute;
+select **Legacy I2C** explicitly for the earlier J2 wiring. Never wire both display
+variants at once. SPI uses mode 0, 4 MHz, MSB first, no MISO. Hardware pull-ups on
+CS/RESET and pull-down on D/C preserve the display frame during CPU sleep.
+
+UART0 uses TX GPIO1 and RX GPIO3, **115200 8N1**, no flow control. The firmware
+installs the IDF UART driver, routes console logging through it, sends structured
+sample/FIFO/API diagnostics, and waits up to 250 ms for TX completion before sleep.
+A typical cycle line is:
+
+```text
+desk sample=42 utc=0 temp_mc=22500 rh_mpermil=45000 queued=1 lost=0 upload=pending
+```
+
+Values are integer milli-degrees C and thousandths of a percent RH, matching the
+API; UTC zero means unsynchronized. No schedule titles, Wi-Fi credentials or API
+tokens are logged. Connect J3 TX to a **3.3 V** USB–UART adapter RX and share GND.
+USB-C on the PCB supplies power only and does not carry this serial console.
 
 Hold BOOT and reset for UART download mode if needed. Use a 3.3 V USB–UART adapter.
 The API origin has no trailing slash and points at the adapter below. HTTPS uses
@@ -62,11 +83,12 @@ binaries or sdkconfig**. CI uses public synthetic compile-only settings to retai
 its artifacts require
 local configuration/rebuild before deployment. It never connects to an account.
 
-Reproduce the CI firmware build with Docker (no server launched):
+Reproduce the default SPI CI build with Docker (substitute `sdkconfig.i2c.defaults`
+for the legacy variant; no server launched):
 
 ```sh
 docker run --rm -v "$PWD:/project" -w /project/firmware espressif/idf:v5.4.2 \
-  bash -c '. "$IDF_PATH/export.sh" && idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.defaults" set-target esp32 && idf.py build && idf.py size'
+  bash -c '. "$IDF_PATH/export.sh" && idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.defaults;sdkconfig.spi.defaults" set-target esp32 && idf.py build && idf.py size'
 ```
 
 ## LifeOS API adapter
@@ -135,18 +157,22 @@ firmware/tests/run_host_tests.sh
 ```
 
 No ESP toolchain is needed for host tests. The script compiles the production C
-core under strict warnings, AddressSanitizer and UBSan and runs Python adapter
+core and shared SSD1306 protocol writer under strict warnings, AddressSanitizer and UBSan and runs Python adapter
 unit/HTTP integration tests. Its temporary binary directory and owned HTTP test
 socket are closed even on failure. Vendored cJSON v1.7.18 in `tests/vendor` is used
 only by host tests with its MIT license; target builds use ESP-IDF's json component.
 
-CI runs those tests and builds the complete firmware in the pinned ESP-IDF Docker
+CI runs those tests and builds both SPI and legacy I²C variants of the complete firmware in the pinned ESP-IDF Docker
 image, then uploads credential-free flash artifacts and reports firmware size.
 No hardware is connected to CI. Before claiming physical operation:
 
-1. Check 3V3 voltage, module/header orientation, and 0x44/0x3C I²C devices.
+1. Check 3V3, module/header orientation and SHT31 at I²C 0x44. Default SPI OLED
+   has no I²C address; legacy I²C OLED is at 0x3C. Confirm J4 CS/RESET pulls.
 2. Flash a locally configured build; confirm class/deadline, units, clipping and
-   readability on the OLED against a synthetic LifeOS/demo fixture.
+   readability on the OLED against a synthetic LifeOS/demo fixture. Capture J4
+   SCLK/MOSI/CS/D-C/RESET with a logic analyzer: mode 0 at 4 MHz, reset before
+   commands, 1024 frame bytes with D/C high. Verify UART0 cycle lines at 115200
+   8N1 and complete sleep diagnostics before TX goes idle.
 3. Disconnect Wi-Fi for several wakes, restore it, and confirm FIFO upload without
    duplicate sample IDs. Test >64 wakes/shortened intervals to confirm loss count.
 4. Remove the sensor/display in turn: other work must continue and deep sleep must

@@ -19,3 +19,10 @@ start time, port, cleanup method and verified listener closure. Test binaries us
 an automatically removed temporary directory. No browser or persistent server is
 needed. No physical device or live LifeOS account was used; follow the README
 bench checklist before claiming measured hardware behavior.
+
+Revision 2 adds 22 host checks for real shared SSD1306 protocol command/data
+ordering, transfer failure propagation and structured UART line bounds. Total:
+74 C checks and 17 Python tests. Target CI builds both SPI and legacy I²C OLED
+variants with synthetic Wi-Fi/API settings so configured paths are linked.
+Physical proof requires J4 SPI capture and J3 115200-8N1 serial monitoring, as
+described in firmware/README.md.

@@ -180,3 +180,19 @@ void desk_render(uint8_t frame[DESK_FRAME_SIZE],const desk_event_t *event,const 
     snprintf(line,sizeof line,"LOST %lu",(unsigned long)dropped);
     text(frame,7,line,21);
 }
+
+bool desk_format_cycle_log(char *out,size_t capacity,const desk_reading_t *reading,
+                           uint32_t queued,uint32_t dropped,bool upload_acked) {
+    int length;
+    if (reading) {
+        length=snprintf(out,capacity,
+            "desk sample=%lu utc=%lld temp_mc=%ld rh_mpermil=%ld queued=%lu lost=%lu upload=%s\r\n",
+            (unsigned long)reading->sequence,(long long)reading->timestamp,
+            (long)reading->temperature_mc,(long)reading->humidity_mpermil,
+            (unsigned long)queued,(unsigned long)dropped,upload_acked?"acked":"pending");
+    } else {
+        length=snprintf(out,capacity,"desk sample=unavailable queued=%lu lost=%lu upload=%s\r\n",
+            (unsigned long)queued,(unsigned long)dropped,upload_acked?"acked":"pending");
+    }
+    return length>=0 && (size_t)length<capacity;
+}

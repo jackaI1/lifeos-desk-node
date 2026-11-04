@@ -31,6 +31,8 @@ bool desk_body_append(desk_body_t *body, const char *data, size_t length);
 bool desk_encode_readings(char *out, size_t capacity, const char *device,
                           const char *session, const desk_ring_t *ring);
 bool desk_ack_matches(const char *json, uint32_t count, uint32_t last_sequence);
+bool desk_format_cycle_log(char *out,size_t capacity,const desk_reading_t *reading,
+                           uint32_t queued,uint32_t dropped,bool upload_acked);
 void desk_render(uint8_t frame[DESK_FRAME_SIZE], const desk_event_t *event,
                  const desk_reading_t *reading, bool online, uint32_t dropped);
 #endif

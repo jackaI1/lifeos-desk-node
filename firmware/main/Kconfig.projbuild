@@ -1,4 +1,12 @@
 menu "LifeOS Desk Node"
+    choice DESK_DISPLAY_INTERFACE
+        prompt "SSD1306 display interface"
+        default DESK_DISPLAY_SPI
+        config DESK_DISPLAY_SPI
+            bool "4-wire SPI module (revision 2 J4)"
+        config DESK_DISPLAY_I2C
+            bool "Legacy I2C module (revision 1 / J2)"
+    endchoice
     config DESK_WIFI_SSID
         string "Wi-Fi SSID"
         default ""
