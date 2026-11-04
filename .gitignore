@@ -12,3 +12,11 @@ __pycache__/
 .env
 *.pem
 .superpowers/
+
+# KiCad local state and reproducible fabrication/build products.
+hardware/build/
+hardware/fab/
+*.kicad_prl
+*.kicad_pcb.lck
+*.kicad_sch.lck
+*-backups/

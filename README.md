@@ -30,6 +30,14 @@ display option explicitly if using that wiring. Do not connect both displays.
 The OLED stays powered while the ESP32 sleeps, so this is intended for USB desk
 power. No measured battery-life claim is available.
 
+## Circuit board
+
+The [board](hardware/) holds the controller, temperature and humidity sensor, and
+USB-C power supply. A small screen plugs into it to show the next LifeOS class or
+deadline. A separate USB-to-UART adapter loads the firmware and lets you read its
+logs. The [board guide](hardware/README.md) explains the connections, parts and
+files needed to order or build one. This version has not been manufactured yet.
+
 ## Build and flash
 
 Install [ESP-IDF v5.4.2](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32/get-started/index.html)
