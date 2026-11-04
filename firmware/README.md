@@ -133,8 +133,8 @@ Expose the adapter through a configured HTTPS reverse proxy, or use `--host` plu
 `--host 0.0.0.0 --allow-http` together with firmware's explicit HTTP opt-in. This
 transmits the device token in cleartext and is unsuitable for shared networks.
 The API token authorizes only desk schedule reads and room reading ingestion;
-keep the adapter private to your network. This task does not deploy a live service
-or modify the owner's records.
+keep the adapter private to your network. Running the adapter without `--demo` writes dedicated room-log notes to the
+configured LifeOS account.
 
 The adapter commits incoming sample identities to SQLite before contacting LifeOS.
 It writes **new dedicated daily notes** named `Desk room <day> <device>` through
