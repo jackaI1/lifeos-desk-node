@@ -1,6 +1,6 @@
 # LifeOS Desk Node
 
-I built a design for a small desk gadget because I wanted to see my next class or deadline without opening LifeOS and keep a record of the room conditions.
+I built a program for a small desk screen and room sensor because I wanted to see my next class and keep room readings in LifeOS.
 
 ## Overview
 
