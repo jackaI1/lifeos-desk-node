@@ -14,7 +14,41 @@ the sensor, fetches the next event over Wi-Fi and sends readings to a small
 program running beside LifeOS. That program saves daily room-log notes. I have
 software checks and a circuit-board design, but I have not bench-tested an
 assembled device. Screen operation, sensor accuracy and power draw still need
-physical checks. Start with the parts and build steps below.
+physical checks.
+
+I can also use the room readings to try a thermostat on my computer. I choose a
+target temperature, watch simulated heating and fan outputs respond, and read or
+change settings through the same kinds of connections used in building controls.
+The computer can simulate the room too, so I can try this part without a board or
+a LifeOS account. Start with the commands below; the parts and flashing steps
+follow for the physical desk display.
+
+## Try the room-control demo
+
+From the repository root, with Python 3.11 or newer:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r automation/requirements.txt
+.venv/bin/python -m automation.gateway --demo
+```
+
+Leave that running and open another terminal in the same folder:
+
+```sh
+.venv/bin/python -m automation.check
+```
+
+The check prints the room readings, asks for heat, then lowers the target and
+checks that heat and fan turn off. It restores the previous settings when done.
+Press Ctrl-C in the first terminal to stop the demo and release its connections.
+The outputs are simulated; they do not switch a heater or fan in my room.
+
+Modbus TCP and BACnet/IP are two network protocols, or sets of rules for exchanging
+readings and commands. This demo exposes the same readings and thermostat through
+both. The [building-control guide](docs/building-automation.md) explains the point
+addresses, how to connect the existing desk-node readings, and how these protocols
+fit into heating, ventilation, air conditioning and electrical systems.
 
 ## Parts and wiring
 
@@ -97,11 +131,13 @@ Run the software tests from the repository root:
 
 ```sh
 firmware/tests/run_host_tests.sh
+.venv/bin/python -m unittest discover -s automation/tests -v
 ```
 
 These run on a computer without an ESP32 toolchain. Continuous integration (CI), the
 automated checks on GitHub, also builds the default SPI and legacy I²C display
-firmware. Neither proves that a physical board works.
+firmware. The room-control tests use actual local network connections and need no
+hardware. Neither suite proves that a physical board or HVAC system works.
 The [bench checklist](firmware/README.md#tests-and-hardware-validation) covers
 wiring, screen output, reconnects, sensor faults and measured current.
 [Design notes](firmware/docs/design.md), the [device API](firmware/docs/api.md)

@@ -12,6 +12,7 @@ __pycache__/
 .env
 *.pem
 .superpowers/
+.venv/
 
 # KiCad local state and reproducible fabrication/build products.
 hardware/build/
