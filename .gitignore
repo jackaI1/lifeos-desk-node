@@ -13,6 +13,8 @@ __pycache__/
 *.pem
 .superpowers/
 .venv/
+replay/build/
+scenario.log
 
 # KiCad local state and reproducible fabrication/build products.
 hardware/build/

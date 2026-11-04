@@ -16,12 +16,38 @@ software checks and a circuit-board design, but I have not bench-tested an
 assembled device. Screen operation, sensor accuracy and power draw still need
 physical checks.
 
+Before connecting a sensor, I can rehearse a long outage on my computer. I write
+a short list of pretend readings, run it through the same reading queue and screen
+code used by the device, and see which readings survive. I can also save an image
+of the screen. The replay below needs no board, LifeOS account or network service.
+
 I can also use the room readings to try a thermostat on my computer. I choose a
 target temperature, watch simulated heating and fan outputs respond, and read or
 change settings through the same kinds of connections used in building controls.
 The computer can simulate the room too, so I can try this part without a board or
 a LifeOS account. Start with the commands below; the parts and flashing steps
 follow for the physical desk display.
+
+## Try a sensor outage without a board
+
+I use Guile, a program that runs Scheme, to turn a short scenario into sensor
+bytes. A C program then feeds those bytes through the device's existing code.
+Install Guile 3 with `brew install guile` on macOS or
+`sudo apt-get install guile-3.0` on Ubuntu. With a C compiler and Make installed,
+run these commands from the repository root:
+
+```sh
+make -C replay
+guile --no-auto-compile -L replay/scheme replay/compile.scm < replay/examples/outage.scm > replay/build/outage.wire
+replay/build/desk-replay --pbm replay/build/screen.pbm < replay/build/outage.wire
+```
+
+The example sends 70 good readings and one damaged reading before a simulated
+upload. The result reports 64 uploaded, six dropped and one sensor fault. The
+screen image is `replay/build/screen.pbm`, a plain black-and-white image file.
+The [replay guide](docs/sensor-replay.md) explains how I change the readings,
+repeat a sequence and view the image. These checks run the real sensor decoder,
+queue and screen renderer, but the sensor and successful upload are simulated.
 
 ## Try the room-control demo
 
@@ -131,12 +157,15 @@ Run the software tests from the repository root:
 
 ```sh
 firmware/tests/run_host_tests.sh
+make -C replay test
 .venv/bin/python -m unittest discover -s automation/tests -v
 ```
 
 These run on a computer without an ESP32 toolchain. Continuous integration (CI), the
 automated checks on GitHub, also builds the default SPI and legacy I²C display
-firmware. The room-control tests use actual local network connections and need no
+firmware. The replay checks run Scheme scenarios and the C program on Linux and
+macOS, checking for invalid memory access as well as the expected results.
+The room-control tests use actual local network connections and need no
 hardware. Neither suite proves that a physical board or HVAC system works.
 The [bench checklist](firmware/README.md#tests-and-hardware-validation) covers
 wiring, screen output, reconnects, sensor faults and measured current.
