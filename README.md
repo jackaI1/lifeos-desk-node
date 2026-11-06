@@ -348,3 +348,5 @@ remain unmeasured.
 - [solidworks-enclosure-tools](projects/solidworks-enclosure-tools/)
 - [submeter-accuracy-bench](projects/submeter-accuracy-bench/)
 - [vue-electron-results-viewer](projects/vue-electron-results-viewer/)
+
+- [three-phase-fault-analysis](projects/three-phase-fault-analysis/)
