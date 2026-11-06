@@ -1,0 +1,47 @@
+name: Component database
+on:
+  push:
+    branches: [main]
+    paths: ['hardware/**', '.github/workflows/components.yml', 'docs/components.md', 'README.md']
+  pull_request:
+    paths: ['hardware/**', '.github/workflows/components.yml', 'docs/components.md', 'README.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  catalogue-and-inventree:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: hardware/components/requirements.txt
+      - run: python -m pip install -r hardware/components/requirements.txt pytest==8.3.5
+      - name: Parse, number, compare, preserve missing evidence and check Excel output
+        run: python -m pytest hardware/components/tests -q
+      - name: Export fitted BOM and real placement coordinates from KiCad 8
+        run: |
+          mkdir -p hardware/build/components
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work --entrypoint kicad-cli kicad/kicad:8.0 sch export bom \
+            -o hardware/build/components/source.csv --fields 'Reference,Value,Footprint,LCSC,MPN,${QUANTITY}' \
+            --labels 'Designator,Value,Footprint,LCSC,MPN,Qty' --group-by 'MPN,Footprint' --ref-range-delimiter '' --exclude-dnp hardware/desk-node.kicad_sch
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work --entrypoint kicad-cli kicad/kicad:8.0 pcb export pos \
+            -o hardware/build/components/placements.csv --format csv --units mm --side both --exclude-dnp hardware/desk-node.kicad_pcb
+      - name: Load real pinned InvenTree twice and verify REST readback
+        run: python -m hardware.components.demo --bom hardware/build/components/source.csv --placements hardware/build/components/placements.csv --output hardware/build/components --boards 10
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desk-node-component-package
+          path: |
+            hardware/build/components/*.xlsx
+            hardware/build/components/*.csv
+            hardware/build/components/manifest.json
+            hardware/build/components/api-verification.json
+            hardware/build/components/report.json
+            hardware/build/components/risk.md
+            hardware/build/components/resources.json
+          if-no-files-found: error

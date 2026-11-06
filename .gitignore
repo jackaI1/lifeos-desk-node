@@ -26,3 +26,6 @@ hardware/fab/
 
 # Local room-analysis outputs may contain private sensor readings.
 analysis/build/
+
+# Local component manager state, credentials and generated handoff packages.
+hardware/components/.env

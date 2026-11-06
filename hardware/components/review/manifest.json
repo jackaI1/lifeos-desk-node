@@ -1,0 +1,12 @@
+{
+  "bom_sha256": "88df132fbf7e62628a65ed59902e341c3176b87482d65c71b2cf6837f1bf32ed",
+  "placements_sha256": "7b62a36d3292ccc2195d6a75da45ab9895816132c5b2669178ca5b76a6922bb0",
+  "schematic_sha256": "cc7960317ba232dc26f27f3a97b19df0a8c4f9dbfca0f248c0d8ed70e5bab628",
+  "board_sha256": "bc1ec495f838eba191baa902907ad93e7bccd0b8bdcf0b4355b3441af5e40b95",
+  "catalog_sha256": "514e116ce0e4f544b4dd38fd9f80766a796ebb11d0c5b40c262a527fdea2d1ca",
+  "templates_sha256": "e5cd3b1fbec544b6c9232c3562046f53ee3a3c5a0aa3d07c0ec358d404abe02c",
+  "boards": 10,
+  "distinct_parts": 19,
+  "fitted_components": 31,
+  "release": "Engineering review only; unverified declarations and candidate alternates require approval."
+}

@@ -2,6 +2,25 @@
 
 I built a small desk display and room monitor because I wanted to see my next class at a glance and keep temperature and humidity readings in LifeOS.
 
+I also keep a purchasing record for the board so I can check replacements and
+missing material declarations before ordering parts. It covers all 31 components,
+with nine replacement candidates and a spreadsheet for an assembler. With
+Python 3.11+, KiCad 8 and its command-line tools installed, I can try it without
+a board or an account:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r hardware/components/requirements.txt
+.venv/bin/python -m hardware.components --boards 10
+```
+
+Open `hardware/build/components/desk-node-cm.xlsx`, or download the
+[example spreadsheet](hardware/components/review/desk-node-cm.xlsx). The
+[parts guide](docs/components.md) shows how I load the same records into InvenTree,
+a free parts manager, and explains the risk report. RoHS and REACH are rules about
+restricted substances; missing manufacturer evidence stays marked unverified.
+The replacement parts are candidates that still need board testing.
+
 I can also check whether sudden jumps in the room log are likely to be noise.
 The analysis tool smooths isolated spikes and faster variations, then shows which
 repeating changes remain. To try it without a board, with Python 3.11 or newer,

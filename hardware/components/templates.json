@@ -1,0 +1,236 @@
+{
+  "capacitor": {
+    "description": "Desk node capacitor purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "capacitance_uf": "capacitance uf",
+      "voltage_v": "voltage v",
+      "tolerance_pct": "tolerance pct",
+      "dielectric": "dielectric",
+      "package": "package"
+    },
+    "alternate_rules": {
+      "capacitance_uf": "equal",
+      "package": "equal",
+      "dielectric": "equal",
+      "voltage_v": "at_least",
+      "tolerance_pct": "at_most"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "resistor": {
+    "description": "Desk node resistor purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "resistance_ohm": "resistance ohm",
+      "tolerance_pct": "tolerance pct",
+      "power_w": "power w",
+      "package": "package"
+    },
+    "alternate_rules": {
+      "resistance_ohm": "equal",
+      "package": "equal",
+      "tolerance_pct": "at_most",
+      "power_w": "at_least"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "tvs": {
+    "description": "Desk node tvs purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "standoff_v": "standoff v",
+      "breakdown_min_v": "breakdown min v",
+      "breakdown_max_v": "breakdown max v",
+      "clamp_max_v": "clamp max v",
+      "peak_pulse_a": "peak pulse a",
+      "peak_pulse_w": "peak pulse w",
+      "package": "package",
+      "pinout": "pinout"
+    },
+    "alternate_rules": {
+      "standoff_v": "equal",
+      "breakdown_min_v": "equal",
+      "breakdown_max_v": "equal",
+      "clamp_max_v": "equal",
+      "peak_pulse_a": "equal",
+      "peak_pulse_w": "equal",
+      "package": "equal",
+      "pinout": "equal"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "led": {
+    "description": "Desk node led purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "forward_current_a": "forward current a",
+      "dominant_wavelength_min_nm": "dominant wavelength min nm",
+      "dominant_wavelength_max_nm": "dominant wavelength max nm",
+      "package": "package",
+      "pinout": "pinout"
+    },
+    "alternate_rules": {
+      "forward_current_a": "equal",
+      "dominant_wavelength_min_nm": "equal",
+      "dominant_wavelength_max_nm": "equal",
+      "package": "equal",
+      "pinout": "equal"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "fuse": {
+    "description": "Desk node fuse purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "hold_a": "hold a",
+      "trip_a": "trip a",
+      "voltage_max_v": "voltage max v",
+      "fault_max_a": "fault max a",
+      "trip_max_s": "trip max s",
+      "trip_test_a": "trip test a",
+      "resistance_min_ohm": "resistance min ohm",
+      "resistance_posttrip_max_ohm": "resistance posttrip max ohm",
+      "package": "package",
+      "pinout": "pinout"
+    },
+    "alternate_rules": {
+      "hold_a": "equal",
+      "trip_a": "equal",
+      "voltage_max_v": "equal",
+      "fault_max_a": "equal",
+      "trip_max_s": "equal",
+      "trip_test_a": "equal",
+      "resistance_min_ohm": "equal",
+      "resistance_posttrip_max_ohm": "equal",
+      "package": "equal",
+      "pinout": "equal"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "connector": {
+    "description": "Desk node connector purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "contacts": "contacts",
+      "package": "package",
+      "pinout": "pinout",
+      "pitch_mm": "pitch mm",
+      "current_a": "current a"
+    },
+    "alternate_rules": {
+      "contacts": "equal",
+      "package": "equal",
+      "pinout": "equal"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "switch": {
+    "description": "Desk node switch purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "voltage_v": "voltage v",
+      "current_a": "current a",
+      "force_gf": "force gf",
+      "height_mm": "height mm",
+      "package": "package",
+      "pinout": "pinout"
+    },
+    "alternate_rules": {
+      "voltage_v": "equal",
+      "current_a": "equal",
+      "force_gf": "equal",
+      "height_mm": "equal",
+      "package": "equal",
+      "pinout": "equal"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "module": {
+    "description": "Desk node module purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "supply_min_v": "supply min v",
+      "supply_max_v": "supply max v",
+      "flash_mb": "flash mb",
+      "package": "package",
+      "pinout": "pinout"
+    },
+    "alternate_rules": {
+      "supply_min_v": "equal",
+      "supply_max_v": "equal",
+      "flash_mb": "equal",
+      "package": "equal",
+      "pinout": "equal"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "regulator": {
+    "description": "Desk node regulator purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "output_v": "output v",
+      "input_max_v": "input max v",
+      "current_a": "current a",
+      "package": "package",
+      "pinout": "pinout"
+    },
+    "alternate_rules": {
+      "output_v": "equal",
+      "input_max_v": "at_least",
+      "current_a": "at_least",
+      "package": "equal",
+      "pinout": "equal"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  },
+  "sensor": {
+    "description": "Desk node sensor purchasing specification; baseline datasheet and board review required.",
+    "fields": {
+      "supply_min_v": "supply min v",
+      "supply_max_v": "supply max v",
+      "interface": "interface",
+      "package": "package",
+      "accuracy_c": "accuracy c"
+    },
+    "alternate_rules": {
+      "package": "equal",
+      "interface": "equal",
+      "supply_min_v": "at_most",
+      "supply_max_v": "at_least",
+      "accuracy_c": "at_most"
+    },
+    "requirements": {
+      "fire_smoke_toxicity": "Not specified for this indoor desk prototype. No fire, smoke or toxicity certification claimed; define an applicable standard and obtain material evidence before regulated use.",
+      "shock_vibration": "Not specified for this stationary desk prototype. No shock or vibration qualification claimed; define levels, mounting and a test procedure before mobile or harsh-environment use.",
+      "qualification": "Compare exact orderable part, footprint, pinout, ratings, derating, assembly profile and measured board operation; candidates require engineering approval."
+    }
+  }
+}

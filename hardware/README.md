@@ -17,6 +17,16 @@ This is a personal project. The board has been checked in KiCad and CI, but it h
 
 The temperature and humidity sensor is soldered directly to the board. The screen, USB supply, programming adapter and mounting hardware are separate purchases. There is no battery connection.
 
+## Check the purchasing record
+
+I keep [the component database](components/catalog.json) beside the drawing so I
+can compare exact manufacturer part numbers and replacement candidates before I
+order. The [parts guide](../docs/components.md) shows how to make an Excel
+assembly package and load it into InvenTree, a free parts manager. The saved
+[risk review](components/review/risk.md) flags an original capacitor that its
+manufacturer no longer recommends for new designs. Missing RoHS and REACH
+material declarations remain unverified, and replacements need qualification.
+
 ## Build or order a board
 
 1. Open [desk-node.kicad_pro](desk-node.kicad_pro) in KiCad 8 to inspect the schematic and board layout.
