@@ -120,8 +120,8 @@ def load(api, parts, templates, bom_sha256):
     def parameters(pk, values):
         for name,data in parameter_chunks(values).items():
             tid = api.upsert('parameter/template/', {'name':name},
-                             {'description':'Desk node reviewed catalogue field', 'model_type':'part'})
-            pid = api.upsert('parameter/', {'model_type':'part','model_id':pk,'template':tid}, {'data':data})
+                             {'description':'Desk node reviewed catalogue field', 'model_type':'part.part'})
+            pid = api.upsert('parameter/', {'model_type':'part.part','model_id':pk,'template':tid}, {'data':data})
             expected['parameters'][str(pid)] = data
 
     def component(part, ipn, category):

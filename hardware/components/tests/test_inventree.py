@@ -141,3 +141,33 @@ def test_parameter_chunks_survive_inventree_whitespace_normalization():
     stored=parameter_chunks({'Long evidence':text})
     assert all(len(value)<=500 and value==value.strip() for value in stored.values())
     assert ''.join(json.loads(value.strip()) for value in stored.values())==text
+
+
+def test_repeat_load_uses_canonical_model_types_from_api_readback():
+    class Server(API):
+        def __init__(self):
+            super().__init__('http://localhost:1234','demo','temporary')
+            self.rows={};self.next_pk=1
+        def request(self,method,path,data=None):
+            if method=='GET':
+                return {'results':deepcopy(self.rows.get(path.split('?')[0],[])),'next':None}
+            canonical=deepcopy(data)
+            if canonical.get('model_type')=='part': canonical['model_type']='part.part'
+            if method=='PATCH':
+                base,pk=path.rstrip('/').rsplit('/',1)
+                row=next(r for r in self.rows[base+'/'] if r['pk']==int(pk))
+                row.update(canonical);return deepcopy(row)
+            rows=self.rows.setdefault(path,[])
+            if path=='parameter/' and any(all(r[k]==canonical[k] for k in ['model_type','model_id','template']) for r in rows):
+                raise ValueError('duplicate canonical parameter identity')
+            row={'pk':self.next_pk}|canonical;self.next_pk+=1;rows.append(row)
+            return deepcopy(row)
+    root=Path(__file__).resolve().parents[3];data=root/'hardware/components'
+    with (root/'hardware/bom.csv').open() as stream: bom=parse_bom(stream)
+    templates=json.loads((data/'templates.json').read_text())
+    parts=prepare(bom,json.loads((data/'catalog.json').read_text()),templates)
+    api=Server();first=load(api,parts,templates,'a'*64);verify(api,first)
+    counts={k:len(v) for k,v in api.rows.items()}
+    second=load(api,parts,templates,'a'*64);verify(api,second)
+    assert first==second
+    assert counts=={k:len(v) for k,v in api.rows.items()}
