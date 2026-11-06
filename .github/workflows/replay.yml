@@ -1,51 +1,36 @@
 name: Sensor replay
 on:
   push:
-    branches:
-    - main
-    paths-ignore:
-    - projects/**
+    paths-ignore: ['projects/**']
+    branches: [main]
   pull_request:
-    paths:
-    - replay/**
-    - firmware/components/desk_core/**
-    - firmware/tests/vendor/**
-    - .github/workflows/replay.yml
-    - README.md
-    - docs/sensor-replay.md
+    paths: ['replay/**', 'firmware/components/desk_core/**', 'firmware/tests/vendor/**', '.github/workflows/replay.yml', 'README.md', 'docs/sensor-replay.md']
 permissions:
   contents: read
 jobs:
   scheme-and-c:
     strategy:
       matrix:
-        os:
-        - ubuntu-latest
-        - macos-latest
-    runs-on: ${{ matrix.os }}
+        os: [ubuntu-latest, macos-latest]
+    runs-on: '${{ matrix.os }}'
     steps:
-    - uses: actions/checkout@v4
-    - name: Install Guile on Linux
-      if: runner.os == 'Linux'
-      run: sudo apt-get update -qq && sudo apt-get install -y guile-3.0
-    - name: Install Guile on macOS
-      if: runner.os == 'macOS'
-      run: brew install guile
-    - name: Scheme unit tests and C replay integration under sanitizers
-      run: make -C replay test
-    - name: Compile and replay the documented outage
-      run: 'make -C replay
-
-        guile --no-auto-compile -L replay/scheme replay/compile.scm < replay/examples/outage.scm > replay/build/outage.wire
-
-        replay/build/desk-replay --pbm replay/build/screen.pbm < replay/build/outage.wire
-
-        '
-    - uses: actions/upload-artifact@v4
-      with:
-        name: sensor-replay-${{ matrix.os }}
-        path: 'replay/build/outage.wire
-
-          replay/build/screen.pbm
-
-          '
+      - uses: actions/checkout@v4
+      - name: Install Guile on Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -qq && sudo apt-get install -y guile-3.0
+      - name: Install Guile on macOS
+        if: runner.os == 'macOS'
+        run: brew install guile
+      - name: Scheme unit tests and C replay integration under sanitizers
+        run: make -C replay test
+      - name: Compile and replay the documented outage
+        run: |
+          make -C replay
+          guile --no-auto-compile -L replay/scheme replay/compile.scm < replay/examples/outage.scm > replay/build/outage.wire
+          replay/build/desk-replay --pbm replay/build/screen.pbm < replay/build/outage.wire
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sensor-replay-${{ matrix.os }}
+          path: |
+            replay/build/outage.wire
+            replay/build/screen.pbm
