@@ -1,0 +1,25 @@
+REOPEN ED-001_case_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+BOX_MM -40.000,-30.000,0.000,40.000,30.000,36.000
+REOPEN ED-002_lid_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+BOX_MM -40.000,-30.000,-18.000,40.000,30.000,2.400
+REOPEN ED-003_hatch_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+BOX_MM -19.700,-11.700,0.000,19.700,25.000,2.400
+REOPEN LIB-001_standoff_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+BOX_MM -3.000,-3.000,0.000,3.000,3.000,6.000
+REOPEN LIB-002_servo_mount_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+BOX_MM -14.000,-9.000,0.000,14.000,9.000,4.000
+REOPEN REF-001_SG90_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+BOX_MM -11.500,-6.100,0.000,11.500,6.100,37.500
+REOPEN REF-002_carrier_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+BOX_MM -25.000,-12.500,0.000,25.000,12.500,1.600
+LID_ACTIVATE 0 exists=True
+SIMULATION_INTERFACE_OK
+SIM_ACTIVE_DOC True
+STUDY_CREATE code=0 exists=True
+MATERIAL code=0
+FIXTURE code=0
+FORCE code=0
+FORCE_EDIT code=0
+MESH code=0 nodes=81289 elements=49823
+SOLVE code=0
+SIMULATION_BLOCKED InvalidCastException: Unable to cast object of type 'System.Object[]' to type 'System.Double[]'.

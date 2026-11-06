@@ -1,0 +1,29 @@
+SELECT Default active=Default
+HATCH_TRANSFORM 1,0,0,0,1,0,0,0,1,0,0,0.0387,1,0,0,0
+CONFIG Default rebuild=True
+INTERFERENCES 0
+COMPONENT REF-001_SG90_A.SLDPRT exists=True resolved=True
+COMPONENT REF-002_carrier_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-002_servo_mount_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-001_standoff_A.SLDPRT exists=True resolved=True
+COMPONENT ED-002_lid_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-001_standoff_A.SLDPRT exists=True resolved=True
+COMPONENT ED-003_hatch_A.SLDPRT exists=True resolved=True
+COMPONENT ED-001_case_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-001_standoff_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-001_standoff_A.SLDPRT exists=True resolved=True
+SELECT Hatch_open_90 active=Default
+HATCH_TRANSFORM 0,1,0,-1,0,0,0,0,1,0.0205,0.0205,0.0387,1,0,0,0
+CONFIG Hatch_open_90 rebuild=True
+INTERFERENCES 0
+COMPONENT LIB-001_standoff_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-001_standoff_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-001_standoff_A.SLDPRT exists=True resolved=True
+COMPONENT REF-002_carrier_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-001_standoff_A.SLDPRT exists=True resolved=True
+COMPONENT ED-003_hatch_A.SLDPRT exists=True resolved=True
+COMPONENT LIB-002_servo_mount_A.SLDPRT exists=True resolved=True
+COMPONENT REF-001_SG90_A.SLDPRT exists=True resolved=True
+COMPONENT ED-002_lid_A.SLDPRT exists=True resolved=True
+COMPONENT ED-001_case_A.SLDPRT exists=True resolved=True
+SAVE errors=0 warnings=0

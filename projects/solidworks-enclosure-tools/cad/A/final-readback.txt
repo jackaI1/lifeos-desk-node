@@ -1,0 +1,13 @@
+REOPEN ED-001_case_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+REOPEN ED-002_lid_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+REOPEN ED-003_hatch_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+REOPEN LIB-001_standoff_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+REOPEN LIB-002_servo_mount_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+REOPEN REF-001_SG90_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+REOPEN REF-002_carrier_A.SLDPRT errors=0 warnings=0 rebuild=True bodies=1
+CONFIG Default
+ACTUAL_HATCH_POSE 1,0,0,0,1,0,0,0,1,0,0,0.0387,1,0,0,0
+SAVED_HATCH_POSE 1,0,0,0,1,0,0,0,1,0,0,0.0387,1,0,0,0
+CONFIG Hatch_open_90
+ACTUAL_HATCH_POSE 0,1,0,-1,0,0,0,0,1,0.0205,0.0205,0.0387,1,0,0,0
+SAVED_HATCH_POSE 0,1,0,-1,0,0,0,0,1,0.0205,0.0205,0.0387,1,0,0,0

@@ -1,0 +1,30 @@
+"""Open in FreeCAD using Macro > Macros, then Execute.
+
+The file picker asks for this checkout, a dimension CSV, and an empty output folder.
+Dependencies: openpyxl must be available to FreeCAD's Python (see README).
+"""
+from pathlib import Path
+import sys
+from PySide import QtWidgets
+
+checkout = QtWidgets.QFileDialog.getExistingDirectory(None, "Choose freecad-design-tools checkout")
+if checkout:
+    checkout = Path(checkout)
+    sys.path.insert(0, str(checkout))
+    # Optional pure-Python dependencies installed using README's target-directory command.
+    vendor = checkout / ".freecad-deps"
+    if vendor.is_dir():
+        sys.path.insert(0, str(vendor))
+    table, _ = QtWidgets.QFileDialog.getOpenFileName(
+        None, "Choose dimension spreadsheet", str(checkout / "examples"), "CSV files (*.csv)")
+    if table:
+        output = QtWidgets.QFileDialog.getExistingDirectory(None, "Choose EMPTY output directory")
+        if output:
+            try:
+                from freecad_tools.parts import build_project
+                from freecad_tools.gui import open_assembly
+                result = build_project(table, output)
+                document = open_assembly(result / "assembly.FCStd")
+                QtWidgets.QMessageBox.information(None, "Toolkit", f"Assembly and reports saved in {result}")
+            except Exception as error:
+                QtWidgets.QMessageBox.critical(None, "Toolkit error", str(error))

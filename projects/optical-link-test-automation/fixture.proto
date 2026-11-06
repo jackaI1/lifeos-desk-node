@@ -1,0 +1,4 @@
+syntax = "proto3";
+package fixture;
+message Request { string operation = 1; double wavelength_nm = 2; double launch_dbm = 3; }
+message Response { bool ok = 1; double value = 2; string error = 3; }

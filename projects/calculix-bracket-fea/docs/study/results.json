@@ -1,0 +1,682 @@
+{
+  "units": {
+    "length": "mm",
+    "force": "N",
+    "stress": "MPa"
+  },
+  "material": {
+    "young_mpa": 70000,
+    "poisson": 0.33,
+    "assumed_yield_mpa": 276
+  },
+  "provenance": {
+    "gmsh": "4.15.0",
+    "python": "3.13.15",
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "ccx": "CalculiX Version 2.23, Copyright(C) 1998-2025 Guido Dhondt"
+  },
+  "beam": {
+    "deflection_mm": 0.4534753456140351,
+    "hand_deflection_mm": 0.45714285714285713,
+    "deflection_error_fraction": 0.008022681469298298,
+    "stress_rms_error_fraction": 0.0017859875708149638,
+    "stress_max_error_fraction": 0.007596775750915074,
+    "hand_root_bending_stress_mpa": 24.0,
+    "section_stress_ratio": 1.0000391809918507,
+    "stress_error_fraction": 3.91809918507402e-05,
+    "force_balance_error_fraction": 1.159834234689656e-06,
+    "nodes": 3961,
+    "elements": 1994
+  },
+  "bracket": [
+    {
+      "nodes": 6789,
+      "elements": 3346,
+      "peak_vm_mpa": 57.02996136267322,
+      "peak_node": 5,
+      "peak_xyz_mm": [
+        6.0,
+        -9.31718387294355,
+        41.56725151858869
+      ],
+      "max_displacement_mm": 0.666785904522663,
+      "yield_margin": 3.8395614060619945,
+      "reaction_n": [
+        3.7199998307868576e-06,
+        -1.2369999994502057e-05,
+        99.99997034999978
+      ],
+      "force_balance_error_fraction": 3.234158022356126e-07,
+      "moment_residual_nmm": [
+        0.00046694506713151895,
+        0.0003352794892634847,
+        6.940338345540198e-05
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 54.40218231722338,
+        "left_bore": 54.27471372063421,
+        "fillet": 14.865173103794872
+      },
+      "reference_peak_vm_mpa": 57.02996136267322,
+      "case": "down",
+      "mesh_size_mm": 4.0,
+      "force_n": [
+        0,
+        0,
+        -100
+      ],
+      "input_sha256": "9b4c4ea20a7a86d8a03d13b671fb0e9ad37c7fe1fa6ac92869e8e79a5f948572"
+    },
+    {
+      "nodes": 6789,
+      "elements": 3346,
+      "peak_vm_mpa": 49.639252837623374,
+      "peak_node": 7,
+      "peak_xyz_mm": [
+        6.0,
+        10.68281612705645,
+        41.56725151858869
+      ],
+      "max_displacement_mm": 0.21821767021291036,
+      "yield_margin": 4.560115920818407,
+      "reaction_n": [
+        1.842999995638195e-05,
+        -100.00000835000002,
+        2.948399996505202e-05
+      ],
+      "force_balance_error_fraction": 3.575882621949995e-07,
+      "moment_residual_nmm": [
+        -0.00010969483179223971,
+        0.0006770942983393979,
+        -0.0003102103082710528
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 40.58957461320761,
+        "left_bore": 44.45082391460586,
+        "fillet": 15.460863049341922
+      },
+      "reference_peak_vm_mpa": 44.26887361133893,
+      "case": "side",
+      "mesh_size_mm": 4.0,
+      "force_n": [
+        0,
+        100,
+        0
+      ],
+      "input_sha256": "dd94de48548bdf71ab6ccecb4f15b5f484c1c7cf14916071cdb4a22fb6b6ceec"
+    },
+    {
+      "nodes": 6789,
+      "elements": 3346,
+      "peak_vm_mpa": 80.64453711733672,
+      "peak_node": 7,
+      "peak_xyz_mm": [
+        6.0,
+        10.68281612705645,
+        41.56725151858869
+      ],
+      "max_displacement_mm": 0.6902287679504601,
+      "yield_margin": 2.422426488708388,
+      "reaction_n": [
+        -1.037000002490629e-05,
+        -59.999970571000034,
+        100.00005675500002
+      ],
+      "force_balance_error_fraction": 5.553703696921895e-07,
+      "moment_residual_nmm": [
+        -0.0007704700790895913,
+        -0.0004986402891518082,
+        -7.143347374949371e-05
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 75.7100282205442,
+        "left_bore": 36.77975016243449,
+        "fillet": 17.514037902442716
+      },
+      "reference_peak_vm_mpa": 80.64453711733672,
+      "case": "combined",
+      "mesh_size_mm": 4.0,
+      "force_n": [
+        0,
+        60,
+        -100
+      ],
+      "input_sha256": "65b46ddae7bef0ca5aed225367cac19ebd54f59651c4b06527f5fa87f7336eea",
+      "displacements_superposition_error_fraction": 1.506816741194488e-07,
+      "stress_superposition_error_fraction": 4.2770867906047974e-06
+    },
+    {
+      "nodes": 14383,
+      "elements": 7810,
+      "peak_vm_mpa": 65.79154676801193,
+      "peak_node": 5,
+      "peak_xyz_mm": [
+        6.0,
+        -9.31718387294355,
+        41.56725151858869
+      ],
+      "max_displacement_mm": 0.6721915930844006,
+      "yield_margin": 3.1950678097477434,
+      "reaction_n": [
+        2.064000000887023e-05,
+        -5.769000009370195e-07,
+        99.99998930999996
+      ],
+      "force_balance_error_fraction": 2.3251204588364186e-07,
+      "moment_residual_nmm": [
+        0.000517097627401597,
+        0.0009418657509741024,
+        9.663692311590033e-05
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 59.717164404435245,
+        "left_bore": 61.117002049644476,
+        "fillet": 23.283062289533916
+      },
+      "reference_peak_vm_mpa": 65.79154676801193,
+      "case": "down",
+      "mesh_size_mm": 3.0,
+      "force_n": [
+        0,
+        0,
+        -100
+      ],
+      "input_sha256": "8f33acb9c7096a836cd9a83a0c2125c5549eda66d9324eb9881e7b77cb8f2f1a"
+    },
+    {
+      "nodes": 14383,
+      "elements": 7810,
+      "peak_vm_mpa": 59.3132017749843,
+      "peak_node": 568,
+      "peak_xyz_mm": [
+        6.0,
+        11.87249166960484,
+        42.043012521626025
+      ],
+      "max_displacement_mm": 0.21995355093986635,
+      "yield_margin": 3.653264226858929,
+      "reaction_n": [
+        3.061299997408895e-05,
+        -99.99998557400002,
+        -1.224000005262127e-05
+      ],
+      "force_balance_error_fraction": 3.5987259468926765e-07,
+      "moment_residual_nmm": [
+        -0.0004537254554861647,
+        0.0014522387335205167,
+        4.3933411689067725e-05
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 46.92089046272383,
+        "left_bore": 49.48661720699674,
+        "fillet": 16.56190737572942
+      },
+      "reference_peak_vm_mpa": 47.265330606213894,
+      "case": "side",
+      "mesh_size_mm": 3.0,
+      "force_n": [
+        0,
+        100,
+        0
+      ],
+      "input_sha256": "a38e99366b7fc62e50554ad21c56f0a3248dc6101cfbae7f720c057bc27f1902"
+    },
+    {
+      "nodes": 14383,
+      "elements": 7810,
+      "peak_vm_mpa": 89.3299242705724,
+      "peak_node": 7,
+      "peak_xyz_mm": [
+        6.0,
+        10.68281612705645,
+        41.56725151858869
+      ],
+      "max_displacement_mm": 0.6958694741397555,
+      "yield_margin": 2.089670144172747,
+      "reaction_n": [
+        4.099978245797331e-08,
+        -60.00000375799999,
+        99.99998547999996
+      ],
+      "force_balance_error_fraction": 1.2861097461528838e-07,
+      "moment_residual_nmm": [
+        -0.00043708170244372013,
+        6.286478310357779e-05,
+        -0.00011072360484831734
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 84.48138368350179,
+        "left_bore": 40.71496851566951,
+        "fillet": 25.31618109067993
+      },
+      "reference_peak_vm_mpa": 89.3299242705724,
+      "case": "combined",
+      "mesh_size_mm": 3.0,
+      "force_n": [
+        0,
+        60,
+        -100
+      ],
+      "input_sha256": "f7e26305e1ee763d4a68f8560e52d8863477ab1bf8b348d19b69f81575282af7",
+      "displacements_superposition_error_fraction": 1.5156567342116228e-07,
+      "stress_superposition_error_fraction": 3.7205389928978284e-06
+    },
+    {
+      "nodes": 38947,
+      "elements": 23148,
+      "peak_vm_mpa": 69.7272396412039,
+      "peak_node": 3,
+      "peak_xyz_mm": [
+        6.0,
+        -10.0,
+        41.5
+      ],
+      "max_displacement_mm": 0.6736049852294388,
+      "yield_margin": 2.9582808873578785,
+      "reaction_n": [
+        2.117000018619919e-06,
+        1.4463999979841269e-05,
+        99.99999705400022
+      ],
+      "force_balance_error_fraction": 1.4912005204218577e-07,
+      "moment_residual_nmm": [
+        -0.0004519348895968278,
+        7.598581760248635e-05,
+        -0.0002088867699789887
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 66.34551184329031,
+        "left_bore": 69.7272396412039,
+        "fillet": 27.566152283322133
+      },
+      "reference_peak_vm_mpa": 67.3423577973403,
+      "case": "down",
+      "mesh_size_mm": 2.0,
+      "force_n": [
+        0,
+        0,
+        -100
+      ],
+      "input_sha256": "64c989b578024d612930ed065b113c0558a17a30c54dbfa18445723b25d00fe0"
+    },
+    {
+      "nodes": 38947,
+      "elements": 23148,
+      "peak_vm_mpa": 62.44174136719363,
+      "peak_node": 849,
+      "peak_xyz_mm": [
+        6.0,
+        -10.905866657858821,
+        41.61925960798826
+      ],
+      "max_displacement_mm": 0.22088217016074838,
+      "yield_margin": 3.420120162520133,
+      "reaction_n": [
+        2.3539999181032556e-06,
+        -99.99999137550003,
+        -2.8219999797518547e-06
+      ],
+      "force_balance_error_fraction": 9.374806623105319e-08,
+      "moment_residual_nmm": [
+        -0.0006207331456380416,
+        6.195378573892185e-05,
+        0.00011093085686297854
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 52.205681290836885,
+        "left_bore": 55.7394925105476,
+        "fillet": 18.166710500647696
+      },
+      "reference_peak_vm_mpa": 47.003311404524474,
+      "case": "side",
+      "mesh_size_mm": 2.0,
+      "force_n": [
+        0,
+        100,
+        0
+      ],
+      "input_sha256": "f1d37a2fe65cf1b63adbf9ba81aede5d8459960728514daf952c8ae1d53722d7"
+    },
+    {
+      "nodes": 38947,
+      "elements": 23148,
+      "peak_vm_mpa": 94.07649394233019,
+      "peak_node": 2,
+      "peak_xyz_mm": [
+        6.0,
+        10.0,
+        41.5
+      ],
+      "max_displacement_mm": 0.6973995291729125,
+      "yield_margin": 1.933782801995052,
+      "reaction_n": [
+        -7.97100011240559e-06,
+        -60.00001515899999,
+        99.99999021499981
+      ],
+      "force_balance_error_fraction": 1.6914107239794321e-07,
+      "moment_residual_nmm": [
+        0.0005960856725835129,
+        -0.0002878884179153829,
+        -1.0954187018796802e-05
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 94.07649394233019,
+        "left_bore": 45.62333973576301,
+        "fillet": 29.739819682968825
+      },
+      "reference_peak_vm_mpa": 93.04755571347913,
+      "case": "combined",
+      "mesh_size_mm": 2.0,
+      "force_n": [
+        0,
+        60,
+        -100
+      ],
+      "input_sha256": "0e649351464ec9a0b6f60bceb656623307aefa4c37b9f4f32bb6f8d509b1ab00",
+      "displacements_superposition_error_fraction": 1.5124620829864e-07,
+      "stress_superposition_error_fraction": 3.274321136574646e-06
+    },
+    {
+      "nodes": 78909,
+      "elements": 48547,
+      "peak_vm_mpa": 73.49401790472133,
+      "peak_node": 1106,
+      "peak_xyz_mm": [
+        6.0,
+        10.343059991153462,
+        41.51685345664731
+      ],
+      "max_displacement_mm": 0.6741023115313929,
+      "yield_margin": 2.7554076898858657,
+      "reaction_n": [
+        6.37580010476313e-06,
+        -1.196500025280045e-06,
+        100.00001385949977
+      ],
+      "force_balance_error_fraction": 1.530255446849525e-07,
+      "moment_residual_nmm": [
+        0.000330790067575748,
+        0.00018307506707060384,
+        5.580945350303068e-05
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 63.99541019170594,
+        "left_bore": 67.87592371323363,
+        "fillet": 27.269852624096888
+      },
+      "reference_peak_vm_mpa": 67.93029290156417,
+      "case": "down",
+      "mesh_size_mm": 1.5,
+      "force_n": [
+        0,
+        0,
+        -100
+      ],
+      "input_sha256": "8c2d06162f2c5f617984da418af86476084766e48b42ea51602c6186f21b1752"
+    },
+    {
+      "nodes": 78909,
+      "elements": 48547,
+      "peak_vm_mpa": 61.7420684276191,
+      "peak_node": 1106,
+      "peak_xyz_mm": [
+        6.0,
+        10.343059991153462,
+        41.51685345664731
+      ],
+      "max_displacement_mm": 0.22120554461265232,
+      "yield_margin": 3.470209810407596,
+      "reaction_n": [
+        -4.8510001109391965e-06,
+        -100.00001444974296,
+        3.223139999053437e-05
+      ],
+      "force_balance_error_fraction": 3.565375743346582e-07,
+      "moment_residual_nmm": [
+        0.000897568306015728,
+        -0.00017503656874051643,
+        1.1037353942811023e-05
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 51.10188319515045,
+        "left_bore": 53.70248290592427,
+        "fillet": 17.76676652528893
+      },
+      "reference_peak_vm_mpa": 56.19440674938032,
+      "case": "side",
+      "mesh_size_mm": 1.5,
+      "force_n": [
+        0,
+        100,
+        0
+      ],
+      "input_sha256": "d039ef09352b710dfdc048ff3d29ffc4752a0f5ec81f52795827e443c3399167"
+    },
+    {
+      "nodes": 78909,
+      "elements": 48547,
+      "peak_vm_mpa": 106.9396567145168,
+      "peak_node": 1106,
+      "peak_xyz_mm": [
+        6.0,
+        10.343059991153462,
+        41.51685345664731
+      ],
+      "max_displacement_mm": 0.6979489325526976,
+      "yield_margin": 1.5808947632663726,
+      "reaction_n": [
+        -5.57600002792924e-06,
+        -60.00000466259996,
+        99.99998104849989
+      ],
+      "force_balance_error_fraction": 1.7405014725587934e-07,
+      "moment_residual_nmm": [
+        0.00014269393125232455,
+        -0.0002231351709269802,
+        7.673423351661768e-05
+      ],
+      "probe_vm_mpa": {
+        "right_bore": 90.9592115093848,
+        "left_bore": 45.18959314370232,
+        "fillet": 29.286366089323884
+      },
+      "reference_peak_vm_mpa": 95.67591196049088,
+      "case": "combined",
+      "mesh_size_mm": 1.5,
+      "force_n": [
+        0,
+        60,
+        -100
+      ],
+      "input_sha256": "2994032c5f29eb8d1e7203a8ddd1e06d0d7e70364a0c8b04f791634b4101b5ff",
+      "displacements_superposition_error_fraction": 1.5415730514747417e-07,
+      "stress_superposition_error_fraction": 3.3527981894613115e-06
+    }
+  ],
+  "convergence": {
+    "down": {
+      "reference_peak": {
+        "xyz_mm": [
+          6.0,
+          -9.31718387294355,
+          41.56725151858869
+        ],
+        "discovery_vm_mpa": 63.55508942109357,
+        "input_sha256": "64809d3e1f76cc4be93777b5e3d3aca4a9b9826e46391f8eb757f2bd2043cb71"
+      },
+      "at_reference_peak": {
+        "relative_changes": [
+          0.13317190179815958,
+          0.02302876050160545,
+          0.008654976728509527
+        ],
+        "within_five_percent_last_two_changes": true
+      },
+      "global_peak": {
+        "relative_changes": [
+          0.13317190179815958,
+          0.0564441227480666,
+          0.05125285527865331
+        ],
+        "within_five_percent_last_two_changes": false
+      },
+      "fixed_gauges": {
+        "right_bore": {
+          "relative_changes": [
+            0.0890025864459351,
+            0.09990649336629404,
+            0.03672297192164806
+          ],
+          "within_five_percent_last_two_changes": false
+        },
+        "left_bore": {
+          "relative_changes": [
+            0.11195392606876188,
+            0.12348456121115933,
+            0.02727500160133091
+          ],
+          "within_five_percent_last_two_changes": false
+        },
+        "fillet": {
+          "relative_changes": [
+            0.3615456197754112,
+            0.15537496672611575,
+            0.010865466099491149
+          ],
+          "within_five_percent_last_two_changes": false
+        }
+      },
+      "displacement": {
+        "relative_changes": [
+          0.008041886595060228,
+          0.002098250719680759,
+          0.0007377608612916506
+        ],
+        "within_five_percent_last_two_changes": true
+      }
+    },
+    "side": {
+      "reference_peak": {
+        "xyz_mm": [
+          0.0,
+          -11.423578250765289,
+          41.80259089825089
+        ],
+        "discovery_vm_mpa": 57.24002716596141,
+        "input_sha256": "339562db1d4e4cf14803b7bcf5fa16d869498d6475662ac5d30b6adf1296be69"
+      },
+      "at_reference_peak": {
+        "relative_changes": [
+          0.06339650979783948,
+          0.0055744838791123505,
+          0.16355889983583108
+        ],
+        "within_five_percent_last_two_changes": false
+      },
+      "global_peak": {
+        "relative_changes": [
+          0.1630994221836288,
+          0.05010333670567742,
+          0.011332191444068001
+        ],
+        "within_five_percent_last_two_changes": false
+      },
+      "fixed_gauges": {
+        "right_bore": {
+          "relative_changes": [
+            0.13493596960923235,
+            0.10123018601503504,
+            0.0215999494866206
+          ],
+          "within_five_percent_last_two_changes": false
+        },
+        "left_bore": {
+          "relative_changes": [
+            0.10176070979607967,
+            0.11218034147633521,
+            0.03793138593222498
+          ],
+          "within_five_percent_last_two_changes": false
+        },
+        "fillet": {
+          "relative_changes": [
+            0.06648052675388208,
+            0.08833757354481216,
+            0.022510791414379918
+          ],
+          "within_five_percent_last_two_changes": false
+        }
+      },
+      "displacement": {
+        "relative_changes": [
+          0.007892033202185345,
+          0.004204138433655456,
+          0.0014618731753320165
+        ],
+        "within_five_percent_last_two_changes": true
+      }
+    },
+    "combined": {
+      "reference_peak": {
+        "xyz_mm": [
+          6.0,
+          10.68281612705645,
+          41.56725151858869
+        ],
+        "discovery_vm_mpa": 89.52543254255241,
+        "input_sha256": "b62fb12278e0b96552664fccb36d3c64882dd6e145af8d95140f3ae15e76d7de"
+      },
+      "at_reference_peak": {
+        "relative_changes": [
+          0.0972281933983109,
+          0.03995410104435635,
+          0.027471452251190714
+        ],
+        "within_five_percent_last_two_changes": true
+      },
+      "global_peak": {
+        "relative_changes": [
+          0.0972281933983109,
+          0.050454364027080735,
+          0.12028430955717169
+        ],
+        "within_five_percent_last_two_changes": false
+      },
+      "fixed_gauges": {
+        "right_bore": {
+          "relative_changes": [
+            0.10382589726297924,
+            0.10199264297317771,
+            0.03427121213142617
+          ],
+          "within_five_percent_last_two_changes": false
+        },
+        "left_bore": {
+          "relative_changes": [
+            0.09665286494623027,
+            0.10758465400650949,
+            0.009598373472436111
+          ],
+          "within_five_percent_last_two_changes": false
+        },
+        "fillet": {
+          "relative_changes": [
+            0.3081879988253658,
+            0.14874463394350004,
+            0.015483436636074963
+          ],
+          "within_five_percent_last_two_changes": false
+        }
+      },
+      "displacement": {
+        "relative_changes": [
+          0.008105983088665572,
+          0.0021939433124819213,
+          0.0007871684505279614
+        ],
+        "within_five_percent_last_two_changes": true
+      }
+    }
+  }
+}

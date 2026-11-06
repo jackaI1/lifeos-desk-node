@@ -1,0 +1,7 @@
+part_id,kind,length,width,thickness,height,outer_diameter,hole_diameter,pitch
+PL-80,plate,80,40,4,,,5,60
+PL-80-ALT,plate,80.1,40,4,,,5,60
+BR-80,bracket,80,20,4,30,,5,60
+BR-100,bracket,100,20,4,30,,5,80
+SP-12,spacer,,,,12,10,5,
+SP-20,spacer,,,,20,10,5,

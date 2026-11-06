@@ -1,0 +1,1 @@
+"""Simulated optical test station."""

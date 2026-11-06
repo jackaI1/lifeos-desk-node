@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Air-core coil calculator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<a class="skip-link" href="#results">Skip to results</a>
+<header>
+  <a href="/" class="project-name">Jack Lai / Coil calculations</a>
+  <a href="https://github.com/jackaI1/air-core-reactor-calculator">Code &amp; model notes</a>
+</header>
+<main>
+  <div class="intro">
+    <h1>Air-core coil calculator</h1>
+    <p>Check how much a coil resists a change in current. Enter its dimensions to compare
+       three inductance estimates and see the effect of adding it to a simple fault circuit.</p>
+  </div>
+  {% if error %}
+  <div class="error" role="alert">
+    <h2>Check your inputs</h2>
+    <p>{{ error }} Enter finite dimensions and whole turn counts. Your entries are kept below.</p>
+  </div>
+  {% endif %}
+  <div class="workspace">
+    <form method="post" action="/">
+      <fieldset>
+        <legend>Coil geometry</legend>
+        <p class="hint">Round bare wire, equal turns per layer, all wound in the same direction.</p>
+        <div class="inputs">
+          <div class="field">
+            <label for="mean_radius_mm">Mean radius <span>mm</span></label>
+            <input id="mean_radius_mm" name="mean_radius_mm" type="number" step="any" min="0.001" required value="{{ values.mean_radius_mm }}" aria-describedby="radius-help">
+            <small id="radius-help">Axis to the middle of the winding depth.</small>
+          </div>
+          <div class="field">
+            <label for="length_mm">Winding length <span>mm</span></label>
+            <input id="length_mm" name="length_mm" type="number" step="any" min="0.001" required value="{{ values.length_mm }}" aria-describedby="length-help">
+            <small id="length-help">Turns per layer × centre-to-centre pitch.</small>
+          </div>
+          <div class="field">
+            <label for="turns_per_layer">Turns in each layer</label>
+            <input id="turns_per_layer" name="turns_per_layer" type="number" min="1" max="2000" step="1" required value="{{ values.turns_per_layer }}">
+          </div>
+          <div class="field">
+            <label for="layers">Layers</label>
+            <input id="layers" name="layers" type="number" min="1" max="20" step="1" required value="{{ values.layers }}">
+          </div>
+          <div class="field">
+            <label for="wire_diameter_mm">Bare wire diameter <span>mm</span></label>
+            <input id="wire_diameter_mm" name="wire_diameter_mm" type="number" step="any" min="0.001" required value="{{ values.wire_diameter_mm }}">
+          </div>
+          <div class="field">
+            <label for="radial_pitch_mm">Radial layer pitch <span>mm</span></label>
+            <input id="radial_pitch_mm" name="radial_pitch_mm" type="number" step="any" min="0.001" required value="{{ values.radial_pitch_mm }}" aria-describedby="pitch-help">
+            <small id="pitch-help">Layer centre spacing, including insulation. Unused for one layer.</small>
+          </div>
+        </div>
+      </fieldset>
+      <details class="circuit-inputs">
+        <summary>Circuit assumptions <span>edit</span></summary>
+        <p class="hint">Balanced three-phase bolted fault, 1 per-unit source voltage, one reactor per phase.</p>
+        <div class="inputs">
+          {% for key, label, unit in [
+            ('voltage_kv', 'Line-to-line voltage', 'kV'),
+            ('base_mva', 'Three-phase power base', 'MVA'),
+            ('frequency_hz', 'Frequency', 'Hz'),
+            ('source_r_pu', 'Source resistance', 'pu'),
+            ('source_x_pu', 'Source reactance', 'pu')
+          ] %}
+          <div class="field">
+            <label for="{{ key }}">{{ label }} <span>{{ unit }}</span></label>
+            <input id="{{ key }}" name="{{ key }}" type="number" step="any" min="0" required value="{{ values[key] }}">
+          </div>
+          {% endfor %}
+        </div>
+      </details>
+      <div class="actions"><button type="submit">Calculate coil</button><a href="/">Reset example</a></div>
+      <p class="hint">Up to 2,000 total turns and 20 layers. Dimensions are converted to metres before calculation.</p>
+    </form>
+    <section id="results" aria-labelledby="results-heading" tabindex="-1">
+      <h2 id="results-heading">Inductance comparison</h2>
+      {% if report %}
+        <p>{{ report.total_turns }} turns · {{ values.layers }} layer{% if values.layers != '1' %}s{% endif %} · values in millihenries (mH)</p>
+        <table>
+          <caption class="sr-only">Three inductance models for the entered winding</caption>
+          <thead><tr><th scope="col">Model</th><th scope="col">Inductance</th></tr></thead>
+          <tbody>
+          {% for key, label, explanation in [
+            ('wheeler', 'Wheeler', 'Quick geometry estimate'),
+            ('nagaoka', 'Nagaoka', 'Continuous current sheet per layer'),
+            ('filament', 'Filament sum', 'Individual circular turns + wire self term')
+          ] %}
+            <tr><th scope="row">{{ label }}<small>{{ explanation }}</small></th><td>{{ '%.4g'|format(report.inductance_h[key]*1000) }} <span>mH</span></td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <p class="comparison-note">Model spread: <strong>{{ '%.2f'|format(report.max_disagreement_percent) }}%</strong> of the largest estimate. Agreement is a cross-check, not a measured accuracy.</p>
+        <div class="checks">
+          <h3>Physical checks</h3>
+          {% if report.flags %}
+            <ul>{% for flag in report.flags %}<li><strong>{{ flag.severity|capitalize }}:</strong> {{ flag.message }}</li>{% endfor %}</ul>
+          {% else %}
+            <p>No plausibility flags for this geometry. The checks cover turn spacing, model range, and magnetic-energy bounds.</p>
+          {% endif %}
+        </div>
+        <section class="fault" aria-labelledby="fault-heading">
+          <h2 id="fault-heading">Fault current with a series reactor</h2>
+          <p>A reactor adds opposition to alternating current. This estimate uses the filament inductance for one identical coil in each phase.</p>
+          <div class="current-change">
+            <div><span>Without reactor</span><strong>{{ '%.3g'|format(circuit.before_a/1000) }} <small>kA</small></strong></div>
+            <div><span>With reactor</span><strong>{{ '%.3g'|format(circuit.after_a/1000) }} <small>kA</small></strong></div>
+          </div>
+          <p><strong>{{ '%.1f'|format(circuit.reduction_percent) }}% lower</strong> symmetrical RMS fault current in this simplified circuit.</p>
+          <dl>
+            <dt>Source</dt><dd>{{ values.voltage_kv }} kV · {{ values.base_mva }} MVA base · {{ values.frequency_hz }} Hz</dd>
+            <dt>Source impedance</dt><dd>{{ values.source_r_pu }} + j{{ values.source_x_pu }} pu</dd>
+            <dt>Added reactance</dt><dd>{{ '%.4g'|format(circuit.reactor_x_ohm) }} Ω / phase ({{ '%.4g'|format(circuit.reactor_x_pu) }} pu)</dd>
+          </dl>
+          <p class="hint">Per-unit (pu) means a value divided by its circuit base. Change the source settings under “Circuit assumptions”.</p>
+        </section>
+      {% else %}
+        <p>Correct the inputs and calculate again to see the model comparison.</p>
+      {% endif %}
+    </section>
+  </div>
+  <aside class="limitations">
+    <h2>Before using a result</h2>
+    <p>This is a geometry and circuit estimate, not a rated reactor design. It omits leads, helical pitch effects, nearby metal, stray capacitance, temperature rise, insulation ratings, and fault forces. The filament wire term assumes uniform low-frequency current. No physical measurements have been made.</p>
+  </aside>
+</main>
+<footer>Built by Jack Lai. <a href="https://github.com/jackaI1/air-core-reactor-calculator/blob/main/docs/models.md">Read the formulas and limits</a>.</footer>
+</body>
+</html>

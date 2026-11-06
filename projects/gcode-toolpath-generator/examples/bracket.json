@@ -1,0 +1,18 @@
+{
+  "stock": [100, 80, 6],
+  "outline": [[10, 10], [90, 10], [90, 60], [80, 70], [20, 70], [10, 60]],
+  "pocket": [30, 25, 70, 55],
+  "pocket_depth": 2,
+  "profile_depth": 5.5,
+  "holes": [[20, 20], [80, 20], [20, 55], [80, 55]],
+  "hole_depth": 5,
+  "diameter": 3,
+  "stepdown": 0.5,
+  "stepover": 1.2,
+  "safe_z": 5,
+  "material": "aluminum_6061",
+  "flutes": 2,
+  "max_rpm": 12000,
+  "lead_length": 2,
+  "peck": 0.5
+}

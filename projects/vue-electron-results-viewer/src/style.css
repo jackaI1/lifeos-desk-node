@@ -1,0 +1,58 @@
+:root { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; color: #17324d; background: #f5f7fa; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 1200px; padding: 32px 44px; margin: auto; }
+button, select { font: inherit; color: inherit; border: 1px solid #adbdcd; border-radius: 5px; padding: 10px 15px; background: white; }
+button { cursor: pointer; font-weight: 600; }
+button:hover { background: #eaf0f6; }
+button:disabled { opacity: .5; cursor: default; }
+button.primary { background: #1760a5; color: white; border-color: #1760a5; }
+button.primary:hover { background: #124d85; }
+:focus-visible { outline: 3px solid #1760a5; outline-offset: 3px; }
+.app-header, .run-heading, .plot-controls, .table-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.app-header { padding-bottom: 24px; border-bottom: 2px solid #17324d; }
+.app-name { font-size: 23px; font-weight: 700; margin: 0 0 4px; letter-spacing: -.5px; }
+p { line-height: 1.5; }
+.local-note, .run-heading p, .plot-controls p, footer { color: #50647a; font-size: 14px; }
+.local-note { margin: 0; }
+.actions { display: flex; gap: 10px; }
+h1 { font-size: 30px; margin: 0 0 8px; letter-spacing: -.6px; overflow-wrap: anywhere; }
+h2 { font-size: 20px; margin: 0; }
+.run-heading { margin: 30px 0 22px; align-items: start; }
+.run-heading p { margin: 0; overflow-wrap: anywhere; }
+.run-summary { border-left: 3px solid #1760a5; padding-left: 12px; flex-shrink: 0; max-width: 270px; }
+.separator { padding: 0 7px; }
+.plot-panel { background: white; border: 1px solid #cdd7e2; border-top: 3px solid #1760a5; padding: 20px 24px; }
+.plot-controls label { display: flex; align-items: center; gap: 12px; font-weight: 600; }
+select { max-width: 320px; }
+figure { margin: 16px 0 0; }
+svg { display: block; width: 100%; }
+svg text { font-size: 12px; fill: #50647a; font-variant-numeric: tabular-nums; }
+figcaption { display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px; color: #50647a; }
+figcaption span::before { content: ''; display: inline-block; width: 13px; height: 3px; background: #1760a5; vertical-align: middle; margin-right: 7px; }
+figcaption .limit-key::before { background: none; border-top: 2px dashed #216144; }
+figcaption .flag-key::before { background: #b42318; width: 9px; height: 9px; border-radius: 50%; }
+.readings { margin-top: 28px; }
+.table-heading { margin-bottom: 18px; }
+.table-heading p { font-size: 14px; margin: 5px 0 0; }
+.flag-count { color: #a21f16; }
+.checkbox { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+input[type=checkbox] { width: 17px; height: 17px; accent-color: #1760a5; }
+.table-scroll { overflow-x: auto; border: 1px solid #cdd7e2; background: white; }
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { padding: 11px 20px; border-bottom: 1px solid #e4e9ef; }
+th { background: #eaf0f6; font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+tr.flagged { background: #fff3f0; }
+tr.flagged td:last-child { color: #a21f16; font-weight: 600; }
+.pagination { display: flex; gap: 15px; align-items: center; justify-content: end; margin-top: 14px; font-size: 14px; }
+footer { margin-top: 22px; }
+.empty { max-width: 630px; margin: 70px auto; }
+.empty h1 { font-size: 40px; line-height: 1.15; }
+.empty p { color: #50647a; }
+.empty .empty-mark { color: #1760a5; font-size: 64px; margin: 0; }
+.error { border-left: 4px solid #b42318; background: #fff0ec; color: #8a2018; margin-top: 20px; padding: 14px; line-height: 1.6; }
+.no-results { background: white; padding: 24px; border: 1px solid #cdd7e2; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 800px) { main { padding: 24px; } .run-heading { flex-wrap: wrap; } .run-summary { max-width: none; } .plot-controls { align-items: start; flex-direction: column; gap: 8px; } .plot-controls p { margin: 0; } }
+@media (max-width: 540px) { main { padding: 16px; } .app-header, .table-heading { align-items: start; flex-direction: column; gap: 16px; } .plot-panel { padding: 16px 8px; } select { max-width: 220px; } figcaption { gap: 12px; } .empty { margin: 40px auto; } .empty h1 { font-size: 32px; } }

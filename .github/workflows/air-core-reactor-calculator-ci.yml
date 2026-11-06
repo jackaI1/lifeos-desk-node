@@ -1,0 +1,49 @@
+name: air-core-reactor-calculator / CI
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - projects/air-core-reactor-calculator/**
+    - .github/workflows/air-core-reactor-calculator-ci.yml
+  pull_request:
+    paths:
+    - projects/air-core-reactor-calculator/**
+    - .github/workflows/air-core-reactor-calculator-ci.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python:
+        - '3.11'
+        - '3.12'
+        - '3.13'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python }}
+    - uses: astral-sh/setup-uv@v6
+      with:
+        working-directory: projects/air-core-reactor-calculator
+    - run: uv sync --locked --extra dev
+    - run: uv run ruff check .
+    - run: uv run ruff format --check .
+    - run: uv run pytest -W error --cov=reactor --cov-report=term-missing --cov-fail-under=90
+    - run: uv run python -m reactor examples/series-reactor.json
+    - name: Build and exercise the installed wheel outside the source tree
+      run: "uv build\nuv venv /tmp/reactor-wheel\nuv pip install --python /tmp/reactor-wheel/bin/python dist/*.whl\ncd /tmp\n\
+        /tmp/reactor-wheel/bin/air-reactor \"$GITHUB_WORKSPACE/examples/nbs-single-layer.json\"\n/tmp/reactor-wheel/bin/python\
+        \ - <<'PY'\nfrom reactor.web import create_app\nclient = create_app().test_client()\nresponse = client.get('/')\n\
+        assert response.status_code == 200 and b'12.91' in response.data\nwith client.get('/static/style.css') as stylesheet:\n\
+        \    assert stylesheet.status_code == 200\nprint('Installed wheel: CLI, Flask template, and stylesheet passed')\n\
+        PY\n"
+    timeout-minutes: 20
+defaults:
+  run:
+    working-directory: projects/air-core-reactor-calculator

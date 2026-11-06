@@ -1,0 +1,14 @@
+{
+  "base_mva": 10,
+  "base_kv_ll": 13.8,
+  "frequency_hz": 60,
+  "prefault_voltage": [1, 0],
+  "buses": ["supply", "plant", "workshop"],
+  "sources": [
+    {"name": "grid", "bus": "supply", "z0": [0.01, 0.08], "z1": [0.01, 0.05], "z2": [0.01, 0.05]}
+  ],
+  "branches": [
+    {"name": "main_feeder", "from_bus": "supply", "to_bus": "plant", "z0": [0.06, 0.18], "z1": [0.02, 0.06], "z2": [0.02, 0.06]},
+    {"name": "workshop_cable", "from_bus": "plant", "to_bus": "workshop", "z0": [0.12, 0.12], "z1": [0.04, 0.04], "z2": [0.04, 0.04]}
+  ]
+}

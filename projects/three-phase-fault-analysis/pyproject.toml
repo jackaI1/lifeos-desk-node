@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "three-phase-fault-analysis"
+version = "0.1.0"
+description = "Sequence-network fault studies with textbook checks and relay timing"
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26,<3", "matplotlib>=3.8,<4", "pandapower>=3.1,<4"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "pytest-cov>=5,<8", "ruff>=0.9,<1"]
+
+[project.scripts]
+three-phase-fault = "three_phase_fault.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/three_phase_fault"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

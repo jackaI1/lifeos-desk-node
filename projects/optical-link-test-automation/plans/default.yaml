@@ -1,0 +1,7 @@
+version: 1
+wavelength_nm: [1530, 1550, 1570]
+launch_dbm: [-2, 0, 2]
+samples: 7
+max_loss_db: 5.0
+min_osnr_db: 30.0
+margin_db: 1.0

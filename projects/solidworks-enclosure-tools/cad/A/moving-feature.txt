@@ -1,0 +1,11 @@
+BODY_CHECK ED-002_lid_A code=1
+PART ED-002_lid_A bodies=1 volume_mm3=9544.307
+STL ED-002_lid_A saved=True errors=0 warnings=0
+BODY_CHECK ED-003_hatch_A code=1
+PART ED-003_hatch_A bodies=1 volume_mm3=2418.030
+STL ED-003_hatch_A saved=True errors=0 warnings=0
+BODY_CHECK REF-001_SG90_A code=1
+PART REF-001_SG90_A bodies=1 volume_mm3=8189.739
+STL REF-001_SG90_A saved=True errors=0 warnings=0
+Rotary hatch configurations saved. Closed standoff above lid 0.30 mm.
+SG90 body is a vendor-sized envelope. Output extension is a design reference, not a vendor spline or horn model.

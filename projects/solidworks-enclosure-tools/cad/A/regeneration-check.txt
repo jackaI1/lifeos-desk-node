@@ -1,0 +1,9 @@
+Clean generation exit: 0
+Seven final native part volumes match the independent regenerated output.
+ED-001_case_A 33363.456 mm3
+ED-002_lid_A 9544.307 mm3
+LIB-001_standoff_A 169.646 mm3
+ED-003_hatch_A 2418.030 mm3
+LIB-002_servo_mount_A 516.480 mm3
+REF-001_SG90_A 8189.739 mm3
+REF-002_carrier_A 1960.592 mm3

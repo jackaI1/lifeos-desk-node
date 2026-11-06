@@ -1,8 +1,10 @@
 name: Harness documentation
 on:
   push:
+    paths-ignore: ['projects/**']
     branches: [main]
   pull_request:
+    paths-ignore: ['projects/**']
 permissions:
   contents: read
 jobs:

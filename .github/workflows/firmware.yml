@@ -1,6 +1,7 @@
 name: Firmware
 on:
   push:
+    paths-ignore: ['projects/**']
     branches: [main, 'skills/firmware']
   pull_request:
     paths: ['firmware/**', 'docs/pinout.md', '.github/workflows/firmware.yml', 'README.md']

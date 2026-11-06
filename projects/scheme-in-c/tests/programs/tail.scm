@@ -1,0 +1,10 @@
+; Each tail context must replace the continuation, including apply and cond.
+(define (sum n acc)
+  (if (= n 0) acc (let ((next (- n 1))) (sum next (+ acc n)))))
+(assert (= (sum 100000 0) 5000050000))
+(define (walk n)
+  (cond ((= n 0) 42) (else (begin #f (apply walk (list (- n 1)))))))
+(assert (= (walk 100000) 42))
+(define (through-and n) (and #t (if (= n 0) 5 (through-and (- n 1)))))
+(assert (= (through-and 100000) 5))
+(display "ok") (newline)

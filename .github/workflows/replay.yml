@@ -1,6 +1,7 @@
 name: Sensor replay
 on:
   push:
+    paths-ignore: ['projects/**']
     branches: [main]
   pull_request:
     paths: ['replay/**', 'firmware/components/desk_core/**', 'firmware/tests/vendor/**', '.github/workflows/replay.yml', 'README.md', 'docs/sensor-replay.md']

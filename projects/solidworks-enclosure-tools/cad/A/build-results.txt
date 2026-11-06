@@ -1,0 +1,29 @@
+SOLIDWORKS 33.3.0
+START_DOCUMENT_COUNT 0
+BODY_CHECK ED-001_case_A code=1
+PART ED-001_case_A bodies=1 volume_mm3=33363.456
+STL ED-001_case_A saved=True errors=0 warnings=0
+BODY_CHECK ED-002_lid_A code=1
+PART ED-002_lid_A bodies=1 volume_mm3=9580.800
+STL ED-002_lid_A saved=True errors=0 warnings=0
+BODY_CHECK LIB-001_standoff_A code=1
+PART LIB-001_standoff_A bodies=1 volume_mm3=169.646
+STL LIB-001_standoff_A saved=True errors=0 warnings=0
+BODY_CHECK ED-003_hatch_A code=1
+PART ED-003_hatch_A bodies=1 volume_mm3=2212.704
+STL ED-003_hatch_A saved=True errors=0 warnings=0
+BODY_CHECK LIB-002_servo_mount_A code=1
+PART LIB-002_servo_mount_A bodies=1 volume_mm3=807.680
+STL LIB-002_servo_mount_A saved=True errors=0 warnings=0
+BODY_CHECK REF-001_SG90_A code=1
+PART REF-001_SG90_A bodies=1 volume_mm3=8137.400
+STL REF-001_SG90_A saved=True errors=0 warnings=0
+BODY_CHECK REF-002_carrier_A code=1
+PART REF-002_carrier_A bodies=1 volume_mm3=2000.000
+STL REF-002_carrier_A saved=True errors=0 warnings=0
+ASSEMBLY components=10
+SIMULATION_COM_AVAILABLE True; no licensed study solved. Hand calculation used.
+DRAWING ED-001_case_A save=0
+PDF ED-001_case_A save=0
+DRAWING ED-002_lid_A save=0
+PDF ED-002_lid_A save=0

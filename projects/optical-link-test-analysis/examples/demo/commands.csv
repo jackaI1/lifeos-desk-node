@@ -1,0 +1,16 @@
+resource,operation,command
+SIM::ATT,write,:POW -30
+SIM::BERT,write,:INIT
+SIM::BERT,query,:FETC:BER?
+SIM::DCA,query,:WAV:DATA?
+SIM::OSA,query,:TRAC:DATA?
+SIM::ATT,write,:POW -24
+SIM::BERT,write,:INIT
+SIM::BERT,query,:FETC:BER?
+SIM::DCA,query,:WAV:DATA?
+SIM::OSA,query,:TRAC:DATA?
+SIM::ATT,write,:POW -18
+SIM::BERT,write,:INIT
+SIM::BERT,query,:FETC:BER?
+SIM::DCA,query,:WAV:DATA?
+SIM::OSA,query,:TRAC:DATA?

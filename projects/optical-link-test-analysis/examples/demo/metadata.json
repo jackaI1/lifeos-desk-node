@@ -1,0 +1,31 @@
+{
+  "simulated": true,
+  "physical_equipment_used": false,
+  "status": "complete",
+  "config": {
+    "n_bits": 4096,
+    "samples_per_bit": 32,
+    "bit_rate_gbps": 10.0,
+    "extinction_ratio_db": 10.0,
+    "fiber_km": 20,
+    "beta2_ps2_per_km": -21.7,
+    "receiver_bandwidth_ghz": 7.0,
+    "noise_std_mw": 0.0015,
+    "seed": 2026
+  },
+  "powers_dbm": [
+    -30.0,
+    -24.0,
+    -18.0
+  ],
+  "target_ber": 0.001,
+  "python": "3.11.16",
+  "versions": {
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "matplotlib": "3.11.2",
+    "optical-link-test-analysis": "0.1.0"
+  },
+  "waveform_layout": "one row per bit: reference, decision, then s0..sN in mW",
+  "sample_time_ps": "(bit_index * samples_per_bit + sample_index) * 1000 / (bit_rate_gbps * samples_per_bit)"
+}

@@ -1,0 +1,11 @@
+{
+  "base_mva": 100,
+  "base_kv_ll": 138,
+  "frequency_hz": 60,
+  "buses": ["fault"],
+  "branches": [],
+  "sources": [
+    {"name": "breaker_B", "bus": "fault", "z0": [0, 0.2], "z1": [0, 0.15], "z2": [0, 0.15]},
+    {"name": "right_grid", "bus": "fault", "z0": null, "z1": [0, 0.12], "z2": [0, 0.12]}
+  ]
+}

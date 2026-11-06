@@ -1,0 +1,44 @@
+{
+  "nominal_v": 0.9,
+  "base_a": 20.0,
+  "step_a": 40.0,
+  "droop_budget_v": 0.045,
+  "vrm_r_ohm": 0.00025,
+  "vrm_l_h": 2e-09,
+  "path_r_ohm": 0.0001,
+  "path_l_h": 1.5e-10,
+  "f_start_hz": 1000.0,
+  "f_stop_hz": 100000000.0,
+  "points_per_decade": 200,
+  "delay_s": 2e-05,
+  "rise_s": 1e-07,
+  "hold_s": 4e-05,
+  "stop_s": 0.0001,
+  "max_step_s": 1e-08,
+  "banks": [
+    {
+      "name": "bulk",
+      "node": "board",
+      "count": 4,
+      "capacitance_f": 0.00033,
+      "esr_ohm": 0.012,
+      "esl_h": 2e-09
+    },
+    {
+      "name": "ceramic",
+      "node": "board",
+      "count": 24,
+      "capacitance_f": 1.2e-05,
+      "esr_ohm": 0.002,
+      "esl_h": 6e-10
+    },
+    {
+      "name": "package",
+      "node": "die",
+      "count": 16,
+      "capacitance_f": 1e-06,
+      "esr_ohm": 0.003,
+      "esl_h": 1.5e-10
+    }
+  ]
+}

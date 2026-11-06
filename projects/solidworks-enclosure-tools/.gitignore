@@ -1,0 +1,10 @@
+~$*
+*.sldbak
+*.SLDBAK
+*.log
+*.LOG
+tmp/
+*.CWR
+*.gsz
+*Solver.txt
+PerformanceLog.txt

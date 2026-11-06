@@ -1,0 +1,21 @@
+appId: io.github.jackai1.resultsviewer
+productName: Results Viewer
+directories:
+  output: release
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - samples/bench-run.json
+  - package.json
+asar: true
+linux:
+  executableName: results-viewer
+  target:
+    - AppImage
+    - tar.gz
+  category: Science
+win:
+  target: nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
