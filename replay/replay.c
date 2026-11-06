@@ -54,8 +54,13 @@ static int fail(const char *reason) {
 
 int main(int argc, char **argv) {
     const char *image = NULL;
-    if (argc == 3 && strcmp(argv[1], "--pbm") == 0) image = argv[2];
-    else if (argc != 1) return fail("usage: desk-replay [--pbm screen.pbm] < scenario.wire");
+    const char *uart_path = NULL;
+    for (int i = 1; i < argc; i += 2) {
+        if (i + 1 >= argc) return fail("option needs a path");
+        if (strcmp(argv[i], "--pbm") == 0 && !image) image = argv[i + 1];
+        else if (strcmp(argv[i], "--uart-log") == 0 && !uart_path) uart_path = argv[i + 1];
+        else return fail("usage: desk-replay [--pbm screen.pbm] [--uart-log log.txt] < scenario.wire");
+    }
 
     char line[80];
     if (read_line(line) != 1 || strcmp(line, "DESK_REPLAY_V1") != 0)
@@ -64,6 +69,8 @@ int main(int argc, char **argv) {
     desk_reading_t latest = {0};
     bool valid = false, online = false;
     uint32_t samples = 0, faults = 0, uploaded = 0, commands = 0;
+    /* Buffer until the complete stream is valid; no partial log on bad input. */
+    char logs[4096][200];
     int status;
     while ((status = read_line(line)) == 1) {
         if (++commands > 4096) return fail("more than 4096 commands");
@@ -85,6 +92,9 @@ int main(int argc, char **argv) {
             } else ++faults;
             online = false; /* Samples accumulate offline until the next U. */
         }
+        if (uart_path && !desk_format_cycle_log(logs[commands - 1], sizeof logs[0],
+                valid ? &latest : NULL, ring.count, ring.dropped, online))
+            return fail("cannot format UART log");
     }
     if (status < 0 || commands == 0) return fail("invalid, overlong or empty command stream");
 
@@ -92,6 +102,15 @@ int main(int argc, char **argv) {
     uint8_t frame[DESK_FRAME_SIZE];
     desk_render(frame, &event, valid ? &latest : NULL, online, ring.dropped);
     if (image && !bitmap(image, frame)) return fail("cannot write screen bitmap");
+    if (uart_path) {
+        FILE *uart = fopen(uart_path, "wb");
+        if (!uart) return fail("cannot open UART log");
+        bool ok = true;
+        for (uint32_t i = 0; i < commands; ++i)
+            if (fputs(logs[i], uart) == EOF) { ok = false; break; }
+        if (fclose(uart) != 0) ok = false;
+        if (!ok) return fail("cannot write UART log");
+    }
     const desk_reading_t *oldest = desk_ring_at(&ring, 0);
     const desk_reading_t *newest = ring.count ? desk_ring_at(&ring, ring.count - 1) : NULL;
     printf("{\"samples\":%u,\"faults\":%u,\"uploaded\":%u,\"queued\":%u,\"dropped\":%u,"
