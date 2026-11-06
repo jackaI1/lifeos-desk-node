@@ -92,7 +92,7 @@ def test_long_evidence_and_family_templates_roundtrip_without_truncation():
     text='Manufacturer scope; ' * 90
     result=parameter_chunks({'DN | family template':text,'DN | rohs | status':'unverified'})
     assert all(len(v)<=500 for v in result.values())
-    assert ''.join(v for k,v in result.items() if k.startswith('DN | family template'))==text
+    assert ''.join(json.loads(v) for k,v in result.items() if k.startswith('DN | family template'))==text
     assert result['DN | rohs | status']=='unverified'
 
 
@@ -133,3 +133,11 @@ def test_candidates_can_have_native_manufacturer_records_but_stay_inactive():
     assert all(not p['active'] for p in candidates)
     assert not api.list('bom/substitute/')
     assert not any(s['part'] in {p['pk'] for p in candidates} for s in api.list('company/part/'))
+
+
+def test_parameter_chunks_survive_inventree_whitespace_normalization():
+    from hardware.components.inventree import parameter_chunks
+    text='word ' * 300 + '  tail '
+    stored=parameter_chunks({'Long evidence':text})
+    assert all(len(value)<=500 and value==value.strip() for value in stored.values())
+    assert ''.join(json.loads(value.strip()) for value in stored.values())==text

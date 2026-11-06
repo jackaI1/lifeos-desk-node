@@ -79,13 +79,23 @@ def parameter_values(part, template):
 
 
 def parameter_chunks(values):
-    """InvenTree limits parameter data to 500 characters; retain long text in ordered fields."""
+    """Encode long values as ordered JSON string fragments, preserving whitespace."""
     result={}
     for name,data in values.items():
-        chunks=[data[i:i+500] for i in range(0,len(data),500)] or ['']
-        for index,chunk in enumerate(chunks):
+        if len(data)<=500 and data==data.strip():
+            result[name]=data
+            continue
+        index=0
+        remaining=data
+        while remaining:
+            size=min(480,len(remaining))
+            # Quotes and escapes count toward the API's character limit too.
+            while len(json.dumps(remaining[:size],ensure_ascii=False))>500:
+                size-=1
             key=name if index==0 else f'{name} | continuation {index+1:03d}'
-            result[key]=chunk
+            result[key]=json.dumps(remaining[:size],ensure_ascii=False)
+            remaining=remaining[size:]
+            index+=1
     return result
 
 
