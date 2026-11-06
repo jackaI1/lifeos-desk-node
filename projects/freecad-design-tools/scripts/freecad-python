@@ -1,0 +1,10 @@
+#!/bin/sh
+# Explicit runtime launcher. No servers or GUI processes are started.
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if [ -x /Applications/FreeCAD.app/Contents/Resources/bin/python ]; then
+    export PYTHONPATH="/Applications/FreeCAD.app/Contents/Resources/lib:$ROOT/.freecad-deps:$ROOT${PYTHONPATH:+:$PYTHONPATH}"
+    exec /Applications/FreeCAD.app/Contents/Resources/bin/python "$@"
+fi
+export PYTHONPATH="/usr/lib/freecad-python3/lib:/usr/lib/freecad/lib:/usr/share/freecad/Mod:$ROOT/.freecad-deps:$ROOT${PYTHONPATH:+:$PYTHONPATH}"
+exec /usr/bin/python3 "$@"

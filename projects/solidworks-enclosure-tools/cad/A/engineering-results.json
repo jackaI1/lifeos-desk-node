@@ -1,0 +1,222 @@
+{
+  "meshes": {
+    "ED-001_case_A.STL": {
+      "triangles": 60,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          80.0,
+          60.0,
+          36.0
+        ]
+      ],
+      "volume_mm3": 33363.45600000001,
+      "centroid_mm": [
+        39.999999999999986,
+        30.00000000000001,
+        12.988039224713395
+      ],
+      "closed_edges": true,
+      "downward_triangles_including_bed_faces": 6,
+      "print_orientation": "minimum Z on bed"
+    },
+    "ED-002_lid_A.STL": {
+      "triangles": 252,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          80.0,
+          60.0,
+          20.4
+        ]
+      ],
+      "volume_mm3": 9544.478851957178,
+      "centroid_mm": [
+        39.99999918276245,
+        29.921988036599366,
+        18.795560945770422
+      ],
+      "closed_edges": true,
+      "downward_triangles_including_bed_faces": 52,
+      "print_orientation": "top face on bed"
+    },
+    "ED-003_hatch_A.STL": {
+      "triangles": 184,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          39.4,
+          36.7,
+          2.4
+        ]
+      ],
+      "volume_mm3": 2418.114741162238,
+      "centroid_mm": [
+        19.699998871671472,
+        13.24274077222652,
+        1.2000000000000002
+      ],
+      "closed_edges": true,
+      "downward_triangles_including_bed_faces": 46,
+      "print_orientation": "minimum Z on bed"
+    },
+    "LIB-001_standoff_A.STL": {
+      "triangles": 224,
+      "bounds_mm": [
+        [
+          0.0,
+          0.00122,
+          0.0
+        ],
+        [
+          6.0,
+          5.99878,
+          6.0
+        ]
+      ],
+      "volume_mm3": 169.28235669540007,
+      "centroid_mm": [
+        3.000088345105884,
+        2.9999999999999987,
+        2.9999999999999987
+      ],
+      "closed_edges": true,
+      "downward_triangles_including_bed_faces": 56,
+      "print_orientation": "minimum Z on bed"
+    },
+    "LIB-002_servo_mount_A.STL": {
+      "triangles": 28,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          28.0,
+          15.4,
+          4.0
+        ]
+      ],
+      "volume_mm3": 516.4799999999998,
+      "centroid_mm": [
+        14.000000000000004,
+        4.65861214374226,
+        2.000000000000001
+      ],
+      "closed_edges": true,
+      "downward_triangles_including_bed_faces": 6,
+      "print_orientation": "minimum Z on bed"
+    },
+    "REF-001_SG90_A.STL": {
+      "triangles": 164,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          23.0,
+          12.2,
+          37.5
+        ]
+      ],
+      "volume_mm3": 8189.491137623697,
+      "centroid_mm": [
+        11.500000584236092,
+        6.099999999999998,
+        14.619264117500423
+      ],
+      "closed_edges": true,
+      "downward_triangles_including_bed_faces": 2,
+      "print_orientation": "minimum Z on bed"
+    },
+    "REF-002_carrier_A.STL": {
+      "triangles": 636,
+      "bounds_mm": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          50.0,
+          25.0,
+          1.6
+        ]
+      ],
+      "volume_mm3": 1960.7771348537594,
+      "centroid_mm": [
+        24.999997149173364,
+        12.49999993961045,
+        0.8000000000000005
+      ],
+      "closed_edges": true,
+      "downward_triangles_including_bed_faces": 162,
+      "print_orientation": "minimum Z on bed"
+    }
+  },
+  "snap": {
+    "E_MPa": 2000,
+    "width_mm": 8,
+    "thickness_mm": 1.2,
+    "effective_length_to_hook_mm": 16.25,
+    "interference_mm": 0.5,
+    "force_N": 0.8054037323623121,
+    "root_stress_MPa": 6.816568047337277,
+    "root_strain": 0.003408284023668639,
+    "assumed_allowable_MPa": 15,
+    "worst_interference_mm": 0.9,
+    "worst_root_stress_MPa": 12.269822485207099,
+    "passes": true,
+    "note": "Load at hook center, 16.25 mm below root. Linear beam approximation, no notch or print anisotropy model."
+  },
+  "tolerance": {
+    "aperture_mm": 40,
+    "hatch_mm": 39.4,
+    "each_size_tolerance_mm": 0.2,
+    "nominal_total_gap_mm": 0.6,
+    "worst_min_total_gap_mm": 0.19999999999999574,
+    "worst_max_total_gap_mm": 1.0,
+    "note": "Total gap, not minimum local gap. Eccentricity can close one side."
+  },
+  "actuator": {
+    "part": "TowerPro SG90 Digital",
+    "source": "https://towerpro.com.tw/product/sg90-7/",
+    "hatch_mass_kg": 0.003071005721276042,
+    "density_kg_m3": 1270,
+    "axis_to_centroid_m": 0.01895725922777348,
+    "gravity_torque_Nm": 0.0005709220938852084,
+    "assumed_friction_Nm": 0.005,
+    "design_factor": 3,
+    "required_Nm": 0.016712766281655626,
+    "stall_Nm": 0.1765197,
+    "assumed_continuous_fraction_of_stall": 0.25,
+    "available_screening_Nm": 0.044129925,
+    "passes_screening": true,
+    "note": "Worst gravity orientation plus assumed friction. Horizontal rotation has zero gravity torque about Z. Stall torque is not a continuous rating. Output shape is a reference. Vendor horn fit and motion are not bench tested."
+  },
+  "print_review": {
+    "wall_mm": 2.4,
+    "snap_beam_mm": 1.2,
+    "nozzle_assumed_mm": 0.4,
+    "wall_lines": 6,
+    "beam_lines": 3,
+    "nozzle_validation": "NOT PRINTED",
+    "support_notes": "Case ledges and square snap hooks need local support or a chamfer revision. Mesh orientation flags include bed faces. No slicer run.",
+    "release": "PROTOTYPE: beam calculation passes assumed limit; requires support planning, slicer and physical testing"
+  }
+}

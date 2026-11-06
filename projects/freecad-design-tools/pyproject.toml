@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freecad-design-tools"
+version = "0.1.0"
+description = "Parametric mounting parts, assembly BOM and local revision workflow"
+requires-python = ">=3.10"
+dependencies = ["openpyxl>=3.1,<4"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "ruff>=0.11,<1"]
+
+[project.scripts]
+freecad-tools = "freecad_tools.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["freecad_tools*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

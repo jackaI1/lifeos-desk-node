@@ -1,0 +1,2 @@
+part_a,part_b,box_delta_mm,volume_delta_fraction,hole_count,decision
+PL-80-ALT.FCStd:PL_80_ALT,PL-80.FCStd:PL_80,0.09999999999999432,0.0012639308515840287,2,Review for reuse; not interchangeable approval

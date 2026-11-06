@@ -1,0 +1,1 @@
+{"private":true,"scripts":{"build":"esbuild web/dashboard.tsx --bundle --format=esm --external:react --external:react-dom/client --outfile=web/dashboard.js"},"devDependencies":{"esbuild":"0.25.12"}}

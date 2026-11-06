@@ -1,0 +1,54 @@
+name: rf-measurement-analysis / RF analysis CI
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - projects/rf-measurement-analysis/**
+    - .github/workflows/rf-measurement-analysis-ci.yml
+  pull_request:
+    paths:
+    - projects/rf-measurement-analysis/**
+    - .github/workflows/rf-measurement-analysis-ci.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python:
+        - '3.11'
+        - '3.12'
+        - '3.13'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: astral-sh/setup-uv@v6
+      with:
+        python-version: ${{ matrix.python }}
+        enable-cache: true
+        working-directory: projects/rf-measurement-analysis
+    - run: uv sync --locked --extra dev --no-editable
+    - run: uv run --no-editable ruff check src tests
+    - run: uv run --no-editable ruff format --check src tests
+    - run: uv run --no-editable pytest --cov=rf_measurement --cov-report=term-missing --cov-report=xml --cov-fail-under=90
+        -q
+    - run: uv run --no-editable rf-analysis demo --output reports/ci-demo
+    - run: uv build
+    - name: Run installed acquisition commands outside the source checkout
+      working-directory: projects/rf-measurement-analysis/${{ runner.temp }}
+      run: '"$GITHUB_WORKSPACE/.venv/bin/rf-sweep" --output sweep-demo
+
+        "$GITHUB_WORKSPACE/.venv/bin/rf-dsp-demo" --output dsp-demo
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: rf-report-python-${{ matrix.python }}
+        path: projects/rf-measurement-analysis/reports/ci-demo/
+    timeout-minutes: 20
+defaults:
+  run:
+    working-directory: projects/rf-measurement-analysis

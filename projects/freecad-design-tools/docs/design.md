@@ -1,0 +1,23 @@
+# Mounting toolkit design
+
+I use a small, editable parts library to avoid redrawing similar mounting pieces. The dimension table is the input contract: a unique safe part ID, one of three part kinds, and positive finite millimetre values. Every row is validated before generation starts. Unknown kinds, duplicate IDs, holes beyond an edge and spacer bores larger than the outside diameter are rejected.
+
+## Native models
+
+Plate and bracket holes are at `x = (length ± pitch)/2`, `y = width/2`, through the base thickness. The bracket foot is a rectangular plate joined to an upright of the same thickness at `y = 0`; height includes the foot. A spacer is an outer cylinder minus a concentric cylinder. These are idealised sharp-edged solids without bend radii, machining allowances or strength calculations.
+
+Each definition is a `Part::FeaturePython` solid linked by expressions to a `Spreadsheet::Sheet`. The reloadable proxy lives in the installed checkout, so that path must stay available when reopening native files. In the GUI, import `freecad_tools.parts` before opening to satisfy FreeCAD 1.1's module-restore rules; running the toolkit macro already loads it. Standard solid geometry remains stored in the file even without the proxy, but recomputation needs the package. A failed recompute clears the previous solid and writes a visible error property.
+
+The sample assembly contains independent local definitions and eight `App::Link` occurrences under `Assembly`. The desktop opener explicitly shows the occurrence links and hides their library definitions. Headless files have no saved GUI display settings, so the opener also prepares the axonometric view. Library definitions are outside the assembly root, so BOM export never counts them as physical pieces. The layout is deliberately exploded for inspection, not a solved assembly, fastening plan or manufacturing drawing. It does not include screws, constraints, collision checks or manufacturing certification. The first row of each kind supplies the sample assembly; extra variants stay in the library.
+
+## Reports
+
+BOM traversal tracks ancestors on each path, rather than globally marking definitions as visited. This preserves counts when the same subassembly appears several times while detecting cycles. Definitions with the same ID and revision must match material and local solid geometry; equal volume alone is insufficient. Total volume is a solid-volume estimate, not purchased stock or mass. CSV and Excel cells beginning with spreadsheet formula markers are escaped as text.
+
+Reuse signatures come from actual saved geometry, without trusting source dimensions or user-supplied hole metadata. Each file is opened from a temporary disk copy so an open document and its unsaved edits remain untouched. PartDesign body histories and construction geometry are excluded in favour of the final solid. Material occupancy on either side of a cylindrical face distinguishes an inner bore from an outer wall, independently of face orientation flags. Each concave cylinder yields a radius, canonical axis and axis line relative to the bounding-box corner. Split faces on one bore are deduplicated. Length and hole differences use absolute millimetres; volume uses relative difference against the larger volume. The report is a conservative screening heuristic. Parts must share orientation, and non-circular internal features can still produce false positives or negatives. It compares pairs in O(n²), suitable for a small library, not an enterprise catalogue.
+
+## File-state workflow
+
+The local vault has a JSON index, a file lock and content-addressed native snapshots. Atomic rename prevents partial index writes; the lock serialises concurrent operations on one machine. A version counter advances on every mutation, separately from the design revision; expected versions reject stale writers even during repeated draft edits. Draft updates record new hashes in an event history; review freezes check-ins; release freezes that revision. A later check-in creates a new draft revision. Old released bytes remain available through `Vault.snapshot(part_id, revision)`.
+
+This is not a security boundary. There is no server, permission model, multi-host lock service, authenticated reviewer, CAD metadata synchronisation or automatic notification. Vault revisions describe saved file snapshots; they do not rewrite the internal `Revision` property of a CAD part. Update the CAD definition and assembly together when issuing another design revision. Empty files are rejected, but the vault accepts bytes without certifying that they form valid CAD geometry. The geometry commands validate solids separately.

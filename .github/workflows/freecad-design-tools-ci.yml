@@ -1,0 +1,58 @@
+name: freecad-design-tools / FreeCAD toolkit
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - projects/freecad-design-tools/**
+    - .github/workflows/freecad-design-tools-ci.yml
+  pull_request:
+    paths:
+    - projects/freecad-design-tools/**
+    - .github/workflows/freecad-design-tools-ci.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  headless:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONPATH: /usr/lib/freecad-python3/lib:/usr/lib/freecad/lib:/usr/share/freecad/Mod:.
+      QT_QPA_PLATFORM: offscreen
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install real FreeCAD runtime and test dependencies
+      run: 'sudo add-apt-repository --yes ppa:freecad-maintainers/freecad-stable
+
+        sudo apt-get update -qq
+
+        sudo apt-get install -y --no-install-recommends freecad-python3 python3-pytest python3-openpyxl python3-venv
+
+        python3 -m venv /tmp/lint
+
+        /tmp/lint/bin/pip install ''ruff>=0.11,<1''
+
+        '
+    - name: Lint and format
+      run: '/tmp/lint/bin/ruff check .
+
+        /tmp/lint/bin/ruff format --check .
+
+        '
+    - name: Test actual OpenCascade solids without a desktop
+      run: '/usr/bin/python3 -c ''import FreeCAD, Part; print("FreeCAD", FreeCAD.Version())''
+
+        /usr/bin/python3 -m pytest -q
+
+        '
+    - name: Build usable native sample files and reports
+      run: /usr/bin/python3 -m freecad_tools generate examples/dimensions.csv build/ci-demo
+    - uses: actions/upload-artifact@v4
+      with:
+        name: mounting-toolkit-demo
+        path: projects/freecad-design-tools/build/ci-demo/
+        if-no-files-found: error
+    timeout-minutes: 20
+defaults:
+  run:
+    working-directory: projects/freecad-design-tools

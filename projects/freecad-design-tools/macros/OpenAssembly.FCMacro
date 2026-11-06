@@ -1,0 +1,18 @@
+"""Open a saved toolkit assembly with the correct display of its occurrences."""
+from pathlib import Path
+import sys
+import FreeCAD
+from PySide import QtWidgets
+
+checkout = QtWidgets.QFileDialog.getExistingDirectory(None, "Choose freecad-design-tools checkout")
+if checkout:
+    sys.path.insert(0, str(Path(checkout)))
+    assembly, _ = QtWidgets.QFileDialog.getOpenFileName(
+        None, "Choose toolkit assembly", str(Path(checkout) / "examples/sample-output"),
+        "FreeCAD documents (*.FCStd)")
+    if assembly:
+        try:
+            from freecad_tools.gui import open_assembly
+            document = open_assembly(assembly)
+        except Exception as error:
+            QtWidgets.QMessageBox.critical(None, "Toolkit error", str(error))

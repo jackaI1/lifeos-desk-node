@@ -1,0 +1,47 @@
+name: pdn-impedance-ngspice / PDN study
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - projects/pdn-impedance-ngspice/**
+    - .github/workflows/pdn-impedance-ngspice-ci.yml
+  pull_request:
+    paths:
+    - projects/pdn-impedance-ngspice/**
+    - .github/workflows/pdn-impedance-ngspice-ci.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python:
+        - '3.11'
+        - '3.13'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: astral-sh/setup-uv@v6
+      with:
+        version: 0.12.19
+        python-version: ${{ matrix.python }}
+        working-directory: projects/pdn-impedance-ngspice
+    - name: Install real circuit simulator
+      run: sudo apt-get update -qq && sudo apt-get install -y ngspice
+    - run: uv sync --locked
+    - run: uv run ruff check .
+    - run: uv run ruff format --check .
+    - name: Run equations, real simulator cases and end-to-end tests
+      run: uv run pytest -q
+    - name: Rebuild report from the public example
+      run: uv run pdn-study --config examples/gpu-core.json --output results/local
+    - uses: actions/upload-artifact@v4
+      with:
+        name: core-rail-study-python-${{ matrix.python }}
+        path: projects/pdn-impedance-ngspice/results/local/
+defaults:
+  run:
+    working-directory: projects/pdn-impedance-ngspice

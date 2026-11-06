@@ -1,0 +1,35 @@
+name: scheme-in-c / C interpreter tests
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - projects/scheme-in-c/**
+    - .github/workflows/scheme-in-c-ci.yml
+  pull_request:
+    paths:
+    - projects/scheme-in-c/**
+    - .github/workflows/scheme-in-c-ci.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build and test
+      run: make test
+    - name: Address and undefined behavior sanitizers
+      run: make sanitize
+defaults:
+  run:
+    working-directory: projects/scheme-in-c

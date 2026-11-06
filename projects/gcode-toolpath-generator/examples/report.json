@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "moves": 427,
+  "issues": [],
+  "cutting_mm": 8553.813,
+  "rapid_mm": 493.29,
+  "estimated_minutes": 32.274,
+  "bounds": {
+    "X": [
+      1.5,
+      93.5
+    ],
+    "Y": [
+      1.5,
+      71.5
+    ],
+    "Z": [
+      -5.5,
+      5
+    ]
+  },
+  "assumptions": "solid stock envelope; no fixtures, holder or material removal; initial XYZ = (tool radius, tool radius, safe_z); rapid speed assumed 2000 mm/min; setup time excluded",
+  "cutting_data": {
+    "rpm": 12000,
+    "feed": 360.0,
+    "plunge": 90.0
+  }
+}

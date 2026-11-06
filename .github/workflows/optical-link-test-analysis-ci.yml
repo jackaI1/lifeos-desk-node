@@ -1,0 +1,42 @@
+name: optical-link-test-analysis / CI
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - projects/optical-link-test-analysis/**
+    - .github/workflows/optical-link-test-analysis-ci.yml
+  pull_request:
+    paths:
+    - projects/optical-link-test-analysis/**
+    - .github/workflows/optical-link-test-analysis-ci.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python:
+        - '3.11'
+        - '3.12'
+        - '3.13'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: astral-sh/setup-uv@v6
+      with:
+        working-directory: projects/optical-link-test-analysis
+    - run: uv sync --locked --python ${{ matrix.python }}
+    - run: uv run ruff check .
+    - run: uv run pytest -q
+    - run: uv run python -m build
+    - run: uv run optical-link --bits 4096 --powers -30 -24 -18 --output runs/ci
+    - uses: actions/upload-artifact@v4
+      with:
+        name: simulated-sweep-${{ matrix.python }}
+        path: projects/optical-link-test-analysis/runs/ci
+    timeout-minutes: 20
+defaults:
+  run:
+    working-directory: projects/optical-link-test-analysis

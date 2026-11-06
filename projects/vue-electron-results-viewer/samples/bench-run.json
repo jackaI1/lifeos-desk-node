@@ -1,0 +1,118 @@
+{
+  "runId": "Bench supply warm-up",
+  "startedAt": "2026-01-10T12:00:00Z",
+  "channels": [
+    {
+      "name": "Voltage",
+      "unit": "V",
+      "lowerLimit": 3.2,
+      "upperLimit": 3.4,
+      "measurements": [
+        {
+          "timeSeconds": 0,
+          "value": 3.1
+        },
+        {
+          "timeSeconds": 10,
+          "value": 3.18
+        },
+        {
+          "timeSeconds": 20,
+          "value": 3.24
+        },
+        {
+          "timeSeconds": 30,
+          "value": 3.28
+        },
+        {
+          "timeSeconds": 40,
+          "value": 3.3
+        },
+        {
+          "timeSeconds": 50,
+          "value": 3.32
+        },
+        {
+          "timeSeconds": 60,
+          "value": 3.35
+        },
+        {
+          "timeSeconds": 70,
+          "value": 3.42
+        },
+        {
+          "timeSeconds": 80,
+          "value": 3.38
+        },
+        {
+          "timeSeconds": 90,
+          "value": 3.34
+        },
+        {
+          "timeSeconds": 100,
+          "value": 3.3
+        },
+        {
+          "timeSeconds": 110,
+          "value": 3.29
+        }
+      ]
+    },
+    {
+      "name": "Temperature",
+      "unit": "\u00b0C",
+      "lowerLimit": 20,
+      "upperLimit": 30,
+      "measurements": [
+        {
+          "timeSeconds": 0,
+          "value": 21
+        },
+        {
+          "timeSeconds": 10,
+          "value": 22
+        },
+        {
+          "timeSeconds": 20,
+          "value": 23
+        },
+        {
+          "timeSeconds": 30,
+          "value": 25
+        },
+        {
+          "timeSeconds": 40,
+          "value": 26
+        },
+        {
+          "timeSeconds": 50,
+          "value": 28
+        },
+        {
+          "timeSeconds": 60,
+          "value": 29
+        },
+        {
+          "timeSeconds": 70,
+          "value": 30
+        },
+        {
+          "timeSeconds": 80,
+          "value": 31
+        },
+        {
+          "timeSeconds": 90,
+          "value": 32
+        },
+        {
+          "timeSeconds": 100,
+          "value": 29
+        },
+        {
+          "timeSeconds": 110,
+          "value": 28
+        }
+      ]
+    }
+  ]
+}

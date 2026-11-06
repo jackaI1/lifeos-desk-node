@@ -1,0 +1,35 @@
+{
+  "name": "vue-electron-results-viewer",
+  "version": "1.0.0",
+  "description": "Offline desktop viewer for test-run measurements and limits",
+  "author": "Jack Lai <jacklai1132@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "dist-electron/main.cjs",
+  "scripts": {
+    "build": "vue-tsc --noEmit && vite build && node scripts/build-electron.mjs",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check": "npm test && npm run build && npm run test:e2e",
+    "package": "npm run build && electron-builder --publish never",
+    "pretest:e2e": "node node_modules/electron/install.js"
+  },
+  "dependencies": {
+    "vue": "^3.5.45"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/test-utils": "^2.5.1",
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.28.2",
+    "jsdom": "^31.0.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0",
+    "vue-tsc": "^3.3.14"
+  }
+}

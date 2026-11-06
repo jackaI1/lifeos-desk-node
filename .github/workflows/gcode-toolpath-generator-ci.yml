@@ -1,0 +1,48 @@
+name: gcode-toolpath-generator / CAM checks
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - projects/gcode-toolpath-generator/**
+    - .github/workflows/gcode-toolpath-generator-ci.yml
+  pull_request:
+    paths:
+    - projects/gcode-toolpath-generator/**
+    - .github/workflows/gcode-toolpath-generator-ci.yml
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python:
+        - '3.10'
+        - '3.12'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python }}
+    - run: python -m pip install -e '.[dev]'
+    - run: python -m pip wheel . --no-deps --wheel-dir dist
+    - run: ruff check .
+    - run: pytest -q
+    - run: gcode-toolpath generate examples/bracket.json --out build/bracket
+    - run: gcode-toolpath check examples/bracket.json build/bracket/bracket.nc
+    - name: Check committed sample stays reproducible
+      run: 'diff -u examples/bracket.nc build/bracket/bracket.nc
+
+        diff -u examples/report.json build/bracket/report.json
+
+        '
+    - uses: actions/upload-artifact@v4
+      with:
+        name: bracket-python-${{ matrix.python }}
+        path: projects/gcode-toolpath-generator/build/bracket/
+    timeout-minutes: 20
+defaults:
+  run:
+    working-directory: projects/gcode-toolpath-generator

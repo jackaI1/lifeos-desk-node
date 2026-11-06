@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gcode-toolpath-generator"
+version = "0.1.0"
+description = "Bracket pocket, drill and profile CAM with an independent G-code envelope checker"
+requires-python = ">=3.10"
+dependencies = ["shapely>=2.0,<3", "matplotlib>=3.8,<4"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9", "ruff>=0.9,<1"]
+
+[project.scripts]
+gcode-toolpath = "gcode_toolpath.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gcode_toolpath"]

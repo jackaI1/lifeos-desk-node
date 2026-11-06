@@ -331,3 +331,20 @@ fabrication outputs. A separate calculation job runs on Python 3.11 and 3.12 and
 saves the power report and predicted radio-reflection sweeps. These checks cover
 the design and calculations; current, runtime, charging and radio performance
 remain unmeasured.
+
+
+## Other things I've built here
+
+- [bms-hil-test-bench](projects/bms-hil-test-bench/)
+- [calculix-bracket-fea](projects/calculix-bracket-fea/)
+- [freecad-design-tools](projects/freecad-design-tools/)
+- [gcode-toolpath-generator](projects/gcode-toolpath-generator/)
+- [optical-link-test-analysis](projects/optical-link-test-analysis/)
+- [optical-link-test-automation](projects/optical-link-test-automation/)
+- [pdn-impedance-ngspice](projects/pdn-impedance-ngspice/)
+- [rf-measurement-analysis](projects/rf-measurement-analysis/)
+- [scheme-in-c](projects/scheme-in-c/)
+- [semiconductor-process-doe](projects/semiconductor-process-doe/)
+- [solidworks-enclosure-tools](projects/solidworks-enclosure-tools/)
+- [submeter-accuracy-bench](projects/submeter-accuracy-bench/)
+- [vue-electron-results-viewer](projects/vue-electron-results-viewer/)

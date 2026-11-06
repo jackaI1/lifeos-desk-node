@@ -1,8 +1,13 @@
 name: Harness documentation
 on:
   push:
-    branches: [main]
+    branches:
+    - main
+    paths-ignore:
+    - projects/**
   pull_request:
+    paths-ignore:
+    - projects/**
 permissions:
   contents: read
 jobs:
@@ -10,12 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.11', '3.12']
+        python:
+        - '3.11'
+        - '3.12'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '${{ matrix.python }}'
-      - run: python -m unittest discover -s harness/tests -v
-      - run: python -m harness.check harness/example.json
-      - run: python -m harness.generate harness/example.json --output /tmp/desk-harness
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python }}
+    - run: python -m unittest discover -s harness/tests -v
+    - run: python -m harness.check harness/example.json
+    - run: python -m harness.generate harness/example.json --output /tmp/desk-harness

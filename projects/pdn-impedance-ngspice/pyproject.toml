@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdn-impedance-ngspice"
+version = "0.1.0"
+description = "Reproducible core-rail impedance and load-step study driven by ngspice"
+requires-python = ">=3.11"
+dependencies = ["numpy>=2.0,<3", "matplotlib>=3.9,<4"]
+
+[project.scripts]
+pdn-study = "pdn.study:main"
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.9,<1"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pdn"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

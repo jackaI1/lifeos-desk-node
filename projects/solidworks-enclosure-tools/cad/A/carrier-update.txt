@@ -1,0 +1,3 @@
+BODY_CHECK REF-002_carrier_A code=1
+PART REF-002_carrier_A bodies=1 volume_mm3=1960.592
+STL REF-002_carrier_A saved=True errors=0 warnings=0
