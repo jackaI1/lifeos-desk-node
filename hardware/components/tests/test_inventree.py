@@ -85,3 +85,12 @@ def test_withdrawn_candidate_refuses_changed_catalogue_before_any_mutation():
 
     assert api.records == before
     assert api.next_pk == next_pk
+
+
+def test_long_evidence_and_family_templates_roundtrip_without_truncation():
+    from hardware.components.inventree import parameter_chunks
+    text='Manufacturer scope; ' * 90
+    result=parameter_chunks({'DN | family template':text,'DN | rohs | status':'unverified'})
+    assert all(len(v)<=500 for v in result.values())
+    assert ''.join(v for k,v in result.items() if k.startswith('DN | family template'))==text
+    assert result['DN | rohs | status']=='unverified'

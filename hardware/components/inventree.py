@@ -74,6 +74,17 @@ def parameter_values(part, template):
     return values
 
 
+def parameter_chunks(values):
+    """InvenTree limits parameter data to 500 characters; retain long text in ordered fields."""
+    result={}
+    for name,data in values.items():
+        chunks=[data[i:i+500] for i in range(0,len(data),500)] or ['']
+        for index,chunk in enumerate(chunks):
+            key=name if index==0 else f'{name} | continuation {index+1:03d}'
+            result[key]=chunk
+    return result
+
+
 def load(api, parts, templates, bom_sha256):
     snapshot = hashlib.sha256(json.dumps({'parts':parts,'templates':templates,'bom':bom_sha256},
                                          sort_keys=True).encode()).hexdigest()
@@ -93,7 +104,7 @@ def load(api, parts, templates, bom_sha256):
     expected = {'parts':{},'bom':{},'parameters':{},'manufacturers':{},'suppliers':{},'relations':{}}
 
     def parameters(pk, values):
-        for name,data in values.items():
+        for name,data in parameter_chunks(values).items():
             tid = api.upsert('parameter/template/', {'name':name},
                              {'description':'Desk node reviewed catalogue field', 'model_type':'part'})
             pid = api.upsert('parameter/', {'model_type':'part','model_id':pk,'template':tid}, {'data':data})
