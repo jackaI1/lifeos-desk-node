@@ -1,0 +1,9 @@
+{
+  "coil": {
+    "mean_radius_m": 0.1,
+    "length_m": 0.4,
+    "turns_per_layer": 400,
+    "layers": 1,
+    "wire_diameter_m": 0.0005
+  }
+}

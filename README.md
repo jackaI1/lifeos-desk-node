@@ -350,3 +350,4 @@ remain unmeasured.
 - [vue-electron-results-viewer](projects/vue-electron-results-viewer/)
 
 - [three-phase-fault-analysis](projects/three-phase-fault-analysis/)
+- [air-core-reactor-calculator](projects/air-core-reactor-calculator/)

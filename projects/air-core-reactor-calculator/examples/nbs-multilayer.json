@@ -1,0 +1,17 @@
+{
+  "coil": {
+    "mean_radius_m": 0.1,
+    "length_m": 0.1,
+    "turns_per_layer": 100,
+    "layers": 10,
+    "wire_diameter_m": 0.0009,
+    "radial_pitch_m": 0.001
+  },
+  "circuit": {
+    "voltage_kv": 10,
+    "base_mva": 100,
+    "frequency_hz": 50,
+    "source_r_pu": 0.03,
+    "source_x_pu": 0.1
+  }
+}

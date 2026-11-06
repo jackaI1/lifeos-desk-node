@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "air-core-reactor-calculator"
+version = "0.1.0"
+description = "Compare air-core winding inductance models and a simple series-reactor circuit"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["Flask>=3.1,<4", "numpy>=2.1,<3", "scipy>=1.14,<2", "mpmath>=1.3,<2"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pytest-cov>=6,<8", "coverage>=7.10,<8", "ruff>=0.11,<1", "build>=1,<2"]
+
+[project.scripts]
+air-reactor = "reactor.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["reactor*"]
+
+[tool.setuptools.package-data]
+reactor = ["templates/*.html", "static/*.css"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+
+[tool.coverage.run]
+patch = ["subprocess"]
