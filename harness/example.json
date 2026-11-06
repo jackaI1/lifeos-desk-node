@@ -1,0 +1,132 @@
+{
+  "title": "Desk node expansion sensor and programming leads",
+  "notes": "SHT31 is already on the PCB. J2 is for an optional external I2C module; check its pin order and address. J3 3V3 is reference only: do not connect adapter power while USB powers the board. Use the board BOOT and RESET buttons for flashing; RTS/DTR need an appropriate auto-reset circuit.",
+  "connectors": {
+    "J2": {
+      "requires_ground": true
+    },
+    "Sensor": {
+      "requires_ground": true
+    },
+    "J3": {
+      "requires_ground": true
+    },
+    "UART adapter": {
+      "requires_ground": true
+    }
+  },
+  "wires": [
+    {
+      "id": "S1",
+      "net": "GND",
+      "from": [
+        "J2",
+        "1"
+      ],
+      "to": [
+        "Sensor",
+        "GND"
+      ],
+      "length_mm": 200,
+      "awg": 24,
+      "color": "black",
+      "current_a": 0.05
+    },
+    {
+      "id": "S2",
+      "net": "3V3",
+      "from": [
+        "J2",
+        "2"
+      ],
+      "to": [
+        "Sensor",
+        "VDD"
+      ],
+      "length_mm": 200,
+      "awg": 24,
+      "color": "red",
+      "current_a": 0.05
+    },
+    {
+      "id": "S3",
+      "net": "SCL",
+      "from": [
+        "J2",
+        "3"
+      ],
+      "to": [
+        "Sensor",
+        "SCL"
+      ],
+      "length_mm": 200,
+      "awg": 26,
+      "color": "yellow",
+      "current_a": 0.01
+    },
+    {
+      "id": "S4",
+      "net": "SDA",
+      "from": [
+        "J2",
+        "4"
+      ],
+      "to": [
+        "Sensor",
+        "SDA"
+      ],
+      "length_mm": 200,
+      "awg": 26,
+      "color": "green",
+      "current_a": 0.01
+    },
+    {
+      "id": "P1",
+      "net": "GND",
+      "from": [
+        "J3",
+        "1"
+      ],
+      "to": [
+        "UART adapter",
+        "GND"
+      ],
+      "length_mm": 250,
+      "awg": 24,
+      "color": "black",
+      "current_a": 0.05
+    },
+    {
+      "id": "P2",
+      "net": "U0TXD",
+      "from": [
+        "J3",
+        "3"
+      ],
+      "to": [
+        "UART adapter",
+        "RX"
+      ],
+      "length_mm": 250,
+      "awg": 26,
+      "color": "white",
+      "current_a": 0.01
+    },
+    {
+      "id": "P3",
+      "net": "U0RXD",
+      "from": [
+        "J3",
+        "4"
+      ],
+      "to": [
+        "UART adapter",
+        "TX"
+      ],
+      "length_mm": 250,
+      "awg": 26,
+      "color": "blue",
+      "current_a": 0.01
+    }
+  ]
+}

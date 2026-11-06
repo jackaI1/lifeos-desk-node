@@ -1,0 +1,21 @@
+name: Harness documentation
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  harness:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python }}'
+      - run: python -m unittest discover -s harness/tests -v
+      - run: python -m harness.check harness/example.json
+      - run: python -m harness.generate harness/example.json --output /tmp/desk-harness
