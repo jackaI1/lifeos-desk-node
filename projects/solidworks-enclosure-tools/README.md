@@ -52,4 +52,6 @@ Files omitted from this snapshot:
 
 - cad/A/simulation-results.zip (over 10 MB)
 
-Project checks run from this directory through the path-filtered hub workflows: `solidworks-enclosure-tools-mesh.yml`.
+Project checks run from this directory through the path-filtered hub workflows: (removed workflow).
+
+The relocated workflow did not complete successfully within the migration batch. Local test sources remain available.
