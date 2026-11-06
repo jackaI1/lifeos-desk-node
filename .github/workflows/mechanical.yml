@@ -1,0 +1,30 @@
+name: Enclosure study
+on: [push, pull_request]
+jobs:
+  enclosure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y freecad xvfb python3-pytest
+      - run: python3 -m pytest mechanical/tests -q
+      - name: Rebuild and reopen two models
+        shell: bash
+        run: |
+          set -euo pipefail
+          export DESK_NODE_ROOT="$PWD"
+          mkdir -p mechanical/build/first mechanical/build/second
+          python3 -c 'import json; p=json.load(open("mechanical/spec.json")); p["board_width"]+=5; json.dump(p,open("mechanical/build/second-spec.json","w"))'
+          export DESK_NODE_OUTPUT="$PWD/mechanical/build/first"
+          timeout 120 xvfb-run -a freecad mechanical/build_enclosure.FCMacro 2>&1 | tee mechanical/build/first.log
+          grep -q DESK_ENCLOSURE_BUILD_OK mechanical/build/first.log
+          export DESK_NODE_OUTPUT="$PWD/mechanical/build/second" DESK_NODE_SPEC="$PWD/mechanical/build/second-spec.json"
+          timeout 120 xvfb-run -a freecad mechanical/build_enclosure.FCMacro 2>&1 | tee mechanical/build/second.log
+          grep -q DESK_ENCLOSURE_BUILD_OK mechanical/build/second.log
+          timeout 120 xvfb-run -a freecad mechanical/check_enclosure.FCMacro 2>&1 | tee mechanical/build/check.log
+          grep -q DESK_ENCLOSURE_REOPEN_OK mechanical/build/check.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: enclosure-study
+          path: mechanical/build/

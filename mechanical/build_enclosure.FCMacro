@@ -1,0 +1,62 @@
+import os, json, sys
+import FreeCAD as App
+import Part
+import Import
+import TechDraw
+import TechDrawGui
+
+root = os.environ.get('DESK_NODE_ROOT', os.getcwd())
+out = os.environ.get('DESK_NODE_OUTPUT', os.path.join(root, 'mechanical', 'build'))
+spec_path = os.environ.get('DESK_NODE_SPEC', os.path.join(root, 'mechanical', 'spec.json'))
+os.makedirs(out, exist_ok=True)
+with open(spec_path) as f:
+    p = json.load(f)
+w = p['board_width'] + 2*p['board_clearance'] + 2*p['wall']
+l = p['board_length'] + 2*p['board_clearance'] + 2*p['wall']
+h = p['floor'] + p['inside_height']
+wall = p['wall']
+if min(w,l,h,wall,p['floor'],p['groove_width'],p['groove_depth']) <= 0 or p['groove_width'] >= wall or p['groove_depth'] >= wall:
+    raise ValueError('Invalid enclosure parameters')
+doc = App.newDocument('DeskEnclosure')
+V = App.Vector
+body = Part.makeBox(w,l,h).cut(Part.makeBox(w-2*wall,l-2*wall,h-p['floor'], V(wall,wall,p['floor'])))
+# Gasket groove in the top rim; corners are square and require a custom gasket.
+inset = (wall-p['groove_width'])/2
+outer = Part.makeBox(w-2*inset,l-2*inset,p['groove_depth'],V(inset,inset,h-p['groove_depth']))
+inner = Part.makeBox(w-2*(inset+p['groove_width']),l-2*(inset+p['groove_width']),p['groove_depth'],V(inset+p['groove_width'],inset+p['groove_width'],h-p['groove_depth']))
+body = body.cut(outer.cut(inner))
+# Four assumed board support pads, not claimed to match physical mounting holes.
+for x in (wall+4,w-wall-4):
+    for y in (wall+4,l-wall-4):
+        body = body.fuse(Part.makeCylinder(p['boss_diameter']/2,p['standoff_height'],V(x,y,p['floor'])))
+body = body.removeSplitter()
+lid = Part.makeBox(w,l,p['lid_thickness'],V(0,0,h))
+# Pilot holes at four corner positions. Verify their actual engagement before manufacture.
+for x in (wall/2,w-wall/2):
+    for y in (wall/2,l-wall/2):
+        tool = Part.makeCylinder(p['screw_diameter']/2,p['lid_thickness']+wall,V(x,y,h-wall))
+        body = body.cut(tool)
+        lid = lid.cut(tool)
+body_obj=doc.addObject('PartDesign::Feature','Housing'); body_obj.Shape=body
+lid_obj=doc.addObject('PartDesign::Feature','Lid'); lid_obj.Shape=lid
+for obj in (body_obj,lid_obj):
+    if obj.Shape.isNull() or not obj.Shape.isValid(): raise RuntimeError('Invalid solid '+obj.Name)
+doc.recompute()
+Import.export([body_obj,lid_obj],os.path.join(out,'enclosure.step'))
+doc.saveAs(os.path.join(out,'enclosure.FCStd'))
+page=doc.addObject('TechDraw::DrawPage','Page')
+template=doc.addObject('TechDraw::DrawSVGTemplate','Template')
+template.Template=os.path.join(App.getResourceDir(),'Mod','TechDraw','Templates','A4_Landscape_blank.svg')
+page.Template=template
+view=doc.addObject('TechDraw::DrawViewPart','TopView'); view.Source=[body_obj]; view.Direction=V(0,0,1); view.ScaleType='Custom'; view.Scale=1.0
+page.addView(view); view.X=95; view.Y=110
+note=doc.addObject('TechDraw::DrawViewAnnotation','Notes')
+note.Text=['DESK NODE REV B - CONCEPT / FIT UNVERIFIED', 'Housing overall: %.2f x %.2f x %.2f mm' % (w,l,h), 'Groove width %.2f, depth %.2f mm' % (p['groove_width'],p['groove_depth']), 'A: base plane; B,C: outer sides (proposed datums)', 'Flatness A 0.20; profile 0.30 to A|B|C (proposed)', 'Position diam 0.30 to A|B|C (proposed)', 'Dimensions in mm. Confirm datum scheme and fit before fabrication.']
+page.addView(note); note.X=185; note.Y=80
+doc.recompute()
+doc.save()
+TechDrawGui.exportPageAsPdf(page,os.path.join(out,'enclosure.pdf'))
+TechDrawGui.exportPageAsSvg(page,os.path.join(out,'enclosure.svg'))
+print('DESK_ENCLOSURE_BUILD_OK',w,l,h)
+App.closeDocument(doc.Name)
+Gui.getMainWindow().close()

@@ -39,3 +39,4 @@ hardware/revb/build/
 hardware/revb/fab/
 antenna_matching/build/
 .pytest_cache/
+/mechanical/build/
