@@ -2,6 +2,21 @@
 
 I built a small desk display and room monitor because I wanted to see my next class at a glance and keep temperature and humidity readings in LifeOS.
 
+I can also check whether sudden jumps in the room log are likely to be noise.
+The analysis tool smooths isolated spikes and faster variations, then shows which
+repeating changes remain. To try it without a board, with Python 3.11 or newer,
+run from this folder:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r analysis/requirements.txt
+.venv/bin/python -m analysis.demo
+```
+
+Open `analysis/build/demo/report.md` for the comparison against known true
+readings. The [analysis guide](docs/signal-analysis.md) shows how I use the same
+filters on my saved room logs. All demo readings are generated on the computer.
+
 ## Overview
 
 Instead of opening my calendar, I want to look beside my desk and see what
@@ -107,6 +122,35 @@ both. The [building-control guide](docs/building-automation.md) explains the poi
 addresses, how to connect the existing desk-node readings, and how these protocols
 fit into heating, ventilation, air conditioning and electrical systems.
 
+## Check noisy room readings
+
+I use a moving median, the middle reading in a small sliding group, to remove
+isolated spikes. A low-pass filter then keeps slow changes and reduces faster
+ones. An FFT, a calculation that separates repeating changes by frequency, helps
+me find interference that repeats at a regular interval.
+
+The demo above makes a week's worth of five-minute readings with a known room
+temperature, a faster unwanted cycle, random noise and occasional spikes. With
+the default seed, the typical error falls from 0.5232 C to 0.1109 C after
+filtering. The [short comparison report](docs/signal-analysis-report.md) includes
+the raw and filtered errors and the detected noise frequencies. These are
+software results against a simulator, not measurements of the physical sensor.
+
+For a real adapter database, I choose one device and analyze a continuous stretch
+of readings. The database opens read-only; the report goes into a new folder:
+
+```sh
+.venv/bin/python -m analysis --database room.sqlite3 --device desk-1 \
+  --channel temperature --cutoff-hz 0.000277777778 --output analysis/build/room
+```
+
+This example keeps changes slower than roughly an hour and removes faster ones.
+The [guide](docs/signal-analysis.md) covers choosing that boundary, humidity and
+CSV input, missing readings, the estimated noise ratio and the filter's limits.
+The filters run after collection; they do not change live readings or thermostat
+commands. Five-minute logs cannot identify rapid electrical noise such as mains
+hum, and smoothing can remove a real rapid change too.
+
 ## Parts and wiring
 
 The controller is an ESP32-WROOM-32E, a small computer with Wi-Fi and 4 MB of
@@ -192,6 +236,8 @@ make -C replay test
 .venv/bin/python -m unittest discover -s automation/tests -v
 .venv/bin/python -m pip install -r capture/requirements-dev.txt
 .venv/bin/python -m pytest capture/tests -q
+.venv/bin/python -m pip install -r analysis/requirements-dev.txt
+.venv/bin/python -m pytest analysis/tests -q
 ```
 
 These run on a computer without an ESP32 toolchain. Continuous integration (CI), the
@@ -203,6 +249,10 @@ hardware. Neither suite proves that a physical board or HVAC system works.
 The capture suite adds 36 pytest cases using the real sigrok decoders, including
 clean and damaged I2C/UART recordings in both file formats. Its CI jobs run on
 Python 3.11 and 3.12 and save generated captures and reports for inspection.
+The analysis suite checks filter gain at the chosen cutoff, known FFT tones,
+spike rejection, power normalization, log imports and report commands. Its CI
+jobs run on Python 3.11 and 3.12, reproduce the comparison report and save the
+synthetic samples and spectra as downloadable files.
 The [bench checklist](firmware/README.md#tests-and-hardware-validation) covers
 wiring, screen output, reconnects, sensor faults and measured current.
 [Design notes](firmware/docs/design.md), the [device API](firmware/docs/api.md)

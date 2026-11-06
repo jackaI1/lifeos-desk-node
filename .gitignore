@@ -23,3 +23,6 @@ hardware/fab/
 *.kicad_pcb.lck
 *.kicad_sch.lck
 *-backups/
+
+# Local room-analysis outputs may contain private sensor readings.
+analysis/build/
