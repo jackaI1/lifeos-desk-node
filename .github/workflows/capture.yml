@@ -1,0 +1,35 @@
+name: Capture decoding
+on:
+  push:
+    branches: [main]
+    paths: ['capture/**', 'replay/**', 'firmware/components/desk_core/**', '.github/workflows/capture.yml', 'docs/capture-decoding.md', 'README.md']
+  pull_request:
+    paths: ['capture/**', 'replay/**', 'firmware/components/desk_core/**', '.github/workflows/capture.yml', 'docs/capture-decoding.md', 'README.md']
+permissions:
+  contents: read
+jobs:
+  sigrok-integration:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python }}'
+      - name: Install real protocol decoders and scenario compiler
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y sigrok-cli guile-3.0
+          python -m pip install -r capture/requirements-dev.txt
+          sigrok-cli --version
+      - name: Pytest with real I2C and UART decoders
+        run: python -m pytest capture/tests -q
+      - name: Generate clean and damaged SR and CSV captures from Scheme/C replay
+        run: python -m capture.demo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capture-reports-python-${{ matrix.python }}
+          path: replay/build/captures/
+          retention-days: 14

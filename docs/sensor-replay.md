@@ -103,6 +103,13 @@ deep-sleep retention or screen electronics. It provides deterministic inputs for
 the shared C logic. It does not change the device firmware or add a Scheme
 runtime to the ESP32.
 
+I can also pass `--uart-log replay/build/uart.txt` to the C replay to save a log
+line after each command. It uses the same `desk_format_cycle_log` function as
+the firmware. The [capture tool](capture-decoding.md) turns those exact serial
+bytes and the scenario's sensor bytes into synthetic I2C/UART waveforms, then
+checks them with sigrok's protocol decoders. This adds digital timing checks;
+it still does not measure a physical wire.
+
 ## Checks
 
 ```sh

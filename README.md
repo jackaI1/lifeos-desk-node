@@ -21,6 +21,11 @@ a short list of pretend readings, run it through the same reading queue and scre
 code used by the device, and see which readings survive. I can also save an image
 of the screen. The replay below needs no board, LifeOS account or network service.
 
+I can also check recordings of the sensor wires and the device's serial log.
+The capture tool turns recorded highs and lows into messages, then points out
+rejected messages, missing acknowledgements and damaged readings. I can try it
+with generated clean and damaged recordings before connecting a board.
+
 I can also use the room readings to try a thermostat on my computer. I choose a
 target temperature, watch simulated heating and fan outputs respond, and read or
 change settings through the same kinds of connections used in building controls.
@@ -48,6 +53,32 @@ screen image is `replay/build/screen.pbm`, a plain black-and-white image file.
 The [replay guide](docs/sensor-replay.md) explains how I change the readings,
 repeat a sequence and view the image. These checks run the real sensor decoder,
 queue and screen renderer, but the sensor and successful upload are simulated.
+
+## Check a wire recording without a board
+
+I use sigrok, a tool that reads logic-analyzer recordings, to decode the sensor
+messages and serial output. On macOS, install `brew install sigrok-cli guile`;
+on Ubuntu, use `sudo apt-get install sigrok-cli guile-3.0 build-essential`.
+With Python 3.11 or newer, Make and a C compiler, run from the repository root:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m capture.demo
+.venv/bin/python -m capture.decode replay/build/captures/clean.sr
+```
+
+The demo generates clean and deliberately damaged recordings from the same sensor
+scenarios and serial-log code used by the replay. Each clean recording gives one
+25 C / 50% reading and 83 serial bytes with no findings. Each damaged recording
+reports a rejected address, a missing acknowledgement clock, a bad sensor checksum,
+an unfinished message and a serial framing error, meaning a missing stop bit.
+The recordings and readable JSON reports are in `replay/build/captures/`.
+
+For a real recording, run `.venv/bin/python -m capture.decode wake.sr --report report.json`.
+The tool accepts sigrok `.sr` sessions and uniformly sampled CSV exports. The
+[capture guide](docs/capture-decoding.md) covers recording pins, channel names,
+sample rates, changing scenarios and reading fault locations. Generated captures
+are synthetic; they do not establish that an assembled board works.
 
 ## Try the room-control demo
 
@@ -159,6 +190,8 @@ Run the software tests from the repository root:
 firmware/tests/run_host_tests.sh
 make -C replay test
 .venv/bin/python -m unittest discover -s automation/tests -v
+.venv/bin/python -m pip install -r capture/requirements-dev.txt
+.venv/bin/python -m pytest capture/tests -q
 ```
 
 These run on a computer without an ESP32 toolchain. Continuous integration (CI), the
@@ -167,6 +200,9 @@ firmware. The replay checks run Scheme scenarios and the C program on Linux and
 macOS, checking for invalid memory access as well as the expected results.
 The room-control tests use actual local network connections and need no
 hardware. Neither suite proves that a physical board or HVAC system works.
+The capture suite adds 36 pytest cases using the real sigrok decoders, including
+clean and damaged I2C/UART recordings in both file formats. Its CI jobs run on
+Python 3.11 and 3.12 and save generated captures and reports for inspection.
 The [bench checklist](firmware/README.md#tests-and-hardware-validation) covers
 wiring, screen output, reconnects, sensor faults and measured current.
 [Design notes](firmware/docs/design.md), the [device API](firmware/docs/api.md)
