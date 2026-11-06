@@ -1,0 +1,15 @@
+import os
+import FreeCAD as App
+root=os.environ['DESK_NODE_ROOT']
+base=os.path.join(root,'mechanical','build')
+a=App.openDocument(os.path.join(base,'first','enclosure.FCStd'))
+b=App.openDocument(os.path.join(base,'second','enclosure.FCStd'))
+assert a.getObject('Housing').Shape.isValid() and b.getObject('Housing').Shape.isValid()
+assert abs(b.getObject('Housing').Shape.BoundBox.XLength - a.getObject('Housing').Shape.BoundBox.XLength - 5) < 1e-6
+for folder in ('first','second'):
+    for name in ('enclosure.step','enclosure.pdf','enclosure.svg'):
+        assert os.path.getsize(os.path.join(base,folder,name)) > 100
+print('DESK_ENCLOSURE_REOPEN_OK')
+App.closeDocument(a.Name)
+App.closeDocument(b.Name)
+Gui.getMainWindow().close()

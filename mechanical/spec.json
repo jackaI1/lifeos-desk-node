@@ -1,0 +1,8 @@
+{
+  "board_width": 48.0, "board_length": 54.0,
+  "board_clearance": 2.0, "wall": 3.0, "floor": 3.0,
+  "inside_height": 20.0, "lid_thickness": 3.0,
+  "groove_width": 2.6, "groove_depth": 1.5, "boss_diameter": 6.0,
+  "screw_diameter": 2.8, "standoff_height": 4.0,
+  "analysis": {"cord": 2.0, "cord_tol": 0.1, "groove_depth": 1.5, "groove_tol": 0.05, "lid_gap": 0.0, "gap_tol": 0.02, "power_w": 0.5, "thermal_resistance_k_w": 20.0}
+}
