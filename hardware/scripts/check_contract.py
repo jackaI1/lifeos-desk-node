@@ -8,7 +8,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 
-def check(path):
+def check(path, overrides=None):
     pins = {}
     for net in ET.parse(path).findall("./nets/net"):
         for node in net.findall("node"):
@@ -42,6 +42,7 @@ def check(path):
         "F1": {"1": "VBUS", "2": "+5V"},
         "D1": {"1": "+5V", "2": "GND"},
     }
+    expected.update(overrides or {})
     for ref, mapping in expected.items():
         for pin, name in mapping.items():
             actual = pins.get((ref, pin))

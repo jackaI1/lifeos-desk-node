@@ -32,8 +32,17 @@ jobs:
       - name: ERC, DRC (+ schematic parity), Gerbers, drill, BOM, CPL
         run: hardware/scripts/export_fab.sh
 
+      - name: Rev B ERC, DRC, schematic parity, battery isolation and exports
+        run: hardware/revb/check.sh
+
       - uses: actions/upload-artifact@v4
         with:
           name: desk-node-fab
           path: hardware/fab/
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desk-node-revb-fab
+          path: hardware/revb/fab/
           if-no-files-found: error
