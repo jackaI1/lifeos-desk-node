@@ -32,3 +32,10 @@ hardware/components/.env
 
 # Generated harness documents.
 harness/build/
+
+# Disposable design tools and generated comparisons.
+.build-tools/
+hardware/revb/build/
+hardware/revb/fab/
+antenna_matching/build/
+.pytest_cache/

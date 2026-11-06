@@ -2,6 +2,23 @@
 
 I built a small desk display and room monitor because I wanted to see my next class at a glance and keep temperature and humidity readings in LifeOS.
 
+I can compare the original USB board with a smaller battery design before
+ordering either one. From this folder, with Python 3.11 or newer, run:
+
+```sh
+python3 -m power_budget.compare
+```
+
+It shows where current goes and estimates battery life. With the documented
+example assumptions, calculated average input current falls from 11.960 mA to
+6.715 mA. These are datasheet calculations, not measurements. The new
+[48 × 54 mm battery board](hardware/revb/README.md) has a charger and a regulator
+that uses less current itself. I still need to build it and fill in the
+[bench measurement sheet](docs/power-and-battery.md#bench-sheet-intentionally-empty).
+I also have an [antenna matching calculator](docs/antenna-matching.md) that reads
+radio measurements and suggests small components to reduce reflections. Its
+included example uses clearly labelled synthetic data; I have not measured an antenna.
+
 I use a wiring plan for removable sensor and programming leads so I can cut
 and label each wire and check it before powering the board. With Python 3.11 or
 newer, I can make the documents without a board or extra packages:
@@ -199,8 +216,9 @@ serial connection used to load the program and read logs. The firmware needs:
 The [wiring guide](docs/pinout.md) gives the exact pins, power requirements and
 pull-up resistors. A four-pin I²C OLED is a different variant; select the legacy
 display option explicitly if using that wiring. Do not connect both displays.
-The OLED stays powered while the ESP32 sleeps, so this is intended for USB desk
-power. No measured battery-life claim is available.
+The OLED stays powered while the ESP32 sleeps. Rev A uses USB desk power;
+Rev B adds a battery option while retaining that display behavior. Neither has
+a measured battery-life claim.
 
 ## Circuit board
 
@@ -296,3 +314,20 @@ wiring, screen output, reconnects, sensor faults and measured current.
 [Design notes](firmware/docs/design.md), the [device API](firmware/docs/api.md)
 and [validation notes](firmware/docs/validation.md) explain the software behavior
 and what remains unverified.
+
+The battery and antenna tools add 28 checks for charge integration, firmware
+sleep timing, runtime units, invalid inputs, independently calculated circuit
+impedances, matching across the whole band, Touchstone formats, rounded values,
+component tolerances, battery-jumper wiring and actual board size:
+
+```sh
+.venv/bin/python -m pip install -r antenna_matching/requirements.txt pytest==8.3.5
+.venv/bin/python -m pytest power_budget/tests antenna_matching/tests hardware/revb/tests -q
+hardware/revb/check.sh
+```
+
+CI checks both native KiCad boards with no ignored ERC/DRC violations and uploads
+fabrication outputs. A separate calculation job runs on Python 3.11 and 3.12 and
+saves the power report and predicted radio-reflection sweeps. These checks cover
+the design and calculations; current, runtime, charging and radio performance
+remain unmeasured.

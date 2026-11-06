@@ -1,0 +1,37 @@
+name: Power and antenna calculations
+on:
+  push:
+    branches: [main]
+    paths: ['power_budget/**', 'antenna_matching/**', 'firmware/main/**', 'hardware/revb/**', 'docs/power-and-battery.md', 'docs/antenna-matching.md', '.github/workflows/power-rf.yml', 'README.md']
+  pull_request:
+    paths: ['power_budget/**', 'antenna_matching/**', 'firmware/main/**', 'hardware/revb/**', 'docs/power-and-battery.md', 'docs/antenna-matching.md', '.github/workflows/power-rf.yml', 'README.md']
+permissions:
+  contents: read
+jobs:
+  calculations:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python }}'
+          cache: pip
+          cache-dependency-path: antenna_matching/requirements.txt
+      - run: python -m pip install -r antenna_matching/requirements.txt pytest==8.3.5
+      - name: Unit tests, independent impedance checks and command-line exports
+        run: python -m pytest power_budget/tests antenna_matching/tests hardware/revb/tests -q
+      - name: Reproduce the synthetic input and produce calculated reports
+        run: |
+          python antenna_matching/examples/generate.py
+          git diff --exit-code -- antenna_matching/examples/synthetic-antenna.s1p
+          mkdir -p antenna_matching/build/example
+          python -m power_budget.compare --json > antenna_matching/build/example/power.json
+          python -m antenna_matching.match antenna_matching/examples/synthetic-antenna.s1p --source-kind synthetic --output antenna_matching/build/example
+      - uses: actions/upload-artifact@v4
+        with:
+          name: calculated-power-and-RF-${{ matrix.python }}
+          path: antenna_matching/build/example/
+          retention-days: 14
