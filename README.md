@@ -2,6 +2,20 @@
 
 I built a small desk display and room monitor because I wanted to see my next class at a glance and keep temperature and humidity readings in LifeOS.
 
+I use a wiring plan for removable sensor and programming leads so I can cut
+and label each wire and check it before powering the board. With Python 3.11 or
+newer, I can make the documents without a board or extra packages:
+
+```sh
+python3 -m harness.check harness/example.json
+python3 -m harness.generate harness/example.json --output harness/build
+```
+
+Open `harness/build/harness.svg` for the drawing and the CSV files for the cut
+list, labels and continuity and polarity test sheet. The example covers the J2
+sensor expansion and J3 programming header. The [harness guide](docs/harness.md)
+explains how to change lengths and pin assignments and check the real wiring.
+
 I also keep a purchasing record for the board so I can check replacements and
 missing material declarations before ordering parts. It covers all 31 components,
 with nine replacement candidates and a spreadsheet for an assembler. With
@@ -250,6 +264,7 @@ are not turned into made-up values.
 Run the software tests from the repository root:
 
 ```sh
+python3 -m unittest discover -s harness/tests -v
 firmware/tests/run_host_tests.sh
 make -C replay test
 .venv/bin/python -m unittest discover -s automation/tests -v
@@ -259,7 +274,7 @@ make -C replay test
 .venv/bin/python -m pytest analysis/tests -q
 ```
 
-These run on a computer without an ESP32 toolchain. Continuous integration (CI), the
+The harness suite checks seven example wires and rejects duplicate pins, missing grounds and undersized wire. These run on a computer without an ESP32 toolchain. Continuous integration (CI), the
 automated checks on GitHub, also builds the default SPI and legacy I²C display
 firmware. The replay checks run Scheme scenarios and the C program on Linux and
 macOS, checking for invalid memory access as well as the expected results.
