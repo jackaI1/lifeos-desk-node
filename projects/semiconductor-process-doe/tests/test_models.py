@@ -24,3 +24,14 @@ def test_recipe_meets_constraints():
     recipe=optimize(rb,ub,100,93)
     assert abs(recipe['rate']-100)<.1 and recipe['uniformity']>=93-1e-6
     assert np.all(recipe['settings']>=RANGES[:,0]) and np.all(recipe['settings']<=RANGES[:,1])
+
+
+def test_noisy_oxidation_intervals_contain_known_rates():
+    rng = np.random.default_rng(42)
+    times = np.linspace(0.05, 5, 40)
+    known = np.array([0.3, 0.12])
+    observations = thickness(times, *known, initial=0.02) + rng.normal(0, 0.0005, len(times))
+    result = fit_oxidation(times, observations, initial=0.02)
+    assert np.all(result['ci95'][:, 0] < known)
+    assert np.all(result['ci95'][:, 1] > known)
+    assert 0 < result['rmse'] < 0.001

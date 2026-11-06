@@ -1,0 +1,24 @@
+name: Semiconductor process tests
+on:
+  push:
+    paths:
+      - 'projects/semiconductor-process-doe/**'
+      - '.github/workflows/semiconductor-process-doe-tests.yml'
+  pull_request:
+    paths:
+      - 'projects/semiconductor-process-doe/**'
+      - '.github/workflows/semiconductor-process-doe-tests.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/semiconductor-process-doe
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install '.[test]'
+      - run: python -m pytest -q
+      - run: python -m semiconductor_doe --output /tmp/process-results
