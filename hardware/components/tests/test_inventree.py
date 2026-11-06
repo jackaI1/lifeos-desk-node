@@ -1,0 +1,173 @@
+import json
+from copy import deepcopy
+from pathlib import Path
+from unittest.mock import patch
+import pytest
+from hardware.components.core import parse_bom, prepare
+from hardware.components.inventree import API, load, parameter_values, verify
+
+
+def test_upsert_exact_identity_is_repeatable():
+    api = API('http://localhost:1234', 'demo', 'temporary')
+    calls = []
+    def request(method, path, data=None):
+        calls.append((method,path,data))
+        if method == 'GET': return {'results':[], 'next':None}
+        return {'pk':1} | data
+    api.request = request
+    assert api.upsert('part/', {'IPN':'DN-X'}, {'name':'Part'}) == 1
+    assert api.upsert('part/', {'IPN':'DN-X'}, {'name':'Part'}) == 1
+    assert [c[0] for c in calls] == ['GET','POST']
+    api.upsert('part/', {'IPN':'DN-X'}, {'name':'Updated'})
+    assert calls[-1][0] == 'PATCH'
+
+
+def test_pagination_reads_all_pages():
+    api = API('http://localhost:1234', 'demo', 'temporary')
+    pages = iter([{'results':[{'pk':1}], 'next':'http://localhost:1234/api/part/?offset=1'},
+                  {'results':[{'pk':2}], 'next':None}])
+    api.request = lambda *args:next(pages)
+    assert len(api.list('part/')) == 2
+
+
+def test_refuses_auth_to_cross_host_pagination():
+    api = API('http://localhost:1234', 'demo', 'temporary')
+    with pytest.raises(ValueError, match='different API host'):
+        api.request('GET','https://attacker.invalid/api/part/')
+
+
+def test_ambiguous_existing_part_is_not_overwritten():
+    api = API('http://localhost:1234', 'demo', 'temporary')
+    api.cache['part/'] = [{'pk':1,'IPN':'DN-X'}, {'pk':2,'IPN':'DN-X'}]
+    with pytest.raises(ValueError, match='Ambiguous'):
+        api.upsert('part/', {'IPN':'DN-X'}, {})
+
+
+def test_withdrawn_candidate_refuses_changed_catalogue_before_any_mutation():
+    """A changed load must not leave a withdrawn candidate linked in the database."""
+    class MemoryAPI:
+        def __init__(self):
+            self.records = {}
+            self.next_pk = 1
+
+        def list(self, path, refresh=False):
+            return self.records.get(path, [])
+
+        def upsert(self, path, identity, values):
+            rows = self.records.setdefault(path, [])
+            for row in rows:
+                if all(row.get(key) == value for key, value in identity.items()):
+                    row.update(deepcopy(values))
+                    return row['pk']
+            row = {'pk': self.next_pk} | deepcopy(identity) | deepcopy(values)
+            self.next_pk += 1
+            rows.append(row)
+            return row['pk']
+
+    root = Path(__file__).resolve().parents[3]
+    data = root / 'hardware/components'
+    with (root / 'hardware/bom.csv').open() as stream:
+        bom = parse_bom(stream)
+    templates = json.loads((data / 'templates.json').read_text())
+    parts = prepare(bom, json.loads((data / 'catalog.json').read_text()), templates)
+    api = MemoryAPI()
+    initial = load(api, parts, templates, 'a' * 64)
+    verify(api, initial)
+    before = deepcopy(api.records)
+    next_pk = api.next_pk
+    changed = deepcopy(parts)
+    item = next(part for part in changed if part['alternates'])
+    item['alternates'].pop()
+    item['no_alternate_reason'] = 'Candidate withdrawn after engineering review'
+
+    with pytest.raises(ValueError):
+        load(api, changed, templates, 'a' * 64)
+
+    assert api.records == before
+    assert api.next_pk == next_pk
+
+
+def test_long_evidence_and_family_templates_roundtrip_without_truncation():
+    from hardware.components.inventree import parameter_chunks
+    text='Manufacturer scope; ' * 90
+    result=parameter_chunks({'DN | family template':text,'DN | rohs | status':'unverified'})
+    assert all(len(v)<=500 for v in result.values())
+    assert ''.join(json.loads(v) for k,v in result.items() if k.startswith('DN | family template'))==text
+    assert result['DN | rohs | status']=='unverified'
+
+
+def test_authenticate_uses_a_token_after_one_basic_request():
+    api=API('http://localhost:1234','demo','temporary')
+    calls=[]
+    def request(method,path,data=None):
+        calls.append((method,path,api.auth.startswith('Basic ')))
+        return {'token':'disposable-test-token'}
+    api.request=request
+    api.authenticate()
+    assert calls==[('GET','user/me/token/?name=desk-node-demo',True)]
+    assert api.auth=='Token disposable-test-token'
+
+
+def test_candidates_can_have_native_manufacturer_records_but_stay_inactive():
+    class ValidatingAPI:
+        def __init__(self): self.records={}; self.next_pk=1
+        def list(self,path,refresh=False): return self.records.get(path,[])
+        def upsert(self,path,identity,values):
+            rows=self.records.setdefault(path,[])
+            if path=='company/part/manufacturer/':
+                parent=next(p for p in self.records['part/'] if p['pk']==identity['part'])
+                if not parent['purchaseable']: raise ValueError('InvenTree requires purchaseable manufacturer parents')
+            for r in rows:
+                if all(r.get(k)==v for k,v in identity.items()): r.update(deepcopy(values)); return r['pk']
+            r={'pk':self.next_pk}|deepcopy(identity)|deepcopy(values)
+            self.next_pk+=1;rows.append(r);return r['pk']
+    root=Path(__file__).resolve().parents[3]
+    data=root/'hardware/components'
+    with (root/'hardware/bom.csv').open() as stream: bom=parse_bom(stream)
+    templates=json.loads((data/'templates.json').read_text())
+    parts=prepare(bom,json.loads((data/'catalog.json').read_text()),templates)
+    api=ValidatingAPI();expected=load(api,parts,templates,'a'*64)
+    verify(api,expected)
+    candidates=[p for p in api.list('part/') if '-ALT-' in p.get('IPN','')]
+    assert len(candidates)==9
+    assert all(not p['active'] for p in candidates)
+    assert not api.list('bom/substitute/')
+    assert not any(s['part'] in {p['pk'] for p in candidates} for s in api.list('company/part/'))
+
+
+def test_parameter_chunks_survive_inventree_whitespace_normalization():
+    from hardware.components.inventree import parameter_chunks
+    text='word ' * 300 + '  tail '
+    stored=parameter_chunks({'Long evidence':text})
+    assert all(len(value)<=500 and value==value.strip() for value in stored.values())
+    assert ''.join(json.loads(value.strip()) for value in stored.values())==text
+
+
+def test_repeat_load_uses_canonical_model_types_from_api_readback():
+    class Server(API):
+        def __init__(self):
+            super().__init__('http://localhost:1234','demo','temporary')
+            self.rows={};self.next_pk=1
+        def request(self,method,path,data=None):
+            if method=='GET':
+                return {'results':deepcopy(self.rows.get(path.split('?')[0],[])),'next':None}
+            canonical=deepcopy(data)
+            if canonical.get('model_type')=='part': canonical['model_type']='part.part'
+            if method=='PATCH':
+                base,pk=path.rstrip('/').rsplit('/',1)
+                row=next(r for r in self.rows[base+'/'] if r['pk']==int(pk))
+                row.update(canonical);return deepcopy(row)
+            rows=self.rows.setdefault(path,[])
+            if path=='parameter/' and any(all(r[k]==canonical[k] for k in ['model_type','model_id','template']) for r in rows):
+                raise ValueError('duplicate canonical parameter identity')
+            row={'pk':self.next_pk}|canonical;self.next_pk+=1;rows.append(row)
+            return deepcopy(row)
+    root=Path(__file__).resolve().parents[3];data=root/'hardware/components'
+    with (root/'hardware/bom.csv').open() as stream: bom=parse_bom(stream)
+    templates=json.loads((data/'templates.json').read_text())
+    parts=prepare(bom,json.loads((data/'catalog.json').read_text()),templates)
+    api=Server();first=load(api,parts,templates,'a'*64);verify(api,first)
+    counts={k:len(v) for k,v in api.rows.items()}
+    second=load(api,parts,templates,'a'*64);verify(api,second)
+    assert first==second
+    assert counts=={k:len(v) for k,v in api.rows.items()}

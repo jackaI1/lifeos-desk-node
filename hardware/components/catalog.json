@@ -1,0 +1,1052 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-06",
+  "parts": [
+    {
+      "key": "cap-10u-25v",
+      "family": "capacitor",
+      "schematic_mpn": "CL21A106KAYNNNE",
+      "manufacturer": "Samsung Electro-Mechanics",
+      "mpn": "CL21A106KAYNNNE",
+      "datasheet": "https://product.samsungsem.com/mlcc/CL21A106KAYNNN.do",
+      "specs": {
+        "capacitance_uf": 10,
+        "voltage_v": 25,
+        "tolerance_pct": 10,
+        "dielectric": "X5R",
+        "package": "0805"
+      },
+      "lifecycle": {
+        "status": "active",
+        "source_url": "https://product.samsungsem.com/mlcc/CL21A106KAYNNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL21A106KAYNNN# including listed packaging suffix",
+        "note": "Manufacturer live product page says Mass Production. This live reported status still requires dated evidence because the page creation timestamp is generated on request, not a dated lifecycle notice."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "https://product.samsungsem.com/mlcc/CL21A106KAYNNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL21A106KAYNNN#",
+        "note": "Manufacturer product page displays ROHS badge, but I did not retrieve a dated, scoped declaration. The badge alone does not verify this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "https://product.samsungsem.com/mlcc/CL21A106KAYNNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL21A106KAYNNN#",
+        "note": "Manufacturer product page displays REACH badge, but I did not retrieve a dated, scoped declaration. The badge alone does not verify this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C15850",
+          "url": "https://www.lcsc.com/product-detail/C15850.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "TDK",
+          "mpn": "C2012X5R1E106K125AB",
+          "datasheet": "https://product.tdk.com/en/search/capacitor/ceramic/mlcc/info?part_no=C2012X5R1E106K125AB",
+          "specs": {
+            "capacitance_uf": 10,
+            "voltage_v": 25,
+            "tolerance_pct": 10,
+            "dielectric": "X5R",
+            "package": "0805"
+          },
+          "kind": "candidate",
+          "note": "Nominal value and footprint match. I still need to compare effective capacitance at DC bias, ESR, land pattern, height and reflow limits on this board; this is a candidate only."
+        }
+      ],
+      "no_alternate_reason": ""
+    },
+    {
+      "key": "cap-22u-16v",
+      "family": "capacitor",
+      "schematic_mpn": "CL21A226MOQNNNE",
+      "manufacturer": "Samsung Electro-Mechanics",
+      "mpn": "CL21A226MOQNNNE",
+      "datasheet": "https://product.samsungsem.com/mlcc/CL21A226MOQNNN.do",
+      "specs": {
+        "capacitance_uf": 22,
+        "voltage_v": 16,
+        "tolerance_pct": 20,
+        "dielectric": "X5R",
+        "package": "0805"
+      },
+      "lifecycle": {
+        "status": "nrnd",
+        "source_url": "https://product.samsungsem.com/mlcc/CL21A226MOQNNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL21A226MOQNNN# including listed packaging suffix",
+        "note": "Manufacturer live product page says NRND; recommended family CL21A226MOYNNN#. This live reported status still requires dated evidence because the page creation timestamp is generated on request, not a dated lifecycle notice."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "https://product.samsungsem.com/mlcc/CL21A226MOQNNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL21A226MOQNNN#",
+        "note": "Manufacturer product page displays ROHS badge, but I did not retrieve a dated, scoped declaration. The badge alone does not verify this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "https://product.samsungsem.com/mlcc/CL21A226MOQNNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL21A226MOQNNN#",
+        "note": "Manufacturer product page displays REACH badge, but I did not retrieve a dated, scoped declaration. The badge alone does not verify this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C98190",
+          "url": "https://www.lcsc.com/product-detail/C98190.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "Samsung Electro-Mechanics",
+          "mpn": "CL21A226MOYNNNE",
+          "datasheet": "https://product.samsungsem.com/mlcc/CL21A226MOYNNN.do",
+          "specs": {
+            "capacitance_uf": 22,
+            "voltage_v": 16,
+            "tolerance_pct": 20,
+            "dielectric": "X5R",
+            "package": "0805"
+          },
+          "kind": "candidate",
+          "note": "Manufacturer recommends this family for the NRND original. Same 0805, 22 uF, 16 V, X5R and 20% tolerance; maximum body thickness increases from 1.40 to 1.45 mm. I must qualify DC bias, ESR, regulator stability and assembly height."
+        }
+      ],
+      "no_alternate_reason": ""
+    },
+    {
+      "key": "cap-100n-50v",
+      "family": "capacitor",
+      "schematic_mpn": "CL10B104KB8NNNC",
+      "manufacturer": "Samsung Electro-Mechanics",
+      "mpn": "CL10B104KB8NNNC",
+      "datasheet": "https://product.samsungsem.com/mlcc/CL10B104KB8NNN.do",
+      "specs": {
+        "capacitance_uf": 0.1,
+        "voltage_v": 50,
+        "tolerance_pct": 10,
+        "dielectric": "X7R",
+        "package": "0603"
+      },
+      "lifecycle": {
+        "status": "active",
+        "source_url": "https://product.samsungsem.com/mlcc/CL10B104KB8NNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL10B104KB8NNN# including listed packaging suffix",
+        "note": "Manufacturer live product page says Mass Production. This live reported status still requires dated evidence because the page creation timestamp is generated on request, not a dated lifecycle notice."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "https://product.samsungsem.com/mlcc/CL10B104KB8NNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL10B104KB8NNN#",
+        "note": "Manufacturer product page displays ROHS badge, but I did not retrieve a dated, scoped declaration. The badge alone does not verify this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "https://product.samsungsem.com/mlcc/CL10B104KB8NNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL10B104KB8NNN#",
+        "note": "Manufacturer product page displays REACH badge, but I did not retrieve a dated, scoped declaration. The badge alone does not verify this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C1591",
+          "url": "https://www.lcsc.com/product-detail/C1591.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "Samsung Electro-Mechanics",
+          "mpn": "CL10B104JB8NNNC",
+          "datasheet": "https://product.samsungsem.com/mlcc/CL10B104JB8NNN.do",
+          "specs": {
+            "capacitance_uf": 0.1,
+            "voltage_v": 50,
+            "tolerance_pct": 5,
+            "dielectric": "X7R",
+            "package": "0603"
+          },
+          "kind": "candidate",
+          "note": "Nominal value and footprint match. I still need to compare effective capacitance at DC bias, ESR, land pattern, height and reflow limits on this board; this is a candidate only."
+        }
+      ],
+      "no_alternate_reason": ""
+    },
+    {
+      "key": "cap-1u-50v",
+      "family": "capacitor",
+      "schematic_mpn": "CL10A105KB8NNNC",
+      "manufacturer": "Samsung Electro-Mechanics",
+      "mpn": "CL10A105KB8NNNC",
+      "datasheet": "https://product.samsungsem.com/mlcc/CL10A105KB8NNN.do",
+      "specs": {
+        "capacitance_uf": 1,
+        "voltage_v": 50,
+        "tolerance_pct": 10,
+        "dielectric": "X5R",
+        "package": "0603"
+      },
+      "lifecycle": {
+        "status": "active",
+        "source_url": "https://product.samsungsem.com/mlcc/CL10A105KB8NNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL10A105KB8NNN# including listed packaging suffix",
+        "note": "Manufacturer live product page says Mass Production. This live reported status still requires dated evidence because the page creation timestamp is generated on request, not a dated lifecycle notice."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "https://product.samsungsem.com/mlcc/CL10A105KB8NNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL10A105KB8NNN#",
+        "note": "Manufacturer product page displays ROHS badge, but I did not retrieve a dated, scoped declaration. The badge alone does not verify this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "https://product.samsungsem.com/mlcc/CL10A105KB8NNN.do",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "CL10A105KB8NNN#",
+        "note": "Manufacturer product page displays REACH badge, but I did not retrieve a dated, scoped declaration. The badge alone does not verify this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C15849",
+          "url": "https://www.lcsc.com/product-detail/C15849.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "TDK",
+          "mpn": "C1608X5R1H105K080AB",
+          "datasheet": "https://product.tdk.com/system/files/dam/doc/product/capacitor/ceramic/mlcc/charasheet/c1608x5r1h105k080ab.pdf",
+          "specs": {
+            "capacitance_uf": 1,
+            "voltage_v": 50,
+            "tolerance_pct": 10,
+            "dielectric": "X5R",
+            "package": "0603"
+          },
+          "kind": "candidate",
+          "note": "Nominal value and footprint match. I still need to compare effective capacitance at DC bias, ESR, land pattern, height and reflow limits on this board; this is a candidate only."
+        }
+      ],
+      "no_alternate_reason": ""
+    },
+    {
+      "key": "res-5k1",
+      "family": "resistor",
+      "schematic_mpn": "0603WAF5101T5E",
+      "manufacturer": "UNI-ROYAL",
+      "mpn": "0603WAF5101T5E",
+      "datasheet": "https://www.uni-royal.cn/en/images/userfile/file/1750647324c56505e6d9ab55c7.pdf",
+      "specs": {
+        "resistance_ohm": 5100,
+        "tolerance_pct": 1,
+        "power_w": 0.1,
+        "package": "0603"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF5101T5E",
+        "note": "The manufacturer Chip Series datasheet is dated 2025-06-21 (V9). It decodes 0603/WA/F/value/T5E but does not establish lifecycle status."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF5101T5E",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF5101T5E",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C23186",
+          "url": "https://www.lcsc.com/product-detail/C23186.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "YAGEO",
+          "mpn": "RC0603FR-075K1L",
+          "datasheet": "https://www.yageogroup.com/component-documentation/download/specsheet/RC0603FR-075K1L",
+          "specs": {
+            "resistance_ohm": 5100,
+            "tolerance_pct": 1,
+            "power_w": 0.1,
+            "package": "0603"
+          },
+          "kind": "candidate",
+          "note": "Same 0603 nominal resistance, 1% tolerance and 0.1 W rating at 70 C. I must check temperature derating, TCR and pulse behaviour; no board substitution is approved."
+        }
+      ],
+      "no_alternate_reason": ""
+    },
+    {
+      "key": "res-10k",
+      "family": "resistor",
+      "schematic_mpn": "0603WAF1002T5E",
+      "manufacturer": "UNI-ROYAL",
+      "mpn": "0603WAF1002T5E",
+      "datasheet": "https://www.uni-royal.cn/en/images/userfile/file/1750647324c56505e6d9ab55c7.pdf",
+      "specs": {
+        "resistance_ohm": 10000,
+        "tolerance_pct": 1,
+        "power_w": 0.1,
+        "package": "0603"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF1002T5E",
+        "note": "The manufacturer Chip Series datasheet is dated 2025-06-21 (V9). It decodes 0603/WA/F/value/T5E but does not establish lifecycle status."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF1002T5E",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF1002T5E",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C25804",
+          "url": "https://www.lcsc.com/product-detail/C25804.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "YAGEO",
+          "mpn": "RC0603FR-0710KL",
+          "datasheet": "https://www.yageogroup.com/component-documentation/download/specsheet/RC0603FR-0710KL",
+          "specs": {
+            "resistance_ohm": 10000,
+            "tolerance_pct": 1,
+            "power_w": 0.1,
+            "package": "0603"
+          },
+          "kind": "candidate",
+          "note": "Same 0603 nominal resistance, 1% tolerance and 0.1 W rating at 70 C. I must check temperature derating, TCR and pulse behaviour; no board substitution is approved."
+        }
+      ],
+      "no_alternate_reason": ""
+    },
+    {
+      "key": "res-4k7",
+      "family": "resistor",
+      "schematic_mpn": "0603WAF4701T5E",
+      "manufacturer": "UNI-ROYAL",
+      "mpn": "0603WAF4701T5E",
+      "datasheet": "https://www.uni-royal.cn/en/images/userfile/file/1750647324c56505e6d9ab55c7.pdf",
+      "specs": {
+        "resistance_ohm": 4700,
+        "tolerance_pct": 1,
+        "power_w": 0.1,
+        "package": "0603"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF4701T5E",
+        "note": "The manufacturer Chip Series datasheet is dated 2025-06-21 (V9). It decodes 0603/WA/F/value/T5E but does not establish lifecycle status."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF4701T5E",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF4701T5E",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C23162",
+          "url": "https://www.lcsc.com/product-detail/C23162.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "YAGEO",
+          "mpn": "RC0603FR-074K7L",
+          "datasheet": "https://www.yageogroup.com/component-documentation/download/specsheet/RC0603FR-074K7L",
+          "specs": {
+            "resistance_ohm": 4700,
+            "tolerance_pct": 1,
+            "power_w": 0.1,
+            "package": "0603"
+          },
+          "kind": "candidate",
+          "note": "Same 0603 nominal resistance, 1% tolerance and 0.1 W rating at 70 C. I must check temperature derating, TCR and pulse behaviour; no board substitution is approved."
+        }
+      ],
+      "no_alternate_reason": ""
+    },
+    {
+      "key": "res-1k",
+      "family": "resistor",
+      "schematic_mpn": "0603WAF1001T5E",
+      "manufacturer": "UNI-ROYAL",
+      "mpn": "0603WAF1001T5E",
+      "datasheet": "https://www.uni-royal.cn/en/images/userfile/file/1750647324c56505e6d9ab55c7.pdf",
+      "specs": {
+        "resistance_ohm": 1000,
+        "tolerance_pct": 1,
+        "power_w": 0.1,
+        "package": "0603"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF1001T5E",
+        "note": "The manufacturer Chip Series datasheet is dated 2025-06-21 (V9). It decodes 0603/WA/F/value/T5E but does not establish lifecycle status."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF1001T5E",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "0603WAF1001T5E",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C21190",
+          "url": "https://www.lcsc.com/product-detail/C21190.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "YAGEO",
+          "mpn": "RC0603FR-071KL",
+          "datasheet": "https://www.yageogroup.com/component-documentation/download/specsheet/RC0603FR-071KL",
+          "specs": {
+            "resistance_ohm": 1000,
+            "tolerance_pct": 1,
+            "power_w": 0.1,
+            "package": "0603"
+          },
+          "kind": "candidate",
+          "note": "Same 0603 nominal resistance, 1% tolerance and 0.1 W rating at 70 C. I must check temperature derating, TCR and pulse behaviour; no board substitution is approved."
+        }
+      ],
+      "no_alternate_reason": ""
+    },
+    {
+      "key": "tvs-5v",
+      "family": "tvs",
+      "schematic_mpn": "MDD SMF5.0A (5 V TVS)",
+      "manufacturer": "MDD (Microdiode Semiconductor)",
+      "mpn": "SMF5.0A",
+      "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/82c461b905225ff344e885083d94bbf3.pdf",
+      "specs": {
+        "standoff_v": 5,
+        "breakdown_min_v": 6.4,
+        "breakdown_max_v": 7,
+        "clamp_max_v": 9.2,
+        "peak_pulse_a": 21.7,
+        "peak_pulse_w": 200,
+        "package": "SOD-123FL",
+        "pinout": "1=K;2=A"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "SMF5.0A",
+        "note": "SMF5.0(C)A through SMF440(C)A manufacturer-authored family sheet is hosted by LCSC under SMF16A. I have not verified its issue date or current lifecycle. I did not use the NextGen distributor declaration as manufacturer compliance evidence."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "SMF5.0A",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "SMF5.0A",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C193402",
+          "url": "https://www.lcsc.com/product-detail/C193402.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I have not qualified a second source against this exact SOD-123F land pattern, polarity and 10/1000 us surge specification. The 9.2 V clamp also needs a system protection review."
+    },
+    {
+      "key": "led-red",
+      "family": "led",
+      "schematic_mpn": "KT-0603R",
+      "manufacturer": "Hubei KENTO Elec",
+      "mpn": "KT-0603R",
+      "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/011ec3e8cb1e825f6961d29bc4db4c7a.pdf",
+      "specs": {
+        "forward_current_a": 0.02,
+        "dominant_wavelength_min_nm": 615,
+        "dominant_wavelength_max_nm": 630,
+        "package": "0603",
+        "pinout": "1=K;2=A"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "KT-0603R",
+        "note": "Manufacturer-authored KT-0603R sheet is hosted by LCSC. No dated manufacturer lifecycle or environmental declaration was retrieved; distributor summaries disagree on optical and forward-voltage values, so I omit those disputed ratings."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "KT-0603R",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "KT-0603R",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C2286",
+          "url": "https://www.lcsc.com/product-detail/C2286.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I need to reconcile conflicting distributor forward-voltage and intensity values against the supplied manufacturer LED sheet, then qualify polarity, brightness and current before selecting a substitute."
+    },
+    {
+      "key": "fuse-750ma",
+      "family": "fuse",
+      "schematic_mpn": "Littelfuse 1206L075THYR",
+      "manufacturer": "Littelfuse",
+      "mpn": "1206L075THYR",
+      "datasheet": "https://www.littelfuse.com/assetdocs/littelfuse-ptc-1206l-datasheet?assetguid=2b6a1515-d4ee-4c83-8bd4-152b4901b8f5",
+      "specs": {
+        "hold_a": 0.75,
+        "trip_a": 1.5,
+        "voltage_max_v": 8,
+        "fault_max_a": 100,
+        "trip_max_s": 0.2,
+        "trip_test_a": 8,
+        "resistance_min_ohm": 0.09,
+        "resistance_posttrip_max_ohm": 0.29,
+        "package": "1206",
+        "pinout": "1-2 nonpolar"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "1206L075THYR",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "rohs": {
+        "status": "compliant",
+        "source_url": "https://www.littelfuse.com/assetdocs/littelfuse-ptc-1206l-datasheet?assetguid=2b6a1515-d4ee-4c83-8bd4-152b4901b8f5",
+        "document_date": "2024-02-26",
+        "checked_on": "2026-11-06",
+        "scope": "1206L series, including 1206L075TH and YR order code",
+        "note": "Manufacturer revised datasheet states RoHS compliant. The electrical table rates this exact TH part at 8 V; 16 V belongs to a different /16 ordering code. Hold/trip ratings are at 20 C still air."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "1206L075THYR",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C99563",
+          "url": "https://www.lcsc.com/product-detail/C99563.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I have not qualified a second PPTC against hold/trip derating, trip curve, post-trip resistance and exact pad geometry. A similar hold current alone is insufficient."
+    },
+    {
+      "key": "usb-c",
+      "family": "connector",
+      "schematic_mpn": "HRO TYPE-C-31-M-12",
+      "manufacturer": "Korean Hroparts Elec (HRO)",
+      "mpn": "TYPE-C-31-M-12",
+      "datasheet": "https://www.krhro.com/Product-Details/726.html",
+      "specs": {
+        "contacts": 16,
+        "package": "HRO_TYPE-C-31-M-12",
+        "pinout": "USB-C USB2.0 16P; match A1/A4/A5/A6/A7/A8/A9/A12/B1/B4/B5/B6/B7/B8/B9/B12 and shield"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "TYPE-C-31-M-12",
+        "note": "This is the manufacturer product page and board symbol identity, not a dated declaration or full drawing. I have not verified the contact electrical ratings from an accessible manufacturer PDF."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "TYPE-C-31-M-12",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "TYPE-C-31-M-12",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C165948",
+          "url": "https://www.lcsc.com/product-detail/C165948.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I have not located a second receptacle with a proven identical shell, mounting holes, pad positions and pin mapping. USB-C naming does not establish footprint compatibility."
+    },
+    {
+      "key": "header-i2c",
+      "family": "connector",
+      "schematic_mpn": "XFCN PZ254V-11-04P",
+      "manufacturer": "XFCN",
+      "mpn": "PZ254V-11-04P",
+      "datasheet": "https://www.xfconn.com/uploads/soft/20240711/4-240G11122102R.pdf",
+      "specs": {
+        "contacts": 4,
+        "pitch_mm": 2.54,
+        "current_a": 3,
+        "package": "THT-1x4-2.54mm",
+        "pinout": "1..4 sequential single row"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-04P",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "https://www.xfconn.com/uploads/soft/20240711/4-240G11122102R.pdf",
+        "document_date": "2024-06-11",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-XX black PA6T series",
+        "note": "Manufacturer drawing carries a RoHS mark but does not identify directive revision, exemptions or a declaration scope. I retain unverified pending a full dated declaration."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-04P",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C492403",
+          "url": "https://www.lcsc.com/product-detail/C492403.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I have not checked an independent header drawing for matching square pin size, tail length, body height, plating and hole fit. A 2.54 mm pitch alone is insufficient."
+    },
+    {
+      "key": "header-uart",
+      "family": "connector",
+      "schematic_mpn": "XFCN PZ254V-11-06P",
+      "manufacturer": "XFCN",
+      "mpn": "PZ254V-11-06P",
+      "datasheet": "https://www.xfconn.com/uploads/soft/20240711/4-240G11122102R.pdf",
+      "specs": {
+        "contacts": 6,
+        "pitch_mm": 2.54,
+        "current_a": 3,
+        "package": "THT-1x6-2.54mm",
+        "pinout": "1..6 sequential single row"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-06P",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "https://www.xfconn.com/uploads/soft/20240711/4-240G11122102R.pdf",
+        "document_date": "2024-06-11",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-XX black PA6T series",
+        "note": "Manufacturer drawing carries a RoHS mark but does not identify directive revision, exemptions or a declaration scope. I retain unverified pending a full dated declaration."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-06P",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C492405",
+          "url": "https://www.lcsc.com/product-detail/C492405.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I have not checked an independent header drawing for matching square pin size, tail length, body height, plating and hole fit. A 2.54 mm pitch alone is insufficient."
+    },
+    {
+      "key": "header-oled",
+      "family": "connector",
+      "schematic_mpn": "XFCN PZ254V-11-07P",
+      "manufacturer": "XFCN",
+      "mpn": "PZ254V-11-07P",
+      "datasheet": "https://www.xfconn.com/uploads/soft/20240711/4-240G11122102R.pdf",
+      "specs": {
+        "contacts": 7,
+        "pitch_mm": 2.54,
+        "current_a": 3,
+        "package": "THT-1x7-2.54mm",
+        "pinout": "1..7 sequential single row"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-07P",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "https://www.xfconn.com/uploads/soft/20240711/4-240G11122102R.pdf",
+        "document_date": "2024-06-11",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-XX black PA6T series",
+        "note": "Manufacturer drawing carries a RoHS mark but does not identify directive revision, exemptions or a declaration scope. I retain unverified pending a full dated declaration."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "PZ254V-11-07P",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C492406",
+          "url": "https://www.lcsc.com/product-detail/C492406.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I have not checked an independent header drawing for matching square pin size, tail length, body height, plating and hole fit. A 2.54 mm pitch alone is insufficient."
+    },
+    {
+      "key": "switch-reset-boot",
+      "family": "switch",
+      "schematic_mpn": "XKB TS-1187A-B-A-B",
+      "manufacturer": "XKB Connectivity",
+      "mpn": "TS-1187A-B-A-B",
+      "datasheet": "https://datasheet.lcsc.com/datasheet/pdf/56c8799ae5193945a16a1ffbe378246a.pdf",
+      "specs": {
+        "voltage_v": 12,
+        "current_a": 0.05,
+        "force_gf": 160,
+        "height_mm": 1.5,
+        "package": "SMD-4P-5.1x5.1mm",
+        "pinout": "SPST-NO; same-side terminals common"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "TS-1187A-B-A-B",
+        "note": "Manufacturer TS-1187A-X-X-X drawing is hosted by LCSC. The older manufacturer URL https://www.helloxkb.com/uploads/qingchukaiguan/TS-1187A-X-X-X.pdf could not be retrieved. No dated lifecycle declaration was found."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "TS-1187A-B-A-B",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "TS-1187A-B-A-B",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C318884",
+          "url": "https://www.lcsc.com/product-detail/C318884.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "SW1 and SW2 share this one catalog item. I have not qualified another switch for pad mapping, actuator height, force and mechanics; similar case dimensions alone are insufficient."
+    },
+    {
+      "key": "esp32-module",
+      "family": "module",
+      "schematic_mpn": "Espressif ESP32-WROOM-32E-N4",
+      "manufacturer": "Espressif Systems",
+      "mpn": "ESP32-WROOM-32E-N4",
+      "datasheet": "https://documentation.espressif.com/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.html",
+      "specs": {
+        "supply_min_v": 3,
+        "supply_max_v": 3.6,
+        "flash_mb": 4,
+        "package": "ESP32-WROOM-32E-38P-18x25.5mm",
+        "pinout": "38-pin WROOM-32E; integrated PCB antenna"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "ESP32-WROOM-32E-N4",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "rohs": {
+        "status": "compliant",
+        "source_url": "https://documentation.espressif.com/Environmental%20Compliance%20Declaration%20for%20Espressif%20Products.pdf",
+        "document_date": "2026-05-15",
+        "checked_on": "2026-11-06",
+        "scope": "All chips, modules and development boards supplied by Espressif Systems",
+        "note": "Manufacturer declaration includes modules and RoHS 2015/863/EU with lead exemption 7c-1. I preserve the exemption and use the date printed in the PDF, not the website upload date."
+      },
+      "reach": {
+        "status": "compliant",
+        "source_url": "https://documentation.espressif.com/Environmental%20Compliance%20Declaration%20for%20Espressif%20Products.pdf",
+        "document_date": "2026-05-15",
+        "checked_on": "2026-11-06",
+        "scope": "All chips, modules and development boards supplied by Espressif Systems; SVHC 253",
+        "note": "Declaration covers EU REACH EC 1907/2006 and the 253-substance list stated in the document. I do not infer coverage of subsequent candidate-list updates."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C701341",
+          "url": "https://www.lcsc.com/product-detail/C701341.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I have not qualified another module for the footprint, strapping pins, flash, antenna keepout, firmware and radio certification. A different ESP32 module is not an automatic substitute."
+    },
+    {
+      "key": "regulator-3v3",
+      "family": "regulator",
+      "schematic_mpn": "AZ1117CH-3.3TRG1",
+      "manufacturer": "Diodes Incorporated",
+      "mpn": "AZ1117CH-3.3TRG1",
+      "datasheet": "https://www.diodes.com/datasheet/download/AZ1117C.pdf",
+      "specs": {
+        "output_v": 3.3,
+        "input_max_v": 15,
+        "current_a": 0.8,
+        "package": "SOT-223",
+        "pinout": "1=GND;2=VOUT;3=VIN;tab=VOUT"
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "AZ1117CH-3.3TRG1",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "rohs": {
+        "status": "unverified",
+        "source_url": "https://www.diodes.com/datasheet/download/AZ1117C.pdf",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "AZ1117C family; G1 green order codes",
+        "note": "Manufacturer DS36676 Rev5-2 says fully RoHS compliant (2011/65/EU and 2015/863/EU), dated September 2022 without a day. I retain unverified because an exact declaration date and order-code-scoped evidence have not been established."
+      },
+      "reach": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "AZ1117CH-3.3TRG1",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C92102",
+          "url": "https://www.lcsc.com/product-detail/C92102.html"
+        }
+      ],
+      "alternates": [],
+      "no_alternate_reason": "I have not qualified a second regulator against pinout, dropout at load, ceramic-capacitor stability, transient response and board thermal dissipation. A generic 1117 name is insufficient."
+    },
+    {
+      "key": "sensor-sht31",
+      "family": "sensor",
+      "schematic_mpn": "Sensirion SHT31-DIS-B2.5KS",
+      "manufacturer": "Sensirion",
+      "mpn": "SHT31-DIS-B2.5KS",
+      "datasheet": "https://sensirion.com/media/documents/213E6A3B/63A5A569/Datasheet_SHT3x_DIS.pdf",
+      "specs": {
+        "supply_min_v": 2.15,
+        "supply_max_v": 5.5,
+        "interface": "I2C",
+        "package": "DFN-8-2.5x2.5mm-EP",
+        "accuracy_c": 0.2
+      },
+      "lifecycle": {
+        "status": "unverified",
+        "source_url": "",
+        "document_date": "",
+        "checked_on": "2026-11-06",
+        "scope": "SHT31-DIS-B2.5KS",
+        "note": "I have not located a dated manufacturer statement for this claim."
+      },
+      "rohs": {
+        "status": "compliant",
+        "source_url": "https://sensirion.com/media/documents/9152E5A6/67481CF3/Sensirion_REACH-RoHS-HalFree_Humidity-Temperature.pdf",
+        "document_date": "2024-11-25",
+        "checked_on": "2026-11-06",
+        "scope": "SHT31 sensor family supplied by Sensirion AG",
+        "note": "Declaration explicitly lists SHT31 and directives 2011/65/EU and 2015/863/EU. This evidence describes the sensor, not the assembled board."
+      },
+      "reach": {
+        "status": "compliant",
+        "source_url": "https://sensirion.com/media/documents/9152E5A6/67481CF3/Sensirion_REACH-RoHS-HalFree_Humidity-Temperature.pdf",
+        "document_date": "2024-11-25",
+        "checked_on": "2026-11-06",
+        "scope": "SHT31 sensor family supplied by Sensirion AG",
+        "note": "Declaration states REACH EC1907/2006 with SVHC below 1000 ppm. It does not name a candidate-list edition; I preserve that limitation and do not call the board compliant."
+      },
+      "suppliers": [
+        {
+          "name": "LCSC",
+          "sku": "C80862",
+          "url": "https://www.lcsc.com/product-detail/C80862.html"
+        }
+      ],
+      "alternates": [
+        {
+          "manufacturer": "Sensirion",
+          "mpn": "SHT35-DIS-B2.5KS",
+          "datasheet": "https://sensirion.com/media/documents/213E6A3B/63A5A569/Datasheet_SHT3x_DIS.pdf",
+          "specs": {
+            "supply_min_v": 2.15,
+            "supply_max_v": 5.5,
+            "interface": "I2C",
+            "package": "DFN-8-2.5x2.5mm-EP",
+            "accuracy_c": 0.1
+          },
+          "kind": "candidate",
+          "note": "Same SHT3x-DIS digital interface and 8-pin DFN pin assignment. SHT35 temperature accuracy is typical 0.1 C at 20..60 C; original SHT31 is typical 0.2 C at 0..90 C. I must compare full accuracy curves across the required range, RH performance, heater use, handling and soldering before approval."
+        }
+      ],
+      "no_alternate_reason": ""
+    }
+  ]
+}

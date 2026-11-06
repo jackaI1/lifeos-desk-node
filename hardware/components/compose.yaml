@@ -1,0 +1,27 @@
+# Local, single-user parts sandbox. SQLite keeps the demo to one bounded container.
+# Credentials must be supplied by the runner; the service never listens on the LAN.
+services:
+  inventree:
+    image: inventree/inventree:1.6.2@sha256:bc058d60eec320930b8730b28eaf425f7f3436a6c0fa6dafd9536270b96a87f8
+    environment:
+      INVENTREE_DB_ENGINE: sqlite3
+      INVENTREE_DB_NAME: /home/inventree/data/db.sqlite3
+      INVENTREE_SITE_URL: http://localhost:8000
+      INVENTREE_ALLOWED_HOSTS: '*'
+      INVENTREE_DEBUG: 'True'
+      INVENTREE_PLUGINS_ENABLED: 'False'
+      INVENTREE_BACKGROUND_WORKERS: '1'
+      INVENTREE_GUNICORN_WORKERS: '1'
+      INVENTREE_ADMIN_USER: desk-demo
+      INVENTREE_ADMIN_EMAIL: demo@example.invalid
+      INVENTREE_ADMIN_PASSWORD: ${DESK_PARTS_PASSWORD:?Run python -m hardware.components.demo}
+      INVENTREE_SECRET_KEY: ${DESK_PARTS_SECRET:?Run python -m hardware.components.demo}
+    ports:
+      - '127.0.0.1::8000'
+    volumes:
+      - parts-data:/home/inventree/data
+    mem_limit: 768m
+    cpus: 1.5
+    restart: 'no'
+volumes:
+  parts-data:
