@@ -272,6 +272,10 @@ The analysis suite checks filter gain at the chosen cutoff, known FFT tones,
 spike rejection, power normalization, log imports and report commands. Its CI
 jobs run on Python 3.11 and 3.12, reproduce the comparison report and save the
 synthetic samples and spectra as downloadable files.
+The component database adds 45 tests for the actual parts catalogue, BOM parsing,
+internal numbering, alternate screening, missing evidence, placement identities
+and the Excel handoff. Its CI job loads the pinned InvenTree database twice,
+reads the stored values back through the API and checks for duplicate records.
 The [bench checklist](firmware/README.md#tests-and-hardware-validation) covers
 wiring, screen output, reconnects, sensor faults and measured current.
 [Design notes](firmware/docs/design.md), the [device API](firmware/docs/api.md)

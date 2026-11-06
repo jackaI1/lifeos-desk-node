@@ -94,3 +94,42 @@ def test_long_evidence_and_family_templates_roundtrip_without_truncation():
     assert all(len(v)<=500 for v in result.values())
     assert ''.join(v for k,v in result.items() if k.startswith('DN | family template'))==text
     assert result['DN | rohs | status']=='unverified'
+
+
+def test_authenticate_uses_a_token_after_one_basic_request():
+    api=API('http://localhost:1234','demo','temporary')
+    calls=[]
+    def request(method,path,data=None):
+        calls.append((method,path,api.auth.startswith('Basic ')))
+        return {'token':'disposable-test-token'}
+    api.request=request
+    api.authenticate()
+    assert calls==[('GET','user/me/token/?name=desk-node-demo',True)]
+    assert api.auth=='Token disposable-test-token'
+
+
+def test_candidates_can_have_native_manufacturer_records_but_stay_inactive():
+    class ValidatingAPI:
+        def __init__(self): self.records={}; self.next_pk=1
+        def list(self,path,refresh=False): return self.records.get(path,[])
+        def upsert(self,path,identity,values):
+            rows=self.records.setdefault(path,[])
+            if path=='company/part/manufacturer/':
+                parent=next(p for p in self.records['part/'] if p['pk']==identity['part'])
+                if not parent['purchaseable']: raise ValueError('InvenTree requires purchaseable manufacturer parents')
+            for r in rows:
+                if all(r.get(k)==v for k,v in identity.items()): r.update(deepcopy(values)); return r['pk']
+            r={'pk':self.next_pk}|deepcopy(identity)|deepcopy(values)
+            self.next_pk+=1;rows.append(r);return r['pk']
+    root=Path(__file__).resolve().parents[3]
+    data=root/'hardware/components'
+    with (root/'hardware/bom.csv').open() as stream: bom=parse_bom(stream)
+    templates=json.loads((data/'templates.json').read_text())
+    parts=prepare(bom,json.loads((data/'catalog.json').read_text()),templates)
+    api=ValidatingAPI();expected=load(api,parts,templates,'a'*64)
+    verify(api,expected)
+    candidates=[p for p in api.list('part/') if '-ALT-' in p.get('IPN','')]
+    assert len(candidates)==9
+    assert all(not p['active'] for p in candidates)
+    assert not api.list('bom/substitute/')
+    assert not any(s['part'] in {p['pk'] for p in candidates} for s in api.list('company/part/'))

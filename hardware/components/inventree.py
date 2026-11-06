@@ -15,6 +15,10 @@ class API:
         self.auth = 'Basic ' + base64.b64encode(f'{username}:{password}'.encode()).decode()
         self.cache = {}
 
+    def authenticate(self):
+        token = self.request('GET','user/me/token/?name=desk-node-demo')['token']
+        self.auth = 'Token ' + token
+
     def request(self, method, path, data=None):
         url = urljoin(self.url, path)
         if urlparse(url).netloc != urlparse(self.url).netloc:
@@ -113,9 +117,10 @@ def load(api, parts, templates, bom_sha256):
     def component(part, ipn, category):
         pk = api.upsert('part/', {'IPN':ipn},
                         {'name':part['mpn'],'description':f'{part["family"]}: {part.get("kind", "baseline")}',
-                         'category':category,'component':True,'purchaseable':part.get('kind') != 'candidate',
+                         'category':category,'component':True,'purchaseable':True,
+                         'active':part.get('kind') != 'candidate',
                          'link':part['datasheet']})
-        expected['parts'][str(pk)] = ipn
+        expected['parts'][str(pk)] = {'IPN':ipn,'active':part.get('kind') != 'candidate','purchaseable':True}
         company = api.upsert('company/', {'name':part['manufacturer']},
                              {'is_manufacturer':True, 'description':'Component manufacturer'})
         mid = api.upsert('company/part/manufacturer/', {'part':pk,'manufacturer':company,'MPN':part['mpn']},
@@ -163,9 +168,7 @@ def verify(api, expected):
         records = {str(r['pk']):r for r in api.list(path, refresh=True)}
         for pk,values in expected[group].items():
             actual = records[pk]
-            if group == 'parts':
-                values = {'IPN':values}
-            elif group == 'parameters':
+            if group == 'parameters':
                 values = {'data':values}
             for field,value in values.items():
                 got = actual[field]

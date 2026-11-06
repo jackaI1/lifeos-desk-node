@@ -62,6 +62,7 @@ def run(output, boards=10, bom=None, placements=None):
         else:
             raise RuntimeError('InvenTree did not become ready in 90 seconds')
         api = API(url, 'desk-demo', env['DESK_PARTS_PASSWORD'])
+        api.authenticate()
         first = load(api,parts,templates,digest)
         first_result = verify(api,first)
         counts = {path:len(api.list(path,refresh=True)) for path in api.cache}
