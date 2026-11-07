@@ -24,3 +24,14 @@ FreeRTOS Sensor Task
     Start Emulation
     Wait For Line On Uart     SENSOR PASS temperature=25000 humidity=50001
     Wait For Line On Uart     FREERTOS PASS scheduled sensor task
+
+Corrupted Sensor Checksum Is Rejected
+    Execute Command           include @${CURDIR}/Sht31.cs
+    Execute Command           mach create
+    Execute Command           machine LoadPlatformDescription @${CURDIR}/desk.repl
+    Execute Command           sysbus.i2c1.sensor Corrupt true
+    Execute Command           sysbus LoadELF @${CURDIR}/../build/bare.elf
+    Create Terminal Tester    sysbus.usart2
+    Start Emulation
+    Wait For Line On Uart     SENSOR FAIL crc/value
+    Wait For Line On Uart     BAREMETAL PASS timer interrupt

@@ -43,7 +43,7 @@ Inside the built system the startup script runs:
 ```sh
 modprobe desk_bus
 modprobe desk_sensor
-/usr/bin/desk-sensor-service /dev/desk-sensor
+/usr/bin/desk-sensor-service /dev/desk-sensor --self-test
 rmmod desk_sensor
 rmmod desk_bus
 ```
@@ -55,3 +55,10 @@ host. The startup test compares read and ioctl, injects bad CRC bytes, confirms
 the alarm remains held after healthy data, clears it and checks an unknown
 command returns ENOTTY. QEMU is stopped after the test and its process metadata
 is kept alongside the serial log.
+
+For normal use, `desk-sensor-service /dev/desk-sensor` prints one JSON reading;
+`--watch` polls once a second and exits cleanly on SIGTERM. `--replay file.wire`
+feeds the existing `DESK_REPLAY_V1` sensor-wire format through the injection ioctl,
+so a Scheme-generated outage can drive the actual kernel checks. Alarmed values
+are printed as null and remain held until `--clear` is requested. The self-test
+mode is explicit because it deliberately changes the simulated sensor state.
