@@ -8,7 +8,8 @@
 #include "esp_timer.h"
 #include <string.h>
 static uint8_t payload[DESK_BLE_SIZE];
-static uint16_t service_handle, value_handle;
+static uint16_t service_handle, value_handle, descriptor_handle;
+static uint8_t notification_config[2];
 static uint64_t last_notify;
 static bool notified;
 static esp_ble_adv_params_t advertising = {.adv_int_min = 0x40,
@@ -50,22 +51,42 @@ static void gatt(esp_gatts_cb_event_t event, esp_gatt_if_t interface, esp_ble_ga
                                    .flag =
                                        ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_BREDR_NOT_SPT};
         esp_ble_gap_config_adv_data(&data);
+    } else if (event == ESP_GATTS_ADD_CHAR_DESCR_EVT && p->add_char_descr.status == ESP_GATT_OK) {
+        descriptor_handle = p->add_char_descr.attr_handle;
+    } else if (event == ESP_GATTS_READ_EVT) {
+        esp_gatt_rsp_t response = {0};
+        response.attr_value.handle = p->read.handle;
+        const uint8_t *value = p->read.handle == descriptor_handle ? notification_config : payload;
+        uint16_t length = p->read.handle == descriptor_handle ? 2 : DESK_BLE_SIZE;
+        esp_gatt_status_t status = ESP_GATT_OK;
+        if (p->read.handle != descriptor_handle && p->read.handle != value_handle) {
+            status = ESP_GATT_READ_NOT_PERMIT;
+        } else if (p->read.offset > length) {
+            status = ESP_GATT_INVALID_OFFSET;
+        } else {
+            response.attr_value.offset = p->read.offset;
+            response.attr_value.len = length - p->read.offset;
+            memcpy(response.attr_value.value, value + p->read.offset, response.attr_value.len);
+        }
+        esp_ble_gatts_send_response(interface, p->read.conn_id, p->read.trans_id, status,
+                                    &response);
     } else if (event == ESP_GATTS_WRITE_EVT) {
-        bool subscribe = p->write.handle == value_handle + 1 && !p->write.is_prep &&
-                         p->write.len == 2 && p->write.value[0] == 1 && p->write.value[1] == 0;
+        bool valid = p->write.handle == descriptor_handle && !p->write.is_prep &&
+                     p->write.offset == 0 && p->write.len == 2 && p->write.value[0] <= 1 &&
+                     p->write.value[1] == 0;
+        bool subscribe = valid && p->write.value[0] == 1;
+        if (valid)
+            memcpy(notification_config, p->write.value, 2);
         if (p->write.need_rsp)
-            esp_ble_gatts_send_response(
-                interface, p->write.conn_id, p->write.trans_id,
-                subscribe || (p->write.len == 2 && p->write.value[0] == 0 && p->write.value[1] == 0)
-                    ? ESP_GATT_OK
-                    : ESP_GATT_INVALID_ATTR_LEN,
-                NULL);
+            esp_ble_gatts_send_response(interface, p->write.conn_id, p->write.trans_id,
+                                        valid ? ESP_GATT_OK : ESP_GATT_INVALID_ATTR_LEN, NULL);
         if (subscribe &&
             desk_notify_due((uint64_t)esp_timer_get_time() / 1000, &last_notify, &notified)) {
             esp_ble_gatts_send_indicate(interface, p->write.conn_id, value_handle, DESK_BLE_SIZE,
                                         payload, false);
         }
     } else if (event == ESP_GATTS_DISCONNECT_EVT) {
+        memset(notification_config, 0, sizeof notification_config);
         esp_ble_gap_start_advertising(&advertising);
     }
 }
