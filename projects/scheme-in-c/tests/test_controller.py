@@ -39,6 +39,12 @@ def replay(samples):
 
 
 class ControllerTests(unittest.TestCase):
+    def test_rejects_incomplete_or_invalid_samples(self):
+        for data in ("1\n", "1 19000\ninvalid\n", "2 19000\n"):
+            with self.subTest(data=data):
+                proc = subprocess.run([DRIVER], input=data, text=True, capture_output=True)
+                self.assertNotEqual(proc.returncode, 0)
+
     def test_recorded_trace(self):
         with (Path(__file__).parent / 'thermostat_trace.csv').open() as f:
             rows = list(csv.DictReader(f))
