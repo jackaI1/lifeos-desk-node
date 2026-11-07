@@ -351,3 +351,5 @@ remain unmeasured.
 
 - [three-phase-fault-analysis](projects/three-phase-fault-analysis/)
 - [air-core-reactor-calculator](projects/air-core-reactor-calculator/)
+
+- [pll-verification-testbench](projects/pll-verification-testbench/)
