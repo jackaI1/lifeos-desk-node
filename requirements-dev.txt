@@ -1,0 +1,11 @@
+# Host regression only. Linux/emulator toolchains stay in their CI jobs.
+-r can_monitor/requirements.txt
+-r networking/requirements.txt
+-r network_lab/requirements.txt
+-r automation/requirements.txt
+-r capture/requirements-dev.txt
+-r analysis/requirements-dev.txt
+-r antenna_matching/requirements.txt
+-r hardware/components/requirements.txt
+-r hardware/simulation/requirements.txt
+cmake==3.31.6

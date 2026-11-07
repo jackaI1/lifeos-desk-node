@@ -404,8 +404,20 @@ exact commands in their linked guides. Linux CI exercises the actual virtual
 CAN interface, SNMP agent, encrypted broker, isolated firewall, ARM firmware and
 kernel images. Host simulations never stand in for a manufactured-board result.
 
-For a full local Python regression after installing each guide's dependencies,
-I build the replay executable first, then run `python -m pytest -q`. The checked
-local run passed 298 tests, with seven Linux integration cases reserved for CI.
+For a full local Python regression, I install the combined host dependencies and
+build the three small programs used by its socket and replay tests. I need a C/C++
+compiler and Make, plus the Guile and sigrok tools described above. The circuit
+tests run when the KiCad and ngspice command-line tools are installed:
+
+```sh
+.venv/bin/python -m pip install -r requirements-dev.txt
+make -C replay
+make -C optical_switch test
+.venv/bin/cmake -S tcp_telemetry -B tcp_telemetry/build
+.venv/bin/cmake --build tcp_telemetry/build -j2
+.venv/bin/python -m pytest -q
+```
+
+The checked local run passed 298 tests, with seven Linux integration cases reserved for CI.
 The shared C/C++ Google Test runner passed ten cases under sanitizers; the alert
 runner checks all 35 state/event pairs plus debounce and a seeded replay.
