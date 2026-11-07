@@ -16,9 +16,10 @@ with (folder/'renode.log').open('w') as log:
                 with socket.create_connection(('127.0.0.1',3333),.1):break
             except OSError:time.sleep(.1)
         else:raise TimeoutError('Renode GDB port did not open')
-        result=subprocess.run(['gdb-multiarch','-q','-batch','-x','stm32/renode/hardfault.gdb','stm32/build/bare.elf'],capture_output=True,text=True,timeout=60)
-        (folder/'gdb.txt').write_text(result.stdout+result.stderr)
-        assert result.returncode==0 and 'PASS: stacked PC' in result.stdout,(result.stdout+result.stderr)[-3000:]
+        with (folder/'gdb.txt').open('w') as debugger_log:
+            result=subprocess.run(['gdb-multiarch','-q','-batch','-x','stm32/renode/hardfault.gdb','stm32/build/bare.elf'],stdout=debugger_log,stderr=debugger_log,text=True,timeout=60)
+        transcript=(folder/'gdb.txt').read_text()
+        assert result.returncode==0 and 'PASS: stacked PC' in transcript,transcript[-3000:]
         print('PASS: stacked ARM PC identifies UDF in the real firmware ELF')
     finally:
         if process.poll() is None:

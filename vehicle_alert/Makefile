@@ -8,7 +8,6 @@ $(BUILD)/test-alert: alert.c alert.h test_alert.c
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS) alert.c test_alert.c -o $@
 analyze:
-	mkdir -p $(BUILD)
-	cppcheck --std=c11 --enable=warning,style,performance,portability --error-exitcode=1 --addon=misra --suppress=misra-c2012-8.7 --suppress=misra-c2012-2.5 --inline-suppr --xml --xml-version=2 alert.c 2> $(BUILD)/cppcheck.xml
+	./analyze.sh
 clean:
 	rm -rf $(BUILD)

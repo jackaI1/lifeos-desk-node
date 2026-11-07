@@ -2,6 +2,7 @@ set pagination off
 set confirm off
 target remote :3333
 break firmware_main
+monitor start
 continue
 set variable trigger_fault=1
 break hardfault_record
