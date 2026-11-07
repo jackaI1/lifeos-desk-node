@@ -9,10 +9,6 @@ continue
 set variable trigger_fault=1
 print trigger_fault
 break hardfault_record
-break injected_fault
-continue
-x/i $pc
-delete 3
 continue
 set $fault_pc=frame[6]
 printf "Stacked ARM PC: 0x%x\n", $fault_pc
