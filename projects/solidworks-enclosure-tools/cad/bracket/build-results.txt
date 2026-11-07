@@ -1,0 +1,13 @@
+SolidWorks 33.3.0 Student Edition; PETG bracket study, no physical tests
+BODY_BOX 0,-0.02,0,0.04,0,0.03
+BR-001_before SLDPRT saved=True errors=0 warnings=0
+BR-001_before stl saved=True errors=0 warnings=0
+BR-001_before step saved=True errors=0 warnings=0
+BR-001_before png saved=True errors=0 warnings=0
+BR-001_before box_m=0,-0.02,0,0.04,0,0.03 volume_mm3=1510.4
+BODY_BOX 0,-0.02,0,0.04,0,0.03
+BR-002_after SLDPRT saved=True errors=0 warnings=0
+BR-002_after stl saved=True errors=0 warnings=0
+BR-002_after step saved=True errors=0 warnings=0
+BR-002_after png saved=True errors=0 warnings=0
+BR-002_after box_m=0,-0.02,0,0.04,0,0.03 volume_mm3=10920

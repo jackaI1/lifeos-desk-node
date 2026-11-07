@@ -1,0 +1,189 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Print screening</title><style>body{font:16px system-ui;max-width:1000px;margin:40px auto}pre{white-space:pre-wrap}svg{max-width:100%}</style><h1>SolidWorks mesh print screening</h1><p>Red: thin-wall samples. Orange: downward faces above bed. Hover for triangle ID. Both flags may apply. SolidWorks Student Edition exports. No physical printing or validation.</p><p>Wall rays sample face centroids, so small local defects can be missed. Bridge length is a downward-patch bounding span, not a verified bridge with anchored ends. Support is a vertical-column estimate sampled on a grid, not slicer output. Cost uses full-solid parts and effective support fill; time adds an assumed 30% travel allowance. Orientation ranking uses fit, support volume, then flagged face count. Use a slicer and print coupons before relying on this.</p><h2>BR-001_before.STL: base-down</h2><svg viewBox="0 0 224.0 213.6" width="460" role="img" aria-label="Flagged mesh faces"><polygon points="57.20,199.12 54.00,83.60 54.00,203.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 7</title></polygon><polygon points="57.20,199.12 54.00,203.60 214.00,136.40" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 8</title></polygon><polygon points="10.00,171.60 214.00,139.60 54.00,203.60" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 19</title></polygon><polygon points="57.20,85.52 54.00,83.60 57.20,199.12" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 6</title></polygon><polygon points="54.00,203.60 10.00,51.60 10.00,171.60" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 3</title></polygon><polygon points="13.20,53.52 57.20,199.12 13.20,167.12" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 21</title></polygon><polygon points="54.00,83.60 10.00,51.60 54.00,203.60" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 2</title></polygon><polygon points="214.00,136.40 54.00,203.60 214.00,139.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 9</title></polygon><polygon points="57.20,85.52 57.20,199.12 13.20,53.52" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 20</title></polygon><polygon points="57.20,199.12 170.00,104.40 13.20,167.12" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 1</title></polygon><polygon points="13.20,167.12 10.00,171.60 13.20,53.52" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 14</title></polygon><polygon points="13.20,167.12 170.00,107.60 10.00,171.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 13</title></polygon><polygon points="214.00,136.40 170.00,104.40 57.20,199.12" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 0</title></polygon><polygon points="57.20,85.52 158.00,42.00 54.00,83.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 5</title></polygon><polygon points="170.00,107.60 214.00,139.60 10.00,171.60" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 18</title></polygon><polygon points="13.20,53.52 10.00,171.60 10.00,51.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 15</title></polygon><polygon points="13.20,53.52 158.00,45.20 57.20,85.52" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 27</title></polygon><polygon points="170.00,107.60 214.00,136.40 214.00,139.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 11</title></polygon><polygon points="158.00,45.20 158.00,42.00 57.20,85.52" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 4</title></polygon><polygon points="170.00,104.40 170.00,107.60 13.20,167.12" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 12</title></polygon><polygon points="54.00,83.60 114.00,10.00 10.00,51.60" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 23</title></polygon><polygon points="170.00,104.40 214.00,136.40 170.00,107.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 10</title></polygon><polygon points="158.00,42.00 114.00,10.00 54.00,83.60" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 22</title></polygon><polygon points="13.20,53.52 10.00,51.60 114.00,13.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 16</title></polygon><polygon points="114.00,13.20 158.00,45.20 13.20,53.52" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 26</title></polygon><polygon points="114.00,13.20 158.00,42.00 158.00,45.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 25</title></polygon><polygon points="114.00,13.20 10.00,51.60 114.00,10.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 17</title></polygon><polygon points="114.00,10.00 158.00,42.00 114.00,13.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 24</title></polygon></svg><pre>{
+  &quot;orientation&quot;: &quot;base-down&quot;,
+  &quot;triangles&quot;: 28,
+  &quot;bounds_mm&quot;: [
+    40.0,
+    20.0,
+    30.0
+  ],
+  &quot;fits_printer&quot;: true,
+  &quot;minimum_wall_mm&quot;: 0.7999992370605469,
+  &quot;wall_sample_coverage&quot;: 1.0,
+  &quot;thin_faces&quot;: [
+    0,
+    1,
+    2,
+    3,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    26,
+    27
+  ],
+  &quot;overhang_faces&quot;: [
+    26,
+    27
+  ],
+  &quot;overhang_angles_from_vertical_deg&quot;: {
+    &quot;26&quot;: 90.0,
+    &quot;27&quot;: 90.0
+  },
+  &quot;overhang_area_mm2&quot;: 504.0000009536743,
+  &quot;regions&quot;: [
+    {
+      &quot;faces&quot;: [
+        26,
+        27
+      ],
+      &quot;span_mm&quot;: 25.200000047683716
+    }
+  ],
+  &quot;max_bridge_mm&quot;: 25.200000047683716,
+  &quot;bridge_flags&quot;: [
+    {
+      &quot;faces&quot;: [
+        26,
+        27
+      ],
+      &quot;span_mm&quot;: 25.200000047683716
+    }
+  ],
+  &quot;support_volume_mm3&quot;: 14200.000405311586,
+  &quot;support_columns&quot;: 500,
+  &quot;volume_mm3&quot;: 1510.3995510101315,
+  &quot;estimated_material_g&quot;: 5.52500753273201,
+  &quot;material_cost&quot;: 0.13812518831830023,
+  &quot;time_hours&quot;: 0.43638267914306966
+}</pre><h2>BR-001_before.STL: top-down</h2><svg viewBox="0 0 224.0 236.0" width="460" role="img" aria-label="Flagged mesh faces"><polygon points="57.20,221.52 54.00,226.00 158.00,181.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 16</title></polygon><polygon points="57.20,221.52 54.00,106.00 54.00,226.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 15</title></polygon><polygon points="10.00,194.00 158.00,184.40 54.00,226.00" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 23</title></polygon><polygon points="158.00,181.20 54.00,226.00 158.00,184.40" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 17</title></polygon><polygon points="57.20,107.92 54.00,106.00 57.20,221.52" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 14</title></polygon><polygon points="57.20,221.52 114.00,149.20 13.20,189.52" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 27</title></polygon><polygon points="10.00,194.00 54.00,226.00 10.00,74.00" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 2</title></polygon><polygon points="13.20,189.52 13.20,75.92 57.20,221.52" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 20</title></polygon><polygon points="158.00,181.20 114.00,149.20 57.20,221.52" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 26</title></polygon><polygon points="10.00,74.00 54.00,226.00 54.00,106.00" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 3</title></polygon><polygon points="57.20,221.52 13.20,75.92 57.20,107.92" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 21</title></polygon><polygon points="13.20,189.52 114.00,152.40 10.00,194.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 5</title></polygon><polygon points="13.20,189.52 10.00,194.00 13.20,75.92" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 6</title></polygon><polygon points="114.00,152.40 158.00,184.40 10.00,194.00" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 22</title></polygon><polygon points="158.00,184.40 114.00,152.40 158.00,181.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 24</title></polygon><polygon points="114.00,149.20 114.00,152.40 13.20,189.52" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 4</title></polygon><polygon points="158.00,181.20 114.00,152.40 114.00,149.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 25</title></polygon><polygon points="13.20,75.92 10.00,194.00 10.00,74.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 7</title></polygon><polygon points="57.20,107.92 214.00,42.00 54.00,106.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 13</title></polygon><polygon points="13.20,75.92 214.00,45.20 57.20,107.92" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 1</title></polygon><polygon points="214.00,45.20 214.00,42.00 57.20,107.92" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 12</title></polygon><polygon points="54.00,106.00 170.00,10.00 10.00,74.00" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 19</title></polygon><polygon points="13.20,75.92 10.00,74.00 170.00,13.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 8</title></polygon><polygon points="214.00,42.00 170.00,10.00 54.00,106.00" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 18</title></polygon><polygon points="170.00,13.20 214.00,45.20 13.20,75.92" fill="#d73027" stroke="#444" stroke-width=".2"><title>Face 0</title></polygon><polygon points="214.00,45.20 170.00,13.20 214.00,42.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 10</title></polygon><polygon points="170.00,13.20 10.00,74.00 170.00,10.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 9</title></polygon><polygon points="214.00,42.00 170.00,13.20 170.00,10.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 11</title></polygon></svg><pre>{
+  &quot;orientation&quot;: &quot;top-down&quot;,
+  &quot;triangles&quot;: 28,
+  &quot;bounds_mm&quot;: [
+    40.0,
+    20.0,
+    30.0
+  ],
+  &quot;fits_printer&quot;: true,
+  &quot;minimum_wall_mm&quot;: 0.7999992370605469,
+  &quot;wall_sample_coverage&quot;: 1.0,
+  &quot;thin_faces&quot;: [
+    0,
+    1,
+    2,
+    3,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    26,
+    27
+  ],
+  &quot;overhang_faces&quot;: [
+    0,
+    1
+  ],
+  &quot;overhang_angles_from_vertical_deg&quot;: {
+    &quot;0&quot;: 90.0,
+    &quot;1&quot;: 90.0
+  },
+  &quot;overhang_area_mm2&quot;: 784.0000009536743,
+  &quot;regions&quot;: [
+    {
+      &quot;faces&quot;: [
+        0,
+        1
+      ],
+      &quot;span_mm&quot;: 39.200000047683716
+    }
+  ],
+  &quot;max_bridge_mm&quot;: 39.200000047683716,
+  &quot;bridge_flags&quot;: [
+    {
+      &quot;faces&quot;: [
+        0,
+        1
+      ],
+      &quot;span_mm&quot;: 39.200000047683716
+    }
+  ],
+  &quot;support_volume_mm3&quot;: 22376.000418663025,
+  &quot;support_columns&quot;: 780,
+  &quot;volume_mm3&quot;: 1510.3995510101324,
+  &quot;estimated_material_g&quot;: 7.601711536123276,
+  &quot;material_cost&quot;: 0.19004278840308192,
+  &quot;time_hours&quot;: 0.6004073707689473
+}</pre><h2>BR-002_after.STL: base-down</h2><svg viewBox="0 0 224.0 213.6" width="460" role="img" aria-label="Flagged mesh faces"><polygon points="54.00,203.60 66.00,186.80 54.00,83.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 7</title></polygon><polygon points="54.00,203.60 214.00,127.60 66.00,186.80" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 6</title></polygon><polygon points="10.00,171.60 214.00,139.60 54.00,203.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 17</title></polygon><polygon points="54.00,203.60 10.00,51.60 10.00,171.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 3</title></polygon><polygon points="54.00,83.60 10.00,51.60 54.00,203.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 2</title></polygon><polygon points="214.00,139.60 214.00,127.60 54.00,203.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 5</title></polygon><polygon points="54.00,83.60 66.00,186.80 158.00,42.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 8</title></polygon><polygon points="66.00,186.80 170.00,95.60 22.00,154.80" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 1</title></polygon><polygon points="10.00,51.60 22.00,154.80 10.00,171.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 14</title></polygon><polygon points="114.00,22.00 66.00,186.80 22.00,154.80" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 23</title></polygon><polygon points="10.00,171.60 22.00,154.80 170.00,107.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 15</title></polygon><polygon points="214.00,127.60 170.00,95.60 66.00,186.80" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 0</title></polygon><polygon points="66.00,186.80 158.00,54.00 158.00,42.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 4</title></polygon><polygon points="170.00,107.60 214.00,139.60 10.00,171.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 16</title></polygon><polygon points="158.00,54.00 66.00,186.80 114.00,22.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 22</title></polygon><polygon points="170.00,107.60 214.00,127.60 214.00,139.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 10</title></polygon><polygon points="10.00,51.60 114.00,22.00 22.00,154.80" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 13</title></polygon><polygon points="22.00,154.80 170.00,95.60 170.00,107.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 11</title></polygon><polygon points="54.00,83.60 114.00,10.00 10.00,51.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 19</title></polygon><polygon points="158.00,42.00 114.00,10.00 54.00,83.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 18</title></polygon><polygon points="170.00,95.60 214.00,127.60 170.00,107.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 9</title></polygon><polygon points="114.00,22.00 158.00,42.00 158.00,54.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 21</title></polygon><polygon points="114.00,10.00 114.00,22.00 10.00,51.60" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 12</title></polygon><polygon points="114.00,10.00 158.00,42.00 114.00,22.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 20</title></polygon></svg><pre>{
+  &quot;orientation&quot;: &quot;base-down&quot;,
+  &quot;triangles&quot;: 24,
+  &quot;bounds_mm&quot;: [
+    40.0,
+    20.0,
+    30.0
+  ],
+  &quot;fits_printer&quot;: true,
+  &quot;minimum_wall_mm&quot;: 3.0,
+  &quot;wall_sample_coverage&quot;: 1.0,
+  &quot;thin_faces&quot;: [],
+  &quot;overhang_faces&quot;: [],
+  &quot;overhang_angles_from_vertical_deg&quot;: {},
+  &quot;overhang_area_mm2&quot;: 0.0,
+  &quot;regions&quot;: [],
+  &quot;max_bridge_mm&quot;: 0.0,
+  &quot;bridge_flags&quot;: [],
+  &quot;support_volume_mm3&quot;: 0.0,
+  &quot;support_columns&quot;: 0,
+  &quot;volume_mm3&quot;: 10920.0,
+  &quot;estimated_material_g&quot;: 13.8684,
+  &quot;material_cost&quot;: 0.34670999999999996,
+  &quot;time_hours&quot;: 1.0953703703703703
+}</pre><h2>BR-002_after.STL: top-down</h2><svg viewBox="0 0 224.0 236.0" width="460" role="img" aria-label="Flagged mesh faces"><polygon points="10.00,194.00 158.00,184.40 54.00,226.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 19</title></polygon><polygon points="158.00,184.40 158.00,172.40 54.00,226.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 12</title></polygon><polygon points="54.00,226.00 158.00,172.40 66.00,113.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 13</title></polygon><polygon points="54.00,226.00 66.00,113.20 54.00,106.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 14</title></polygon><polygon points="10.00,194.00 54.00,226.00 10.00,74.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 2</title></polygon><polygon points="10.00,74.00 54.00,226.00 54.00,106.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 3</title></polygon><polygon points="114.00,152.40 158.00,184.40 10.00,194.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 18</title></polygon><polygon points="158.00,184.40 114.00,152.40 158.00,172.40" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 20</title></polygon><polygon points="158.00,172.40 22.00,81.20 66.00,113.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 23</title></polygon><polygon points="10.00,194.00 22.00,81.20 114.00,152.40" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 8</title></polygon><polygon points="10.00,74.00 22.00,81.20 10.00,194.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 7</title></polygon><polygon points="158.00,172.40 114.00,152.40 114.00,140.40" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 21</title></polygon><polygon points="114.00,140.40 22.00,81.20 158.00,172.40" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 22</title></polygon><polygon points="54.00,106.00 66.00,113.20 214.00,42.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 15</title></polygon><polygon points="22.00,81.20 114.00,140.40 114.00,152.40" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 4</title></polygon><polygon points="22.00,81.20 214.00,54.00 66.00,113.20" fill="#fdae61" stroke="#444" stroke-width=".2"><title>Face 1</title></polygon><polygon points="66.00,113.20 214.00,54.00 214.00,42.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 11</title></polygon><polygon points="54.00,106.00 170.00,10.00 10.00,74.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 17</title></polygon><polygon points="10.00,74.00 170.00,22.00 22.00,81.20" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 6</title></polygon><polygon points="214.00,42.00 170.00,10.00 54.00,106.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 16</title></polygon><polygon points="170.00,22.00 214.00,54.00 22.00,81.20" fill="#fdae61" stroke="#444" stroke-width=".2"><title>Face 0</title></polygon><polygon points="214.00,54.00 170.00,22.00 214.00,42.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 9</title></polygon><polygon points="170.00,10.00 170.00,22.00 10.00,74.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 5</title></polygon><polygon points="214.00,42.00 170.00,22.00 170.00,10.00" fill="#a6bddb" stroke="#444" stroke-width=".2"><title>Face 10</title></polygon></svg><pre>{
+  &quot;orientation&quot;: &quot;top-down&quot;,
+  &quot;triangles&quot;: 24,
+  &quot;bounds_mm&quot;: [
+    40.0,
+    20.0,
+    30.0
+  ],
+  &quot;fits_printer&quot;: true,
+  &quot;minimum_wall_mm&quot;: 3.0,
+  &quot;wall_sample_coverage&quot;: 1.0,
+  &quot;thin_faces&quot;: [],
+  &quot;overhang_faces&quot;: [
+    0,
+    1
+  ],
+  &quot;overhang_angles_from_vertical_deg&quot;: {
+    &quot;0&quot;: 90.0,
+    &quot;1&quot;: 90.0
+  },
+  &quot;overhang_area_mm2&quot;: 740.0,
+  &quot;regions&quot;: [
+    {
+      &quot;faces&quot;: [
+        0,
+        1
+      ],
+      &quot;span_mm&quot;: 37.0
+    }
+  ],
+  &quot;max_bridge_mm&quot;: 37.0,
+  &quot;bridge_flags&quot;: [
+    {
+      &quot;faces&quot;: [
+        0,
+        1
+      ],
+      &quot;span_mm&quot;: 37.0
+    }
+  ],
+  &quot;support_volume_mm3&quot;: 13080.000000000011,
+  &quot;support_columns&quot;: 740,
+  &quot;volume_mm3&quot;: 10920.0,
+  &quot;estimated_material_g&quot;: 17.190720000000002,
+  &quot;material_cost&quot;: 0.4297680000000001,
+  &quot;time_hours&quot;: 1.357777777777778
+}</pre></html>

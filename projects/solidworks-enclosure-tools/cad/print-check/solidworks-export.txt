@@ -1,0 +1,3 @@
+SolidWorks 33.3.0 Student Edition; exported from native revision A.
+ED-001_case_A rebuilt=True bodies=1 volume_mm3=33363.456 STL_errors=0 warnings=0
+ED-002_lid_A rebuilt=True bodies=1 volume_mm3=9544.3072597359 STL_errors=0 warnings=0

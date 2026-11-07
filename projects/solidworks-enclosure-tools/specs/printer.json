@@ -1,0 +1,15 @@
+{
+  "name": "Generic 220 mm PETG screening profile, assumed",
+  "build_mm": [220, 220, 250],
+  "min_wall_mm": 1.2,
+  "overhang_deg": 45,
+  "max_bridge_mm": 10,
+  "density_g_cm3": 1.27,
+  "cost_per_kg": 25,
+  "currency": "CAD",
+  "layer_mm": 0.2,
+  "extrusion_width_mm": 0.45,
+  "speed_mm_s": 40,
+  "support_fraction": 0.2,
+  "grid_mm": 1
+}

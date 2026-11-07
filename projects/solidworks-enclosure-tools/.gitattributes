@@ -1,1 +1,3 @@
-cad/A/** -text whitespace=cr-at-eol
+cad/** -text whitespace=cr-at-eol
+
+*.step binary

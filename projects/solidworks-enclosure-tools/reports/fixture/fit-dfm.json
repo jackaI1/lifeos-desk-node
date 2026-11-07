@@ -1,0 +1,39 @@
+{
+  "pocket_mm": [
+    81.2,
+    61.2
+  ],
+  "minimum_wall_mm": 6,
+  "hole_to_outer_edge_ligament_mm": 4.8,
+  "hole_to_pocket_ligament_mm": 4.199999999999998,
+  "shrinkage": [
+    {
+      "shrinkage": 0,
+      "worst_total_gap_x_mm": 0.7999999999999972,
+      "worst_total_gap_y_mm": 0.7999999999999972
+    },
+    {
+      "shrinkage": 0.002,
+      "worst_total_gap_x_mm": 0.637999999999991,
+      "worst_total_gap_y_mm": 0.6779999999999973
+    },
+    {
+      "shrinkage": 0.004,
+      "worst_total_gap_x_mm": 0.4759999999999991,
+      "worst_total_gap_y_mm": 0.5559999999999974
+    },
+    {
+      "shrinkage": 0.006,
+      "worst_total_gap_x_mm": 0.31399999999999295,
+      "worst_total_gap_y_mm": 0.4339999999999975
+    },
+    {
+      "shrinkage": 0.008,
+      "worst_total_gap_x_mm": 0.15200000000000102,
+      "worst_total_gap_y_mm": 0.3119999999999976
+    }
+  ],
+  "flags": [],
+  "passes": true,
+  "note": "Isotropic fixture shrinkage applied to the minimum pocket size. Enclosure remains at maximum unshrunk size. No physical fit test."
+}

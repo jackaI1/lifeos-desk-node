@@ -1,0 +1,4 @@
+path,bytes,sha256,status
+ED-001_case_A.STL,3084,9e7a824a8e6f30176fbb0363498af8d1a3881745252437a8f6a62c4fa313f64a,Educational prototype; no physical testing
+ED-002_lid_A.STL,12684,e68269daa8331658ca774a3c1f988b26cbdcf89b55d387c5c33702f5c2c56116,Educational prototype; no physical testing
+solidworks-export.txt,238,c004c86892f55ebfe0fdf51ca543e4bedb1a8a3c30a7fa37d3681bccfa2dc659,Educational prototype; no physical testing

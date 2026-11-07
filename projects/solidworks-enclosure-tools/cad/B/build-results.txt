@@ -1,0 +1,34 @@
+SolidWorks 33.3.0 Student Edition educational designation. No physical testing.
+SAVE ED-101_sensor_housing_B.SLDPRT ok=True errors=0 warnings=0
+SAVE ED-101_sensor_housing_B.step ok=True errors=0 warnings=0
+SAVE ED-101_sensor_housing_B.STL ok=True errors=0 warnings=0
+SAVE ED-101_sensor_housing_B.png ok=True errors=0 warnings=0
+PART ED-101_sensor_housing_B bodies=1 volume_mm3=63992.1872749251 bounds_m=-0.04,-0.03,0,0.04,0.03,0.0362
+SAVE ED-102_sensor_lid_B.SLDPRT ok=True errors=0 warnings=0
+SAVE ED-102_sensor_lid_B.step ok=True errors=0 warnings=0
+SAVE ED-102_sensor_lid_B.STL ok=True errors=0 warnings=0
+SAVE ED-102_sensor_lid_B.png ok=True errors=0 warnings=0
+PART ED-102_sensor_lid_B bodies=1 volume_mm3=14291.0495667735 bounds_m=-0.04,-0.03,0,0.04,0.03,0.003
+SAVE ED-103_gasket_B.SLDPRT ok=True errors=0 warnings=0
+SAVE ED-103_gasket_B.step ok=True errors=0 warnings=0
+SAVE ED-103_gasket_B.STL ok=True errors=0 warnings=0
+SAVE ED-103_gasket_B.png ok=True errors=0 warnings=0
+PART ED-103_gasket_B bodies=1 volume_mm3=1033.6 bounds_m=-0.0383,-0.0283,0,0.0383,0.0283,0.002
+DRAWING ED-101_sensor_housing_B native_dimensions=4
+DATUM A attached edge, axis=2
+DATUM B attached edge, axis=1
+DATUM C attached edge, axis=0
+SAVE ED-101_sensor_housing_B.SLDDRW ok=True errors=0 warnings=0
+SAVE ED-101_sensor_housing_B.pdf ok=True errors=0 warnings=0
+SAVE ED-101_sensor_housing_B-drawing.png ok=True errors=0 warnings=0
+DRAWING ED-102_sensor_lid_B native_dimensions=4
+DATUM A attached edge, axis=2
+DATUM B attached edge, axis=1
+DATUM C attached edge, axis=0
+SAVE ED-102_sensor_lid_B.SLDDRW ok=True errors=0 warnings=0
+SAVE ED-102_sensor_lid_B.pdf ok=True errors=0 warnings=0
+SAVE ED-102_sensor_lid_B-drawing.png ok=True errors=0 warnings=0
+DRAWING ED-103_gasket_B native_dimensions=3
+SAVE ED-103_gasket_B.SLDDRW ok=True errors=0 warnings=0
+SAVE ED-103_gasket_B.pdf ok=True errors=0 warnings=0
+SAVE ED-103_gasket_B-drawing.png ok=True errors=0 warnings=0

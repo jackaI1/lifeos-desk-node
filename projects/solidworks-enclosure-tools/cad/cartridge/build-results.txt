@@ -1,0 +1,37 @@
+SolidWorks 33.3.0 Student Edition educational designation. No physical testing.
+SAVE FC-001_body.SLDPRT ok=True errors=0 warnings=0
+SAVE FC-001_body.step ok=True errors=0 warnings=0
+SAVE FC-001_body.STL ok=True errors=0 warnings=0
+SAVE FC-001_body.png ok=True errors=0 warnings=0
+PART FC-001_body bodies=1 volume_mm3=33824.4176814239 bounds_m=-0.035,-0.02,0,0.035,0.02,0.03
+SAVE FC-002_lid.SLDPRT ok=True errors=0 warnings=0
+SAVE FC-002_lid.step ok=True errors=0 warnings=0
+SAVE FC-002_lid.STL ok=True errors=0 warnings=0
+SAVE FC-002_lid.png ok=True errors=0 warnings=0
+PART FC-002_lid bodies=1 volume_mm3=8387.65134308735 bounds_m=-0.035,-0.02,-0.01,0.035,0.02,0.003
+SAVE FC-003_inlet.SLDPRT ok=True errors=0 warnings=0
+SAVE FC-003_inlet.step ok=True errors=0 warnings=0
+SAVE FC-003_inlet.STL ok=True errors=0 warnings=0
+SAVE FC-003_inlet.png ok=True errors=0 warnings=0
+PART FC-003_inlet bodies=1 volume_mm3=942.477796076938 bounds_m=-0.007,-0.007,0,0.007,0.007,0.012
+DRAWING FC-003_inlet native_dimensions=4
+SAVE FC-003_inlet.SLDDRW ok=True errors=0 warnings=0
+SAVE FC-003_inlet.pdf ok=True errors=0 warnings=0
+SAVE FC-003_inlet-drawing.png ok=True errors=0 warnings=0
+SAVE FC-004_outlet.SLDPRT ok=True errors=0 warnings=0
+SAVE FC-004_outlet.step ok=True errors=0 warnings=0
+SAVE FC-004_outlet.STL ok=True errors=0 warnings=0
+SAVE FC-004_outlet.png ok=True errors=0 warnings=0
+PART FC-004_outlet bodies=1 volume_mm3=942.477796076938 bounds_m=-0.007,-0.007,0,0.007,0.007,0.012
+DRAWING FC-004_outlet native_dimensions=4
+SAVE FC-004_outlet.SLDDRW ok=True errors=0 warnings=0
+SAVE FC-004_outlet.pdf ok=True errors=0 warnings=0
+SAVE FC-004_outlet-drawing.png ok=True errors=0 warnings=0
+DRAWING FC-001_body native_dimensions=4
+SAVE FC-001_body.SLDDRW ok=True errors=0 warnings=0
+SAVE FC-001_body.pdf ok=True errors=0 warnings=0
+SAVE FC-001_body-drawing.png ok=True errors=0 warnings=0
+DRAWING FC-002_lid native_dimensions=4
+SAVE FC-002_lid.SLDDRW ok=True errors=0 warnings=0
+SAVE FC-002_lid.pdf ok=True errors=0 warnings=0
+SAVE FC-002_lid-drawing.png ok=True errors=0 warnings=0

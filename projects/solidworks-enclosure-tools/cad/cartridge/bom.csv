@@ -1,0 +1,6 @@
+id,description,quantity,material
+FC-001,cartridge body,1,PETG
+FC-002,cartridge lid with snap beams,1,PETG
+FC-003,inlet reference port,1,PETG
+FC-004,outlet reference port,1,PETG
+M3-SCREW,M3 x 10 thread-forming reference screw,4,steel
