@@ -9,7 +9,12 @@ tar -xf "$work/buildroot.tar.xz" -C "$work"
 br="$work/buildroot-2024.02.9"
 make -C "$br" BR2_EXTERNAL="$root/linux_sensor/buildroot" qemu_arm_vexpress_defconfig
 cat >> "$br/.config" <<CONF
-BR2_TOOLCHAIN_BUILDROOT_CXX=y
+# BR2_TOOLCHAIN_BUILDROOT is not set
+BR2_TOOLCHAIN_EXTERNAL=y
+BR2_TOOLCHAIN_EXTERNAL_BOOTLIN=y
+BR2_TOOLCHAIN_EXTERNAL_BOOTLIN_ARMV7_EABIHF_GLIBC_STABLE=y
+BR2_ARM_EABIHF=y
+# BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_1 is not set
 # BR2_PACKAGE_HOST_QEMU is not set
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="arm/vexpress-v2p-ca9"
 BR2_PACKAGE_DESK_SENSOR=y

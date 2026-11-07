@@ -16,9 +16,9 @@ sudo apt-get install build-essential bc bison flex libssl-dev libncurses-dev cpi
 linux_sensor/tests/build.sh
 ```
 
-This builds a pinned Buildroot 2024.02.9 ARM system and Linux 6.6.63, then boots
-it without a desktop. The serial log must contain `DESK_QEMU_PASS`. Building a
-cross-compiler takes time and several gigabytes on Linux; GitHub Actions runs
+This builds a pinned Buildroot 2024.02.9 ARM system and Linux 6.6.63 using the
+Bootlin armv7-eabihf glibc stable 2023.11-1 compiler, then boots
+it without a desktop. The serial log must contain `DESK_QEMU_PASS`. Building the kernel takes time and several gigabytes on Linux; GitHub Actions runs
 this work so I do not fill the Mac with toolchains. Outputs are CI artifacts.
 
 ## How the driver fits together
