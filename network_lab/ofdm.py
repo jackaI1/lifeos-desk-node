@@ -19,14 +19,18 @@ def receive(samples,*,frames,doppler_hz=0,sample_rate=64000,delay=0,cp=16):
 
 
 def channel(samples,*,doppler_hz=1500,sample_rate=64000,delay=12,noise=.001):
-    from gnuradio import blocks,channels,gr
+    from gnuradio import analog,blocks,gr
     graph=gr.top_block()
-    source=blocks.vector_source_c(list(samples),False)
-    model=channels.channel_model(noise_voltage=noise,frequency_offset=doppler_hz/sample_rate,taps=[1+0j],noise_seed=42,block_tags=False)
-    latency=blocks.delay(gr.sizeof_gr_complex,delay)
-    # Feed enough zeros to flush the delayed tail; vector sources otherwise end early.
     source=blocks.vector_source_c(list(samples)+[0j]*delay,False)
-    sink=blocks.vector_sink_c();graph.connect(source,model,latency,sink)
+    doppler=blocks.rotator_cc(2*math.pi*doppler_hz/sample_rate)
+    noise_source=analog.noise_source_c(analog.GR_GAUSSIAN,noise,42)
+    addition=blocks.add_cc()
+    latency=blocks.delay(gr.sizeof_gr_complex,delay)
+    finite=blocks.head(gr.sizeof_gr_complex,len(samples)+delay)
+    sink=blocks.vector_sink_c()
+    graph.connect(source,doppler,(addition,0))
+    graph.connect(noise_source,(addition,1))
+    graph.connect(addition,latency,finite,sink)
     graph.run()
     return np.asarray(sink.data())
 

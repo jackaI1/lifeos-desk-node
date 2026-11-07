@@ -17,13 +17,17 @@ def frame(payload):
 
 
 @contextmanager
-def server():
+def server(metadata_path):
     binary=os.getenv('DESK_TCP_BINARY','tcp_telemetry/build/desk-tcp')
+    started=time.time()
     process=subprocess.Popen([binary,'0','4000'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
     try:
         line=process.stdout.readline()
         assert line.startswith('PORT '), (line,process.stderr.read(2000))
-        yield int(line.split()[1])
+        port=int(line.split()[1])
+        import json
+        metadata_path.write_text(json.dumps(dict(owner='TCP telemetry stress test',pid=process.pid,started=started,port=port,cleanup=f'terminate PID {process.pid} and wait')))
+        yield port
         out,err=process.communicate(timeout=8)
         assert process.returncode==0,(out,err)
         assert 'accepted=' in out
@@ -51,9 +55,9 @@ def exchange(port,payload,*,slow=False,truncated=False):
         return result
 
 
-def test_many_clients_corruption_truncation_and_slow_connections():
+def test_many_clients_corruption_truncation_and_slow_connections(tmp_path):
     good=frame(struct.pack('!iI',21500,50000))
-    with server() as port:
+    with server(tmp_path/'owned-resource.json') as port:
         with ThreadPoolExecutor(max_workers=16) as pool:
             results=list(pool.map(lambda _:exchange(port,good),range(100)))
         assert results==[good]*100

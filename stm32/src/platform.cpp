@@ -37,7 +37,7 @@ volatile uint32_t ticks=0;
 void SysTick_Handler(){++ticks;}
 #else
 void vApplicationGetIdleTaskMemory(StaticTask_t **tcb,StackType_t **stack,uint32_t *size){static StaticTask_t task;static StackType_t memory[configMINIMAL_STACK_SIZE];*tcb=&task;*stack=memory;*size=configMINIMAL_STACK_SIZE;}
-void vApplicationStackOverflowHook(TaskHandle_t,const char*){for(;;){}}
+void vApplicationStackOverflowHook(TaskHandle_t,char*){for(;;){}}
 #endif
 void firmware_main(){
  StmUart uart;desk::Logger log(uart);StmI2c i2c;desk::Sensor sensor(i2c);

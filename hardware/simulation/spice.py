@@ -24,8 +24,12 @@ def exported_values():
         for node in net.findall('node'):nets[(node.attrib['ref'],node.attrib['pin'])]=net.attrib['name']
     assert nets[('R3','1')]==nets[('U2','1')]==nets[('C3','1')]
     assert nets[('R3','2')]==nets[('U2','4')]==nets[('D1','1')]
-    assert values['R3']=='100k' and values['C3']=='100pF'
-    return 100000.,100e-12
+    import re
+    def physical(value):
+        match=re.fullmatch(r'([0-9.]+)([pnumkMG]?)(?:F|ohm)?',value)
+        if not match:raise ValueError('unsupported component value '+value)
+        return float(match[1])*{'':1,'p':1e-12,'n':1e-9,'u':1e-6,'m':1e-3,'k':1e3,'M':1e6,'G':1e9}[match[2]]
+    return physical(values['R3']),physical(values['C3'])
 
 
 def run_tia(folder,*,rf=100000.,cf=100e-12,ripple=False):

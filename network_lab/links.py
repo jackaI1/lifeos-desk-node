@@ -125,7 +125,11 @@ def main():
         manager=Manager(dict(cellular=cellular,leo=leo))
         for _ in range(6):
             rtt={name:manager.probe(name) for name in manager.addresses}
-            selected=manager.select();snapshot=manager.health[selected].snapshot();snapshot['updated']=time.time();Path('/tmp/desk-link.json').write_text(json.dumps(snapshot));result=manager.send(b'desk temperature=21.5',duplicate=any(x is None for x in rtt.values()))
+            selected=manager.select();snapshot=manager.health[selected].snapshot();snapshot['updated']=time.time();Path('/tmp/desk-link.json').write_text(json.dumps(snapshot))
+            try:result=manager.send(b'desk temperature=21.5',duplicate=any(x is None for x in rtt.values()))
+            except TimeoutError:
+                print(json.dumps(dict(rtt_ms=rtt,selected=selected,delivered=None,error='all selected links lost this upload')))
+                continue
             print(json.dumps(dict(rtt_ms=rtt,selected=selected,delivered=result.decode())))
 
 

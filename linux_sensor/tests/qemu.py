@@ -7,7 +7,7 @@ import time
 command=['qemu-system-arm','-M','vexpress-a9','-m','256M','-nographic','-no-reboot',
     '-kernel','linux_sensor/build/zImage','-dtb','linux_sensor/build/desk.dtb',
     '-drive','file=linux_sensor/build/rootfs.ext2,if=sd,format=raw',
-    '-append','console=ttyAMA0 root=/dev/mmcblk0 rw']
+    '-append','console=ttyAMA0 rootwait root=/dev/mmcblk0 rw']
 start=time.time()
 with open('linux_sensor/build/qemu.log','w') as log:
     process=subprocess.Popen(command,stdout=log,stderr=log)

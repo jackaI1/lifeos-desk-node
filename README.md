@@ -223,6 +223,29 @@ The filters run after collection; they do not change live readings or thermostat
 commands. Five-minute logs cannot identify rapid electrical noise such as mains
 hum, and smoothing can remove a real rapid change too.
 
+## Rehearse a controller or connection fault
+
+I can check the sensor's Bluetooth packet, Wi-Fi retry decisions and damaged
+GPS or vehicle-data recordings on my computer. I can also run the C++ sensor
+program on an emulated STM32 and follow a deliberately triggered processor
+fault back to its instruction. The [embedded guide](docs/embedded-lab.md)
+explains the commands, what each check means and what is simulated.
+
+For a longer control experiment, my [controller rehearsal](robot_controller/)
+records timing and sensor data while a simulated heater and two-joint arm run.
+Its saved readings feed the same controller-message decoder above. The
+[connection rehearsal](network_lab/) tries two delayed or interrupted upload
+links and a radio waveform with a simulated frequency shift. Both run without
+physical machinery or a paid cloud account.
+
+I also keep a [water-probe board](hardware/leak/) and a
+[light-input circuit calculation](hardware/simulation/report.md) here while I
+learn how to extend the node. They include circuit checks and simulation plots;
+neither circuit has been manufactured. The [Linux sensor experiment](linux_sensor/)
+puts the same checked sensor bytes behind a device file inside an emulated ARM
+computer. The [concurrent receiver](tcp_telemetry/) and
+[port-switch service](optical_switch/) are separate local networking experiments.
+
 ## Parts and wiring
 
 The controller is an ESP32-WROOM-32E, a small computer with Wi-Fi and 4 MB of
@@ -375,3 +398,8 @@ remain unmeasured.
 - [air-core-reactor-calculator](projects/air-core-reactor-calculator/)
 
 - [pll-verification-testbench](projects/pll-verification-testbench/)
+
+The new controller, link, packet, driver and circuit checks are described with
+exact commands in their linked guides. Linux CI exercises the actual virtual
+CAN interface, SNMP agent, encrypted broker, isolated firewall, ARM firmware and
+kernel images. Host simulations never stand in for a manufactured-board result.
