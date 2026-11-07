@@ -112,6 +112,9 @@ void vApplicationStackOverflowHook(TaskHandle_t, char *) {
 }
 #endif
 void firmware_main() {
+    /* GDB can request the fault before peripheral setup or timer waits. */
+    if (trigger_fault)
+        injected_fault();
     StmUart uart;
     desk::Logger log(uart);
     StmI2c i2c;

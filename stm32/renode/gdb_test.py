@@ -1,6 +1,7 @@
 """Own one headless Renode process and its GDB port, including failure cleanup."""
 from pathlib import Path
 import json
+import signal
 import socket
 import subprocess
 import time
@@ -19,7 +20,14 @@ with (folder/'renode.log').open('w') as log:
             time.sleep(.1)
         else:raise TimeoutError('Renode GDB listener did not become ready')
         with (folder/'gdb.txt').open('w') as debugger_log:
-            result=subprocess.run(['gdb-multiarch','-q','-batch','-x','stm32/renode/hardfault.gdb','stm32/build/bare.elf'],stdout=debugger_log,stderr=debugger_log,text=True,timeout=60)
+            debugger=subprocess.Popen(['gdb-multiarch','-q','-batch','-x','stm32/renode/hardfault.gdb','stm32/build/bare.elf'],stdout=debugger_log,stderr=debugger_log,text=True)
+            try:
+                debugger.wait(timeout=20)
+            except subprocess.TimeoutExpired:
+                debugger.send_signal(signal.SIGINT)
+                try:debugger.wait(timeout=5)
+                except subprocess.TimeoutExpired:debugger.terminate();debugger.wait(timeout=5)
+            result=debugger
         transcript=(folder/'gdb.txt').read_text()
         assert result.returncode==0 and 'PASS: stacked PC' in transcript,transcript[-3000:]
         print('PASS: stacked ARM PC identifies UDF in the real firmware ELF')
