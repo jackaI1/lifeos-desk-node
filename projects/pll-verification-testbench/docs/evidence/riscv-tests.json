@@ -1,0 +1,428 @@
+{
+  "revision": "3df703cd52d5f0d8224e3c50bf03c6cb70efff98",
+  "negative_control_caught": true,
+  "total": 42,
+  "passed": 42,
+  "tests": [
+    {
+      "name": "simple",
+      "passed": true,
+      "cycles": 7,
+      "retired": 2,
+      "stalls": 0,
+      "flushes": 1,
+      "forwards": 0,
+      "test_number": 1
+    },
+    {
+      "name": "add",
+      "passed": true,
+      "cycles": 463,
+      "retired": 426,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 140,
+      "test_number": 1
+    },
+    {
+      "name": "addi",
+      "passed": true,
+      "cycles": 222,
+      "retired": 203,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 80,
+      "test_number": 1
+    },
+    {
+      "name": "and",
+      "passed": true,
+      "cycles": 483,
+      "retired": 446,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 211,
+      "test_number": 1
+    },
+    {
+      "name": "andi",
+      "passed": true,
+      "cycles": 178,
+      "retired": 159,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 68,
+      "test_number": 1
+    },
+    {
+      "name": "auipc",
+      "passed": true,
+      "cycles": 31,
+      "retired": 20,
+      "stalls": 0,
+      "flushes": 4,
+      "forwards": 6,
+      "test_number": 1
+    },
+    {
+      "name": "beq",
+      "passed": true,
+      "cycles": 311,
+      "retired": 252,
+      "stalls": 0,
+      "flushes": 28,
+      "forwards": 56,
+      "test_number": 1
+    },
+    {
+      "name": "bge",
+      "passed": true,
+      "cycles": 347,
+      "retired": 270,
+      "stalls": 0,
+      "flushes": 37,
+      "forwards": 61,
+      "test_number": 1
+    },
+    {
+      "name": "bgeu",
+      "passed": true,
+      "cycles": 372,
+      "retired": 295,
+      "stalls": 0,
+      "flushes": 37,
+      "forwards": 84,
+      "test_number": 1
+    },
+    {
+      "name": "blt",
+      "passed": true,
+      "cycles": 311,
+      "retired": 252,
+      "stalls": 0,
+      "flushes": 28,
+      "forwards": 56,
+      "test_number": 1
+    },
+    {
+      "name": "bltu",
+      "passed": true,
+      "cycles": 336,
+      "retired": 277,
+      "stalls": 0,
+      "flushes": 28,
+      "forwards": 80,
+      "test_number": 1
+    },
+    {
+      "name": "bne",
+      "passed": true,
+      "cycles": 315,
+      "retired": 252,
+      "stalls": 0,
+      "flushes": 30,
+      "forwards": 57,
+      "test_number": 1
+    },
+    {
+      "name": "fence_i",
+      "passed": true,
+      "cycles": 477,
+      "retired": 260,
+      "stalls": 0,
+      "flushes": 107,
+      "forwards": 113,
+      "test_number": 1
+    },
+    {
+      "name": "jal",
+      "passed": true,
+      "cycles": 27,
+      "retired": 16,
+      "stalls": 0,
+      "flushes": 4,
+      "forwards": 4,
+      "test_number": 1
+    },
+    {
+      "name": "jalr",
+      "passed": true,
+      "cycles": 107,
+      "retired": 76,
+      "stalls": 0,
+      "flushes": 14,
+      "forwards": 30,
+      "test_number": 1
+    },
+    {
+      "name": "lb",
+      "passed": true,
+      "cycles": 235,
+      "retired": 214,
+      "stalls": 2,
+      "flushes": 8,
+      "forwards": 92,
+      "test_number": 1
+    },
+    {
+      "name": "lbu",
+      "passed": true,
+      "cycles": 235,
+      "retired": 214,
+      "stalls": 2,
+      "flushes": 8,
+      "forwards": 92,
+      "test_number": 1
+    },
+    {
+      "name": "lh",
+      "passed": true,
+      "cycles": 251,
+      "retired": 230,
+      "stalls": 2,
+      "flushes": 8,
+      "forwards": 108,
+      "test_number": 1
+    },
+    {
+      "name": "lhu",
+      "passed": true,
+      "cycles": 260,
+      "retired": 239,
+      "stalls": 2,
+      "flushes": 8,
+      "forwards": 119,
+      "test_number": 1
+    },
+    {
+      "name": "lw",
+      "passed": true,
+      "cycles": 265,
+      "retired": 244,
+      "stalls": 2,
+      "flushes": 8,
+      "forwards": 124,
+      "test_number": 1
+    },
+    {
+      "name": "ld_st",
+      "passed": true,
+      "cycles": 1075,
+      "retired": 924,
+      "stalls": 144,
+      "flushes": 2,
+      "forwards": 495,
+      "test_number": 1
+    },
+    {
+      "name": "lui",
+      "passed": true,
+      "cycles": 33,
+      "retired": 26,
+      "stalls": 0,
+      "flushes": 2,
+      "forwards": 8,
+      "test_number": 1
+    },
+    {
+      "name": "ma_data",
+      "passed": true,
+      "cycles": 402,
+      "retired": 341,
+      "stalls": 54,
+      "flushes": 2,
+      "forwards": 147,
+      "test_number": 1
+    },
+    {
+      "name": "or",
+      "passed": true,
+      "cycles": 486,
+      "retired": 449,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 215,
+      "test_number": 1
+    },
+    {
+      "name": "ori",
+      "passed": true,
+      "cycles": 185,
+      "retired": 166,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 75,
+      "test_number": 1
+    },
+    {
+      "name": "sb",
+      "passed": true,
+      "cycles": 462,
+      "retired": 415,
+      "stalls": 0,
+      "flushes": 22,
+      "forwards": 139,
+      "test_number": 1
+    },
+    {
+      "name": "sh",
+      "passed": true,
+      "cycles": 515,
+      "retired": 468,
+      "stalls": 0,
+      "flushes": 22,
+      "forwards": 190,
+      "test_number": 1
+    },
+    {
+      "name": "sw",
+      "passed": true,
+      "cycles": 522,
+      "retired": 475,
+      "stalls": 0,
+      "flushes": 22,
+      "forwards": 203,
+      "test_number": 1
+    },
+    {
+      "name": "st_ld",
+      "passed": true,
+      "cycles": 451,
+      "retired": 444,
+      "stalls": 0,
+      "flushes": 2,
+      "forwards": 209,
+      "test_number": 1
+    },
+    {
+      "name": "sll",
+      "passed": true,
+      "cycles": 491,
+      "retired": 454,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 151,
+      "test_number": 1
+    },
+    {
+      "name": "slli",
+      "passed": true,
+      "cycles": 221,
+      "retired": 202,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 78,
+      "test_number": 1
+    },
+    {
+      "name": "slt",
+      "passed": true,
+      "cycles": 457,
+      "retired": 420,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 134,
+      "test_number": 1
+    },
+    {
+      "name": "slti",
+      "passed": true,
+      "cycles": 217,
+      "retired": 198,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 75,
+      "test_number": 1
+    },
+    {
+      "name": "sltiu",
+      "passed": true,
+      "cycles": 217,
+      "retired": 198,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 76,
+      "test_number": 1
+    },
+    {
+      "name": "sltu",
+      "passed": true,
+      "cycles": 457,
+      "retired": 420,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 134,
+      "test_number": 1
+    },
+    {
+      "name": "sra",
+      "passed": true,
+      "cycles": 510,
+      "retired": 473,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 177,
+      "test_number": 1
+    },
+    {
+      "name": "srai",
+      "passed": true,
+      "cycles": 236,
+      "retired": 217,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 98,
+      "test_number": 1
+    },
+    {
+      "name": "srl",
+      "passed": true,
+      "cycles": 504,
+      "retired": 467,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 159,
+      "test_number": 1
+    },
+    {
+      "name": "srli",
+      "passed": true,
+      "cycles": 230,
+      "retired": 211,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 87,
+      "test_number": 1
+    },
+    {
+      "name": "sub",
+      "passed": true,
+      "cycles": 455,
+      "retired": 418,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 136,
+      "test_number": 1
+    },
+    {
+      "name": "xor",
+      "passed": true,
+      "cycles": 485,
+      "retired": 448,
+      "stalls": 0,
+      "flushes": 17,
+      "forwards": 214,
+      "test_number": 1
+    },
+    {
+      "name": "xori",
+      "passed": true,
+      "cycles": 187,
+      "retired": 168,
+      "stalls": 0,
+      "flushes": 8,
+      "forwards": 77,
+      "test_number": 1
+    }
+  ]
+}

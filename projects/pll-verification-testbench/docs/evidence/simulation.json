@@ -1,0 +1,62 @@
+{
+  "status": "pass",
+  "simulation_exit_code": 0,
+  "coverage_hit": 11,
+  "coverage_total": 11,
+  "fifo_runs": [
+    {
+      "depth": 1,
+      "seed": 17,
+      "hit": 7,
+      "total": 7
+    },
+    {
+      "depth": 1,
+      "seed": 409,
+      "hit": 7,
+      "total": 7
+    },
+    {
+      "depth": 1,
+      "seed": 20261106,
+      "hit": 7,
+      "total": 7
+    },
+    {
+      "depth": 3,
+      "seed": 17,
+      "hit": 7,
+      "total": 7
+    },
+    {
+      "depth": 3,
+      "seed": 409,
+      "hit": 7,
+      "total": 7
+    },
+    {
+      "depth": 3,
+      "seed": 20261106,
+      "hit": 7,
+      "total": 7
+    },
+    {
+      "depth": 8,
+      "seed": 17,
+      "hit": 7,
+      "total": 7
+    },
+    {
+      "depth": 8,
+      "seed": 409,
+      "hit": 7,
+      "total": 7
+    },
+    {
+      "depth": 8,
+      "seed": 20261106,
+      "hit": 7,
+      "total": 7
+    }
+  ]
+}

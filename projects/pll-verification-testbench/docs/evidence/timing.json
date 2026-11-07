@@ -1,0 +1,16 @@
+{
+  "before_ns": 21.0994,
+  "after_ns": 19.5514,
+  "improvement_percent": 7.34,
+  "library": "Sky130 HD tt 25C 1.80V",
+  "library_revision": "c5310d7ffdd5f8a1eed83089697631548cc08a99",
+  "library_sha256": "ec0e1067a35c8bf20b11e58d1e8ac53326067e4dac84a125cc1b917a3518d0d9",
+  "clock_period_ns": 100,
+  "input_delay_ns": 1,
+  "output_delay_ns": 1,
+  "output_load_pf": 0.05,
+  "input_transition_ns": 0.1,
+  "parasitics": "cell pins only; no placement or extracted wire delays",
+  "opensta": "3.1.0",
+  "yosys": "Yosys 0.70+344 (git sha1 2f2307ad6, Release, Clang /usr/bin/clang++ 21.1.8)"
+}

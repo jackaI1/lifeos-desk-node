@@ -1,0 +1,6 @@
+{
+  "bmc": "PASS",
+  "prove": "PASS",
+  "cover": "PASS",
+  "bug": "FAIL"
+}
