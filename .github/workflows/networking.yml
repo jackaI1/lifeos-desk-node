@@ -2,9 +2,9 @@ name: Desk network monitoring and telemetry
 on:
   push:
     branches: [main]
-    paths: ['networking/**', 'firmware/tools/**', '.github/workflows/networking.yml']
+    paths: ['networking/**', '.dockerignore', 'firmware/tools/**', '.github/workflows/networking.yml']
   pull_request:
-    paths: ['networking/**', 'firmware/tools/**', '.github/workflows/networking.yml']
+    paths: ['networking/**', '.dockerignore', 'firmware/tools/**', '.github/workflows/networking.yml']
 permissions:
   contents: read
 jobs:
@@ -33,6 +33,7 @@ jobs:
             curl -fsS 'http://localhost:8093/v1/readings/000000000001?limit=1' && break
             sleep 1
           done
+          docker compose -f networking/compose.yml exec -T gateway sh -c 'test ! -e /app/networking/build/certs/ca.key && test ! -e /app/networking/build/data/room.sqlite3'
           docker compose -f networking/compose.yml --profile send run --rm sensor
           sleep 2
           curl -fsS 'http://localhost:8093/v1/readings/000000000001?limit=1' | python -c 'import json,sys; assert json.load(sys.stdin)[0]["temperature_mc"] == 21500'
