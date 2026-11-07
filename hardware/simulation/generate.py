@@ -27,7 +27,28 @@ d.COMPONENTS=[
 ]
 sch.design=project.design=d
 sheet=sch.Sheet(sch.Libs(next(p for p in sch.DEFAULT_SYMBOLS if p and Path(p).is_dir())))
-for c in d.COMPONENTS:sheet.component(c)
+# Explicit field positions keep values off symbol bodies in exported sheets.
+original_instance=sheet.instance
+def readable_instance(ref,lib_id,value,at,*args,**kwargs):
+ if not ref.startswith('#'):
+  x,y=at
+  if ref.startswith(('R','C')):
+   kwargs.update(ref_at=(x+5.08,y-1.27),val_at=(x+5.08,y+1.27))
+  elif ref.startswith('U'):
+   kwargs.update(ref_at=(x+2.54,y-10.16),val_at=(x+20.32,y+10.16))
+  elif ref.startswith('J'):
+   kwargs.update(ref_at=(x,y-7.62),val_at=(x,y+10.16))
+  else:
+   kwargs.update(ref_at=(x,y-5.08),val_at=(x,y+5.08))
+ return original_instance(ref,lib_id,value,at,*args,**kwargs)
+sheet.instance=readable_instance
+for c in d.COMPONENTS:
+ original_power=sheet.power
+ # Closely spaced connector pins need horizontal net labels, not rotated
+ # power-symbol text extending across adjacent pin labels.
+ if c['ref'].startswith('J') or c['lib'].startswith('Regulator_Linear:'):sheet.power=sheet.label
+ sheet.component(c)
+ sheet.power=original_power
 sheet.pwr_flag(d.V5,(340,70));sheet.pwr_flag(d.GND,(360,70))
 sheet.text((30,30),'Light input prototype: photodiode current becomes an ADC voltage; model assumptions in report.md')
 (HERE/'light-front-end.kicad_sch').write_text(sheet.render().replace('Pinout contract: docs/pinout.md','Circuit model: hardware/simulation/report.md'))

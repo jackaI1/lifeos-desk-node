@@ -13,7 +13,28 @@ import gen_project as project
 schematic.design=project.design=design
 libs=schematic.Libs(next(p for p in schematic.DEFAULT_SYMBOLS if p and Path(p).is_dir()))
 sheet=schematic.Sheet(libs)
-for c in design.COMPONENTS: sheet.component(c)
+# Explicit field positions keep values off symbol bodies in exported sheets.
+original_instance=sheet.instance
+def readable_instance(ref,lib_id,value,at,*args,**kwargs):
+ if not ref.startswith('#'):
+  x,y=at
+  if ref.startswith(('R','C')):
+   kwargs.update(ref_at=(x+5.08,y-1.27),val_at=(x+5.08,y+1.27))
+  elif ref.startswith('U'):
+   kwargs.update(ref_at=(x+2.54,y-10.16),val_at=(x+20.32,y+10.16))
+  elif ref.startswith('J'):
+   kwargs.update(ref_at=(x,y-7.62),val_at=(x,y+10.16))
+  else:
+   kwargs.update(ref_at=(x,y-5.08),val_at=(x,y+5.08))
+ return original_instance(ref,lib_id,value,at,*args,**kwargs)
+sheet.instance=readable_instance
+for c in design.COMPONENTS:
+ original_power=sheet.power
+ # Closely spaced connector pins need horizontal net labels, not rotated
+ # power-symbol text extending across adjacent pin labels.
+ if c['ref'].startswith('J') or c['lib'].startswith('Regulator_Linear:'):sheet.power=sheet.label
+ sheet.component(c)
+ sheet.power=original_power
 for net,at in design.PWR_FLAGS: sheet.pwr_flag(net,at)
 for at,text in design.NOTES: sheet.text(at,text)
 out=HERE.parent

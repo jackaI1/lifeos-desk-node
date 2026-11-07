@@ -1327,7 +1327,7 @@
 		(dnp no)
 		(uuid "d71245d7-3d0c-5c3c-9783-8a116060b857")
 		(property "Reference" "J1"
-			(at 50.8 66.04 0)
+			(at 50.8 63.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1335,7 +1335,7 @@
 			)
 		)
 		(property "Value" "MCU 3V3 GND ALERT SENSE"
-			(at 50.8 78.74 0)
+			(at 50.8 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1410,70 +1410,16 @@
 		)
 		(uuid "7496e31d-708d-507a-9af9-9e30eacd5049")
 	)
-	(symbol
-		(lib_id "power:+3V3")
-		(at 43.18 68.58 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9d4603f8-a841-5a7e-9778-30408ccdf2a2")
-		(property "Reference" "#PWR01"
-			(at 43.18 72.39 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
+	(label "+3V3"
+		(at 43.18 68.58 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify right bottom)
 		)
-		(property "Value" "+3V3"
-			(at 39.18 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 43.18 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 43.18 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 43.18 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "bcc31cbc-70af-5599-835e-b56cf002128e")
-		)
-		(instances
-			(project "leak-node"
-				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR01")
-					(unit 1)
-				)
-			)
-		)
+		(uuid "396eff5d-80b7-588d-a258-66df957c2706")
 	)
 	(wire
 		(pts
@@ -1486,70 +1432,16 @@
 		)
 		(uuid "dbdae92d-ef6d-5d1f-aaec-5de921f5f8c1")
 	)
-	(symbol
-		(lib_id "power:GND")
-		(at 43.18 71.12 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "ab09d2e2-ec7f-5e22-8d18-e3078cb01abc")
-		(property "Reference" "#PWR02"
-			(at 43.18 77.47 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
+	(label "GND"
+		(at 43.18 71.12 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify right bottom)
 		)
-		(property "Value" "GND"
-			(at 38.18 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 43.18 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 43.18 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 43.18 71.12 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f744b2e8-d93e-594d-8441-6e422a8d9c6e")
-		)
-		(instances
-			(project "leak-node"
-				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR02")
-					(unit 1)
-				)
-			)
-		)
+		(uuid "4dd6bf84-67c0-544e-b14d-02d6f8184635")
 	)
 	(wire
 		(pts
@@ -1605,7 +1497,7 @@
 		(dnp no)
 		(uuid "9aff60c5-78c8-5130-8e83-69c3ef5f7fa4")
 		(property "Reference" "J2"
-			(at 50.8 127 0)
+			(at 50.8 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1613,7 +1505,7 @@
 			)
 		)
 		(property "Value" "External conductive probe"
-			(at 50.8 134.62 0)
+			(at 50.8 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1704,70 +1596,16 @@
 		)
 		(uuid "067ac121-6461-5a27-89a8-cefc51f5c2f7")
 	)
-	(symbol
-		(lib_id "power:GND")
-		(at 43.18 132.08 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "7b7568a8-38b6-5060-bcca-2fc1c3d1d852")
-		(property "Reference" "#PWR03"
-			(at 43.18 138.43 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
+	(label "GND"
+		(at 43.18 132.08 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
 			)
+			(justify right bottom)
 		)
-		(property "Value" "GND"
-			(at 38.18 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 43.18 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 43.18 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 43.18 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ea8bf148-4869-5b29-b48e-c5b0ef697762")
-		)
-		(instances
-			(project "leak-node"
-				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR03")
-					(unit 1)
-				)
-			)
-		)
+		(uuid "84ad10d3-286c-505c-a323-1e46b2f8c00d")
 	)
 	(symbol
 		(lib_id "Comparator:LMV331")
@@ -1779,7 +1617,7 @@
 		(dnp no)
 		(uuid "b24f42fa-971a-5001-802c-4ba2b912e168")
 		(property "Reference" "U1"
-			(at 140.97 93.98 0)
+			(at 142.24 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1787,7 +1625,7 @@
 			)
 		)
 		(property "Value" "LMV331IDBVR"
-			(at 143.51 104.14 0)
+			(at 160.02 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1895,8 +1733,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b3ef676d-41c5-5e81-966f-ad88581fde82")
-		(property "Reference" "#PWR04"
+		(uuid "9d4603f8-a841-5a7e-9778-30408ccdf2a2")
+		(property "Reference" "#PWR01"
 			(at 137.16 115.57 0)
 			(effects
 				(font
@@ -1941,12 +1779,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "2541ca65-7d84-5a43-91a9-1c2194516d1b")
+			(uuid "bcc31cbc-70af-5599-835e-b56cf002128e")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR04")
+					(reference "#PWR01")
 					(unit 1)
 				)
 			)
@@ -2015,8 +1853,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e02a9519-d651-57a3-b94e-058f32997dce")
-		(property "Reference" "#PWR05"
+		(uuid "ab09d2e2-ec7f-5e22-8d18-e3078cb01abc")
+		(property "Reference" "#PWR02"
 			(at 137.16 92.71 0)
 			(effects
 				(font
@@ -2061,12 +1899,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "4a1fbc1d-be90-5fb3-8c12-d84adfc71cea")
+			(uuid "f744b2e8-d93e-594d-8441-6e422a8d9c6e")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR05")
+					(reference "#PWR02")
 					(unit 1)
 				)
 			)
@@ -2082,7 +1920,7 @@
 		(dnp no)
 		(uuid "ae6b5532-9146-5cf1-9d83-7f347f8cb7db")
 		(property "Reference" "R1"
-			(at 90.93 71.12 0)
+			(at 93.98 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2090,7 +1928,7 @@
 			)
 		)
 		(property "Value" "1M"
-			(at 88.9 71.12 0)
+			(at 93.98 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2167,8 +2005,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "56222b1b-4ea4-5826-b48d-a5c1e0c6de3c")
-		(property "Reference" "#PWR06"
+		(uuid "7b7568a8-38b6-5060-bcca-2fc1c3d1d852")
+		(property "Reference" "#PWR03"
 			(at 88.9 68.58 0)
 			(effects
 				(font
@@ -2213,12 +2051,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "0fdc5394-6509-5f89-9f41-78400366a10c")
+			(uuid "ea8bf148-4869-5b29-b48e-c5b0ef697762")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR06")
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -2256,7 +2094,7 @@
 		(dnp no)
 		(uuid "df46beeb-d5e4-53ee-b56c-8902b6604e46")
 		(property "Reference" "R2"
-			(at 90.93 119.38 0)
+			(at 93.98 118.11 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2264,7 +2102,7 @@
 			)
 		)
 		(property "Value" "100k"
-			(at 88.9 119.38 0)
+			(at 93.98 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2341,8 +2179,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "cd3dccec-7d3b-582a-a6e9-5d15a8ec0466")
-		(property "Reference" "#PWR07"
+		(uuid "b3ef676d-41c5-5e81-966f-ad88581fde82")
+		(property "Reference" "#PWR04"
 			(at 88.9 116.84 0)
 			(effects
 				(font
@@ -2387,12 +2225,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "8647955a-b4e3-5051-b3d7-868ce7dbf582")
+			(uuid "2541ca65-7d84-5a43-91a9-1c2194516d1b")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR07")
+					(reference "#PWR04")
 					(unit 1)
 				)
 			)
@@ -2430,7 +2268,7 @@
 		(dnp no)
 		(uuid "dffc537b-6f0f-5353-b196-9a81a26120b9")
 		(property "Reference" "R3"
-			(at 90.93 165.1 0)
+			(at 93.98 163.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2438,7 +2276,7 @@
 			)
 		)
 		(property "Value" "100k"
-			(at 88.9 165.1 0)
+			(at 93.98 166.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2537,8 +2375,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "6ce84de1-cdb9-56d5-942f-af8827c93644")
-		(property "Reference" "#PWR08"
+		(uuid "e02a9519-d651-57a3-b94e-058f32997dce")
+		(property "Reference" "#PWR05"
 			(at 88.9 177.8 0)
 			(effects
 				(font
@@ -2583,12 +2421,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "320e0a40-3688-5ca9-b9f9-3314ec5bf362")
+			(uuid "4a1fbc1d-be90-5fb3-8c12-d84adfc71cea")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR08")
+					(reference "#PWR05")
 					(unit 1)
 				)
 			)
@@ -2604,7 +2442,7 @@
 		(dnp no)
 		(uuid "07cf2450-e6ec-5a26-87e2-a2e97e2ff97b")
 		(property "Reference" "R4"
-			(at 141.73 160.02 0)
+			(at 144.78 158.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2612,7 +2450,7 @@
 			)
 		)
 		(property "Value" "10M"
-			(at 139.7 160.02 0)
+			(at 144.78 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2724,7 +2562,7 @@
 		(dnp no)
 		(uuid "5d9be4fb-d66d-5bbc-9675-c4dc396e1cd5")
 		(property "Reference" "R5"
-			(at 192.53 71.12 0)
+			(at 195.58 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2732,7 +2570,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 190.5 71.12 0)
+			(at 195.58 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2809,8 +2647,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "01ae51b0-ad6a-5022-87e8-9a875aeece1e")
-		(property "Reference" "#PWR09"
+		(uuid "56222b1b-4ea4-5826-b48d-a5c1e0c6de3c")
+		(property "Reference" "#PWR06"
 			(at 190.5 68.58 0)
 			(effects
 				(font
@@ -2855,12 +2693,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "b0c9c24c-de02-59d4-be54-6e93d51bd63f")
+			(uuid "0fdc5394-6509-5f89-9f41-78400366a10c")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR09")
+					(reference "#PWR06")
 					(unit 1)
 				)
 			)
@@ -2898,7 +2736,7 @@
 		(dnp no)
 		(uuid "9e2681d9-ac08-5510-8a76-13782105f9b8")
 		(property "Reference" "R6"
-			(at 240.79 71.12 0)
+			(at 243.84 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2906,7 +2744,7 @@
 			)
 		)
 		(property "Value" "1k"
-			(at 238.76 71.12 0)
+			(at 243.84 72.39 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2983,8 +2821,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5715d703-033d-56c2-ae4a-280150afd6dc")
-		(property "Reference" "#PWR10"
+		(uuid "cd3dccec-7d3b-582a-a6e9-5d15a8ec0466")
+		(property "Reference" "#PWR07"
 			(at 238.76 68.58 0)
 			(effects
 				(font
@@ -3029,12 +2867,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "190b4ec0-0648-58d5-90ad-ad805e92f8d5")
+			(uuid "8647955a-b4e3-5051-b3d7-868ce7dbf582")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR10")
+					(reference "#PWR07")
 					(unit 1)
 				)
 			)
@@ -3072,7 +2910,7 @@
 		(dnp no)
 		(uuid "368478a2-3ffe-5ee9-ba54-920291be3998")
 		(property "Reference" "D1"
-			(at 238.76 116.84 0)
+			(at 238.76 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3080,7 +2918,7 @@
 			)
 		)
 		(property "Value" "Red wet indicator"
-			(at 238.76 121.92 0)
+			(at 238.76 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3192,7 +3030,7 @@
 		(dnp no)
 		(uuid "a0465a98-08c0-53d3-96e8-13cb7f42e81a")
 		(property "Reference" "C1"
-			(at 191.14 162.56 0)
+			(at 195.58 163.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3200,7 +3038,7 @@
 			)
 		)
 		(property "Value" "100nF"
-			(at 191.14 167.64 0)
+			(at 195.58 166.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3277,8 +3115,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "0d0d08cb-2e97-5a3e-a4a5-f2e8a729bb9a")
-		(property "Reference" "#PWR11"
+		(uuid "6ce84de1-cdb9-56d5-942f-af8827c93644")
+		(property "Reference" "#PWR08"
 			(at 190.5 162.56 0)
 			(effects
 				(font
@@ -3323,12 +3161,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "2536bc5b-8290-5948-9813-fb0c74593276")
+			(uuid "320e0a40-3688-5ca9-b9f9-3314ec5bf362")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR11")
+					(reference "#PWR08")
 					(unit 1)
 				)
 			)
@@ -3353,8 +3191,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "b95c303e-84ac-5d8d-96fc-522cb0f0bc4e")
-		(property "Reference" "#PWR12"
+		(uuid "01ae51b0-ad6a-5022-87e8-9a875aeece1e")
+		(property "Reference" "#PWR09"
 			(at 190.5 177.8 0)
 			(effects
 				(font
@@ -3399,12 +3237,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "8a65b289-353d-53cf-87c1-2fc5af34d0ba")
+			(uuid "b0c9c24c-de02-59d4-be54-6e93d51bd63f")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR12")
+					(reference "#PWR09")
 					(unit 1)
 				)
 			)
@@ -3418,8 +3256,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "1e778024-366f-5591-be18-423bafdf969e")
-		(property "Reference" "#FLG13"
+		(uuid "719ea4ff-638f-5bed-8fcd-73bca48061c3")
+		(property "Reference" "#FLG10"
 			(at 269.24 69.22 0)
 			(effects
 				(font
@@ -3465,12 +3303,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "1b14b423-5164-5258-8924-124c3e0faf90")
+			(uuid "d27fceb7-0d6e-55ae-86c9-ed87cd2892bb")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#FLG13")
+					(reference "#FLG10")
 					(unit 1)
 				)
 			)
@@ -3495,8 +3333,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "6ea733e8-8a60-583d-a4c7-1370db39e474")
-		(property "Reference" "#PWR14"
+		(uuid "0d0d08cb-2e97-5a3e-a4a5-f2e8a729bb9a")
+		(property "Reference" "#PWR11"
 			(at 269.24 77.47 0)
 			(effects
 				(font
@@ -3541,12 +3379,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "763c5e9b-c81b-54be-85c0-31c12daba305")
+			(uuid "2536bc5b-8290-5948-9813-fb0c74593276")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR14")
+					(reference "#PWR11")
 					(unit 1)
 				)
 			)
@@ -3560,8 +3398,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c991fad5-e8be-5e74-9252-7925dcdb2d85")
-		(property "Reference" "#FLG15"
+		(uuid "5a0ed078-e89b-56e5-886c-4a2b8ccabb7a")
+		(property "Reference" "#FLG12"
 			(at 289.56 69.22 0)
 			(effects
 				(font
@@ -3607,12 +3445,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "b48e4cd7-e981-5820-bac2-8431501aed24")
+			(uuid "0c462b70-08e6-5549-aef3-afe820e83cab")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#FLG15")
+					(reference "#FLG12")
 					(unit 1)
 				)
 			)
@@ -3637,8 +3475,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5b273244-a504-5c7a-92b0-9c913b350c5f")
-		(property "Reference" "#PWR16"
+		(uuid "5619d4d6-97eb-5534-b138-2b3175c7f5d5")
+		(property "Reference" "#PWR13"
 			(at 289.56 80.01 0)
 			(effects
 				(font
@@ -3683,12 +3521,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "d4caf039-a741-552f-9978-98f30947de67")
+			(uuid "52327cb0-a5a8-5a96-90fc-6314dcd2fe95")
 		)
 		(instances
 			(project "leak-node"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR16")
+					(reference "#PWR13")
 					(unit 1)
 				)
 			)
