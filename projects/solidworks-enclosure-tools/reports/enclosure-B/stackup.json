@@ -1,0 +1,75 @@
+{
+  "compression": {
+    "worst_case": {
+      "min": 0.1093749999999999,
+      "max": 0.3798076923076923,
+      "nominal": 0.24999999999999997
+    },
+    "monte_carlo": {
+      "samples": 50000,
+      "seed": 20261106,
+      "distribution": "independent bounded uniform",
+      "min": 0.11879157482819794,
+      "max": 0.36997298903003834,
+      "mean": 0.24961329065133045,
+      "std": 0.040476481441337066,
+      "p01": 0.1580831571941545,
+      "p99": 0.3373793671025716
+    },
+    "contributors": [
+      {
+        "name": "housing_height",
+        "variance": 0.0008333333333333335,
+        "fraction": 0.5076142131979696
+      },
+      {
+        "name": "gasket_thickness",
+        "variance": 0.0003,
+        "fraction": 0.18274111675126903
+      },
+      {
+        "name": "groove_depth",
+        "variance": 0.0003,
+        "fraction": 0.18274111675126903
+      },
+      {
+        "name": "shoulder_height",
+        "variance": 0.00020833333333333337,
+        "fraction": 0.1269035532994924
+      }
+    ],
+    "target": [
+      0.15,
+      0.35
+    ],
+    "passes": false,
+    "note": "Gap tolerance is the sum of independent housing and shoulder height limits; all limits are unverified design assumptions."
+  },
+  "lid_gap": {
+    "nominal_mm": 0.2,
+    "worst_min_mm": 0.05000000000000002,
+    "worst_max_mm": 0.35,
+    "monte_carlo_mean_mm": 0.19996056492723768,
+    "p01_mm": 0.06982292722641578,
+    "p99_mm": 0.3294983864495504,
+    "contributors": [
+      {
+        "name": "housing_height",
+        "variance_mm2": 0.003333333333333334
+      },
+      {
+        "name": "shoulder_height",
+        "variance_mm2": 0.0008333333333333335
+      }
+    ]
+  },
+  "thermal": {
+    "power_W": 1.5,
+    "area_m2": 0.019679999999999996,
+    "h_W_m2K": 7,
+    "rise_K": 10.888501742160281,
+    "ambient_C": 23,
+    "estimated_surface_C": 33.88850174216028,
+    "note": "Single uniform node, natural convection on all external area. No internal hotspot, radiation, conduction or sealing model. Not tested."
+  }
+}

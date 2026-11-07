@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Gasket stack-up</title><style>body{font:17px system-ui;max-width:950px;margin:40px auto;padding:0 20px}svg{width:100%}pre{white-space:pre-wrap}</style><h1>Revision B gasket stack-up</h1><p>Nominal compression 25.0%. Worst case 10.9% to 38.0%. The target is 15% to 35%: <strong>FLAG</strong>.</p><p>50,000 bounded independent uniform component samples give mean 24.96% and 1st to 99th percentiles 15.81% to 33.74%. These distributions are assumptions, not measured process capability. Gap is shoulder height minus housing rim height. Its two height tolerances are sampled separately.</p><h2>First-order variance contributors</h2><svg viewBox="0 0 800 230" role="img" aria-label="Tolerance variance contributors"><text x="0" y="45">housing_height</text><rect x="180" y="30" width="203.0" height="25" fill="#35719c"/><text x="393.0" y="48">50.8%</text><text x="0" y="90">gasket_thickness</text><rect x="180" y="75" width="73.1" height="25" fill="#35719c"/><text x="263.1" y="93">18.3%</text><text x="0" y="135">groove_depth</text><rect x="180" y="120" width="73.1" height="25" fill="#35719c"/><text x="263.1" y="138">18.3%</text><text x="0" y="180">shoulder_height</text><rect x="180" y="165" width="50.8" height="25" fill="#35719c"/><text x="240.8" y="183">12.7%</text></svg><p>The main contributor is the housing height limit. Tightening it or changing the gland design would need a new calculation and physical verification. The native model uses the nominal dimensions; this report does not establish a seal rating.</p><h2>Thermal screen</h2><p>With 1.5 W and assumed natural-convection coefficient 7 W/m²K, the single-node rise estimate is 10.9 K. This ignores internal hotspots and is not a measured temperature.</p><h2>Calculation data</h2><pre>{
+  &quot;compression&quot;: {
+    &quot;worst_case&quot;: {
+      &quot;min&quot;: 0.1093749999999999,
+      &quot;max&quot;: 0.3798076923076923,
+      &quot;nominal&quot;: 0.24999999999999997
+    },
+    &quot;monte_carlo&quot;: {
+      &quot;samples&quot;: 50000,
+      &quot;seed&quot;: 20261106,
+      &quot;distribution&quot;: &quot;independent bounded uniform&quot;,
+      &quot;min&quot;: 0.11879157482819794,
+      &quot;max&quot;: 0.36997298903003834,
+      &quot;mean&quot;: 0.24961329065133045,
+      &quot;std&quot;: 0.040476481441337066,
+      &quot;p01&quot;: 0.1580831571941545,
+      &quot;p99&quot;: 0.3373793671025716
+    },
+    &quot;contributors&quot;: [
+      {
+        &quot;name&quot;: &quot;housing_height&quot;,
+        &quot;variance&quot;: 0.0008333333333333335,
+        &quot;fraction&quot;: 0.5076142131979696
+      },
+      {
+        &quot;name&quot;: &quot;gasket_thickness&quot;,
+        &quot;variance&quot;: 0.0003,
+        &quot;fraction&quot;: 0.18274111675126903
+      },
+      {
+        &quot;name&quot;: &quot;groove_depth&quot;,
+        &quot;variance&quot;: 0.0003,
+        &quot;fraction&quot;: 0.18274111675126903
+      },
+      {
+        &quot;name&quot;: &quot;shoulder_height&quot;,
+        &quot;variance&quot;: 0.00020833333333333337,
+        &quot;fraction&quot;: 0.1269035532994924
+      }
+    ],
+    &quot;target&quot;: [
+      0.15,
+      0.35
+    ],
+    &quot;passes&quot;: false,
+    &quot;note&quot;: &quot;Gap tolerance is the sum of independent housing and shoulder height limits; all limits are unverified design assumptions.&quot;
+  },
+  &quot;lid_gap&quot;: {
+    &quot;nominal_mm&quot;: 0.2,
+    &quot;worst_min_mm&quot;: 0.05000000000000002,
+    &quot;worst_max_mm&quot;: 0.35,
+    &quot;monte_carlo_mean_mm&quot;: 0.19996056492723768,
+    &quot;p01_mm&quot;: 0.06982292722641578,
+    &quot;p99_mm&quot;: 0.3294983864495504,
+    &quot;contributors&quot;: [
+      {
+        &quot;name&quot;: &quot;housing_height&quot;,
+        &quot;variance_mm2&quot;: 0.003333333333333334
+      },
+      {
+        &quot;name&quot;: &quot;shoulder_height&quot;,
+        &quot;variance_mm2&quot;: 0.0008333333333333335
+      }
+    ]
+  },
+  &quot;thermal&quot;: {
+    &quot;power_W&quot;: 1.5,
+    &quot;area_m2&quot;: 0.019679999999999996,
+    &quot;h_W_m2K&quot;: 7,
+    &quot;rise_K&quot;: 10.888501742160281,
+    &quot;ambient_C&quot;: 23,
+    &quot;estimated_surface_C&quot;: 33.88850174216028,
+    &quot;note&quot;: &quot;Single uniform node, natural convection on all external area. No internal hotspot, radiation, conduction or sealing model. Not tested.&quot;
+  }
+}</pre></html>

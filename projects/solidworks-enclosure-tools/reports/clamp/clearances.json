@@ -1,0 +1,42 @@
+{
+  "baseline": {
+    "clearances_mm": {
+      "pin_diametral_worst": 0.15000000000000036,
+      "shoulder_diametral_worst": 0.14999999999999858,
+      "pivot_diametral_worst": 0.35000000000000053,
+      "arm_to_pin_vertical": 5,
+      "bolt_below_nut": 2,
+      "pivot_to_coupon": 14.0
+    },
+    "passes": true,
+    "intended_contacts": [
+      "pin to coupon tangent faces",
+      "nose to coupon top",
+      "pivot shoulder to arm",
+      "bolt head to arm",
+      "washer to base and nut"
+    ],
+    "note": "Simplified clearance hardware without threads. Intended contacts are zero-gap, excluded from positive-clearance requirement. No force, deflection, thread engagement or physical test."
+  },
+  "cases": {
+    "larger-base-taller-coupon": {
+      "clearances_mm": {
+        "pin_diametral_worst": 0.4500000000000002,
+        "shoulder_diametral_worst": 0.14999999999999858,
+        "pivot_diametral_worst": 0.35000000000000053,
+        "arm_to_pin_vertical": 6,
+        "bolt_below_nut": 1,
+        "pivot_to_coupon": 14.0
+      },
+      "passes": true,
+      "intended_contacts": [
+        "pin to coupon tangent faces",
+        "nose to coupon top",
+        "pivot shoulder to arm",
+        "bolt head to arm",
+        "washer to base and nut"
+      ],
+      "note": "Simplified clearance hardware without threads. Intended contacts are zero-gap, excluded from positive-clearance requirement. No force, deflection, thread engagement or physical test."
+    }
+  }
+}

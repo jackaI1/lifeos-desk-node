@@ -1,0 +1,10 @@
+path,bytes,sha256,status
+BR-001_before.SLDPRT,66767,b85f7766659e38e8e032cc6b003ac03338e1515534f4e0db1d050869cf0ceece,Educational prototype; no physical testing
+BR-001_before.STL,1484,66f9e2c55c3275d29642175970a9412aabcb7b222358f8f2b799389fa987c11d,Educational prototype; no physical testing
+BR-001_before.png,75386,0e47d35f81bd380ea84b71d8358aff2852e8648d4a36a4090eeb7c644b8c998f,Educational prototype; no physical testing
+BR-001_before.step,25031,b4fe950e7182ce9c0740202a23dae4e486fafd5ff79b92c8864c0d1d36fbef8a,Educational prototype; no physical testing
+BR-002_after.SLDPRT,69695,3e8357e5565e23186265b1568313d3400d62d36f190afb8d9d80244e0bc945e1,Educational prototype; no physical testing
+BR-002_after.STL,1284,5ffa7811c2120d6f6929c9323c3da12847bfc14eb08493562496080be19adc51,Educational prototype; no physical testing
+BR-002_after.png,73897,d375b3723d232f52660ed197b14f53d8dc7496c863dd0d2cd2302ed7e5ac5ff2,Educational prototype; no physical testing
+BR-002_after.step,22739,00bd5902ebae5f4f0db2a8d9eb342f0b4c64a40c0a680209a153e71421e94a0d,Educational prototype; no physical testing
+build-results.txt,662,a0d3ef1607ee82cec92f303ade01e140a0ee06f45b6d4115e9c876916866439b,Educational prototype; no physical testing

@@ -8,3 +8,6 @@ tmp/
 *.gsz
 *Solver.txt
 PerformanceLog.txt
+
+__pycache__/
+.pytest_cache/

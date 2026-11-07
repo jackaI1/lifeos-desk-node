@@ -1,0 +1,105 @@
+{
+  "nominal": {
+    "wall_mm": 4,
+    "conservative_shell_wall_mm": 2.428844705848784,
+    "draft_deg": 1.5,
+    "driver_to_port_margin_mm": 5.970562748477139,
+    "release_slot_mm": [
+      8,
+      2
+    ],
+    "flags": [],
+    "passes": true,
+    "note": "Draft erosion assumes both shell contours reduce wall thickness over full height. Tool check is an axial cylinder versus port flange and a rectangular release blade. Snap beams, holes and intentional mating surfaces are excluded from the shell draft rule. No pressure, leak, fatigue or mold-release validation."
+  },
+  "wall_sweep": [
+    {
+      "wall_mm": 1,
+      "conservative_shell_wall_mm": -0.5711552941512159,
+      "draft_deg": 1.5,
+      "driver_to_port_margin_mm": 5.970562748477139,
+      "release_slot_mm": [
+        8,
+        2
+      ],
+      "flags": [
+        "wall"
+      ],
+      "passes": false,
+      "note": "Draft erosion assumes both shell contours reduce wall thickness over full height. Tool check is an axial cylinder versus port flange and a rectangular release blade. Snap beams, holes and intentional mating surfaces are excluded from the shell draft rule. No pressure, leak, fatigue or mold-release validation."
+    },
+    {
+      "wall_mm": 1.5,
+      "conservative_shell_wall_mm": -0.07115529415121591,
+      "draft_deg": 1.5,
+      "driver_to_port_margin_mm": 5.970562748477139,
+      "release_slot_mm": [
+        8,
+        2
+      ],
+      "flags": [
+        "wall"
+      ],
+      "passes": false,
+      "note": "Draft erosion assumes both shell contours reduce wall thickness over full height. Tool check is an axial cylinder versus port flange and a rectangular release blade. Snap beams, holes and intentional mating surfaces are excluded from the shell draft rule. No pressure, leak, fatigue or mold-release validation."
+    },
+    {
+      "wall_mm": 2,
+      "conservative_shell_wall_mm": 0.4288447058487841,
+      "draft_deg": 1.5,
+      "driver_to_port_margin_mm": 5.970562748477139,
+      "release_slot_mm": [
+        8,
+        2
+      ],
+      "flags": [
+        "wall"
+      ],
+      "passes": false,
+      "note": "Draft erosion assumes both shell contours reduce wall thickness over full height. Tool check is an axial cylinder versus port flange and a rectangular release blade. Snap beams, holes and intentional mating surfaces are excluded from the shell draft rule. No pressure, leak, fatigue or mold-release validation."
+    },
+    {
+      "wall_mm": 2.5,
+      "conservative_shell_wall_mm": 0.9288447058487841,
+      "draft_deg": 1.5,
+      "driver_to_port_margin_mm": 5.970562748477139,
+      "release_slot_mm": [
+        8,
+        2
+      ],
+      "flags": [
+        "wall"
+      ],
+      "passes": false,
+      "note": "Draft erosion assumes both shell contours reduce wall thickness over full height. Tool check is an axial cylinder versus port flange and a rectangular release blade. Snap beams, holes and intentional mating surfaces are excluded from the shell draft rule. No pressure, leak, fatigue or mold-release validation."
+    },
+    {
+      "wall_mm": 3,
+      "conservative_shell_wall_mm": 1.428844705848784,
+      "draft_deg": 1.5,
+      "driver_to_port_margin_mm": 5.970562748477139,
+      "release_slot_mm": [
+        8,
+        2
+      ],
+      "flags": [
+        "wall"
+      ],
+      "passes": false,
+      "note": "Draft erosion assumes both shell contours reduce wall thickness over full height. Tool check is an axial cylinder versus port flange and a rectangular release blade. Snap beams, holes and intentional mating surfaces are excluded from the shell draft rule. No pressure, leak, fatigue or mold-release validation."
+    },
+    {
+      "wall_mm": 4,
+      "conservative_shell_wall_mm": 2.428844705848784,
+      "draft_deg": 1.5,
+      "driver_to_port_margin_mm": 5.970562748477139,
+      "release_slot_mm": [
+        8,
+        2
+      ],
+      "flags": [],
+      "passes": true,
+      "note": "Draft erosion assumes both shell contours reduce wall thickness over full height. Tool check is an axial cylinder versus port flange and a rectangular release blade. Snap beams, holes and intentional mating surfaces are excluded from the shell draft rule. No pressure, leak, fatigue or mold-release validation."
+    }
+  ]
+}

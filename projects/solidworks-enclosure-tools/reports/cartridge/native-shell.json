@@ -1,0 +1,8 @@
+{
+  "shell_face_samples": 16,
+  "minimum_draft_deg": 1.4999966020615347,
+  "maximum_draft_deg": 1.5000059990878427,
+  "minimum_wall_sample_mm": 3.9200971636245625,
+  "passes": true,
+  "note": "Samples main planar shell triangles. Bosses, catches, holes and mating faces excluded. Does not prove mold release."
+}

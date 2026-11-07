@@ -1,0 +1,32 @@
+name: solidworks-enclosure-tools / Export checks
+on:
+  push:
+    paths:
+    - projects/solidworks-enclosure-tools/**
+    - .github/workflows/solidworks-enclosure-tools-mesh.yml
+    branches:
+    - main
+  pull_request:
+    paths:
+    - projects/solidworks-enclosure-tools/**
+    - .github/workflows/solidworks-enclosure-tools-mesh.yml
+jobs:
+  mesh:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - run: python tools/check.py
+    - run: python -m pip install -r requirements-checks.txt
+    - run: python -m pytest -q
+      env:
+        PYTHONPATH: tools
+    - run: python tools/manifest.py
+    timeout-minutes: 15
+permissions:
+  contents: read
+defaults:
+  run:
+    working-directory: projects/solidworks-enclosure-tools

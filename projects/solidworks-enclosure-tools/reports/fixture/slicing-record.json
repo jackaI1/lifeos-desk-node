@@ -1,0 +1,16 @@
+{
+  "slicer": "PrusaSlicer 2.7.2 Ubuntu 2.7.2+dfsg-1build2",
+  "command": "tools/slice-fixture.sh",
+  "physically_printed": false,
+  "sha256": {
+    "cad/fixture/FX-001_enclosure_nest_B.STL": "c62bb727b9bf79a640d91076b54728f55c96e7d91bc01cbfa473c376777c8add",
+    "specs/fixture-slicer.ini": "4b9f2bb50d4b45020b074bc607c57cd6629201bac3fe5adb7a71cb0ec1a74172",
+    "cad/fixture/FX-001_enclosure_nest_B.gcode": "0b3d083255d411672f82d1929a6bafdf07c5da74cfec9c484033fff5f1f025d6"
+  },
+  "layer_changes": 70,
+  "estimates": {
+    "filament used [g]": "54.30",
+    "total filament cost": "1.36",
+    "estimated printing time (normal mode)": "4h 31m 9s"
+  }
+}

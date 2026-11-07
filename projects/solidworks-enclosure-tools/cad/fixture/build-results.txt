@@ -1,0 +1,10 @@
+SolidWorks 33.3.0 Student Edition educational designation. No physical testing.
+SAVE FX-001_enclosure_nest_B.SLDPRT ok=True errors=0 warnings=0
+SAVE FX-001_enclosure_nest_B.step ok=True errors=0 warnings=0
+SAVE FX-001_enclosure_nest_B.STL ok=True errors=0 warnings=0
+SAVE FX-001_enclosure_nest_B.png ok=True errors=0 warnings=0
+PART FX-001_enclosure_nest_B bodies=1 volume_mm3=92448.982727171 bounds_m=-0.054,-0.044,0,0.054,0.044,0.014
+DRAWING FX-001_enclosure_nest_B native_dimensions=4
+SAVE FX-001_enclosure_nest_B.SLDDRW ok=True errors=0 warnings=0
+SAVE FX-001_enclosure_nest_B.pdf ok=True errors=0 warnings=0
+SAVE FX-001_enclosure_nest_B-drawing.png ok=True errors=0 warnings=0

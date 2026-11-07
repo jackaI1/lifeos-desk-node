@@ -1,0 +1,100 @@
+{
+  "profile": {
+    "name": "Generic 220 mm PETG screening profile, assumed",
+    "build_mm": [
+      220,
+      220,
+      250
+    ],
+    "min_wall_mm": 1.2,
+    "overhang_deg": 45,
+    "max_bridge_mm": 10,
+    "density_g_cm3": 1.27,
+    "cost_per_kg": 25,
+    "currency": "CAD",
+    "layer_mm": 0.2,
+    "extrusion_width_mm": 0.45,
+    "speed_mm_s": 40,
+    "support_fraction": 0.2,
+    "grid_mm": 1
+  },
+  "parts": {
+    "FX-001_enclosure_nest_B.STL": {
+      "recommended": "base-down",
+      "orientations": [
+        {
+          "orientation": "base-down",
+          "triangles": 662,
+          "bounds_mm": [
+            108.0,
+            88.0,
+            14.0
+          ],
+          "fits_printer": true,
+          "minimum_wall_mm": 4.806967106091354,
+          "wall_sample_coverage": 1.0,
+          "thin_faces": [],
+          "overhang_faces": [],
+          "overhang_angles_from_vertical_deg": {},
+          "overhang_area_mm2": 0.0,
+          "regions": [],
+          "max_bridge_mm": 0.0,
+          "bridge_flags": [],
+          "support_volume_mm3": 0.0,
+          "support_columns": 0,
+          "volume_mm3": 92452.98441621003,
+          "estimated_material_g": 117.41529020858674,
+          "material_cost": 2.9353822552146682,
+          "time_hours": 9.2738333133544
+        },
+        {
+          "orientation": "top-down",
+          "triangles": 662,
+          "bounds_mm": [
+            108.0,
+            88.0,
+            14.0
+          ],
+          "fits_printer": true,
+          "minimum_wall_mm": 4.806967106091354,
+          "wall_sample_coverage": 1.0,
+          "thin_faces": [],
+          "overhang_faces": [
+            356,
+            357
+          ],
+          "overhang_angles_from_vertical_deg": {
+            "356": 90.0,
+            "357": 90.0
+          },
+          "overhang_area_mm2": 4969.440303955071,
+          "regions": [
+            {
+              "faces": [
+                356,
+                357
+              ],
+              "span_mm": 81.20000648498535
+            }
+          ],
+          "max_bridge_mm": 81.20000648498535,
+          "bridge_flags": [
+            {
+              "faces": [
+                356,
+                357
+              ],
+              "span_mm": 81.20000648498535
+            }
+          ],
+          "support_volume_mm3": 39527.99999999999,
+          "support_columns": 4941,
+          "volume_mm3": 92452.98441621005,
+          "estimated_material_g": 127.45540220858675,
+          "material_cost": 3.186385055214669,
+          "time_hours": 10.066833313354401
+        }
+      ]
+    }
+  }
+}

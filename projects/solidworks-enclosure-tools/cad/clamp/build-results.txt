@@ -1,0 +1,104 @@
+SolidWorks 33.3.0 Student Edition educational designation. No physical testing.
+SAVE CL-001_base.SLDPRT ok=True errors=0 warnings=0
+SAVE CL-001_base.step ok=True errors=0 warnings=0
+SAVE CL-001_base.STL ok=True errors=0 warnings=0
+SAVE CL-001_base.png ok=True errors=0 warnings=0
+PART CL-001_base bodies=1 volume_mm3=94713.989047253 bounds_m=-0.06,-0.04,0,0.06,0.04,0.025
+SAVE CL-002_locator_pin.SLDPRT ok=True errors=0 warnings=0
+SAVE CL-002_locator_pin.step ok=True errors=0 warnings=0
+SAVE CL-002_locator_pin.STL ok=True errors=0 warnings=0
+SAVE CL-002_locator_pin.png ok=True errors=0 warnings=0
+PART CL-002_locator_pin bodies=1 volume_mm3=609.46897479642 bounds_m=-0.004,-0.004,0,0.004,0.004,0.02
+SAVE CL-003_arm.SLDPRT ok=True errors=0 warnings=0
+SAVE CL-003_arm.step ok=True errors=0 warnings=0
+SAVE CL-003_arm.STL ok=True errors=0 warnings=0
+SAVE CL-003_arm.png ok=True errors=0 warnings=0
+PART CL-003_arm bodies=1 volume_mm3=6536.78231644264 bounds_m=-0.008,-0.008,-0.004,0.042,0.008,0.008
+SAVE CL-004_coupon.SLDPRT ok=True errors=0 warnings=0
+SAVE CL-004_coupon.step ok=True errors=0 warnings=0
+SAVE CL-004_coupon.STL ok=True errors=0 warnings=0
+SAVE CL-004_coupon.png ok=True errors=0 warnings=0
+PART CL-004_coupon bodies=1 volume_mm3=7920 bounds_m=-0.015,-0.012,0,0.015,0.012,0.011
+SAVE CL-005_M5_bolt.SLDPRT ok=True errors=0 warnings=0
+SAVE CL-005_M5_bolt.step ok=True errors=0 warnings=0
+SAVE CL-005_M5_bolt.STL ok=True errors=0 warnings=0
+SAVE CL-005_M5_bolt.png ok=True errors=0 warnings=0
+PART CL-005_M5_bolt bodies=1 volume_mm3=976.249917103028 bounds_m=-0.0045,-0.0045,0,0.0045,0.0045,0.043
+SAVE CL-006_washer.SLDPRT ok=True errors=0 warnings=0
+SAVE CL-006_washer.step ok=True errors=0 warnings=0
+SAVE CL-006_washer.STL ok=True errors=0 warnings=0
+SAVE CL-006_washer.png ok=True errors=0 warnings=0
+PART CL-006_washer bodies=1 volume_mm3=55.6376058950752 bounds_m=-0.005,-0.005,0,0.005,0.005,0.001
+SAVE CL-007_nut.SLDPRT ok=True errors=0 warnings=0
+SAVE CL-007_nut.step ok=True errors=0 warnings=0
+SAVE CL-007_nut.STL ok=True errors=0 warnings=0
+SAVE CL-007_nut.png ok=True errors=0 warnings=0
+PART CL-007_nut bodies=1 volume_mm3=164.391158221322 bounds_m=-0.004,-0.004,0,0.004,0.004,0.004
+SAVE CL-000_clamp.SLDASM ok=True errors=0 warnings=0
+MATE CL-002_locator_pin-1 Front Plane offset_mm=0 status=1 created=True
+MATE CL-002_locator_pin-1 Top Plane offset_mm=15 status=1 created=True
+MATE CL-002_locator_pin-1 Right Plane offset_mm=-10 status=1 created=True
+PLACEMENT CL-002_locator_pin-1 actual_mm=-10,15,0 expected_mm=-10,15,0 error_mm=0
+MATE CL-002_locator_pin-2 Front Plane offset_mm=0 status=1 created=True
+MATE CL-002_locator_pin-2 Top Plane offset_mm=15 status=1 created=True
+MATE CL-002_locator_pin-2 Right Plane offset_mm=10 status=1 created=True
+PLACEMENT CL-002_locator_pin-2 actual_mm=10,15,0 expected_mm=10,15,0 error_mm=0
+MATE CL-002_locator_pin-3 Front Plane offset_mm=0 status=1 created=True
+MATE CL-002_locator_pin-3 Top Plane offset_mm=-5 status=1 created=True
+MATE CL-002_locator_pin-3 Right Plane offset_mm=-18 status=1 created=True
+PLACEMENT CL-002_locator_pin-3 actual_mm=-18,-5,0 expected_mm=-18,-5,0 error_mm=0
+MATE CL-003_arm-1 Front Plane offset_mm=25 status=1 created=True
+MATE CL-003_arm-1 Top Plane offset_mm=0 status=1 created=True
+MATE CL-003_arm-1 Right Plane offset_mm=-35 status=1 created=True
+PLACEMENT CL-003_arm-1 actual_mm=-35,0,25 expected_mm=-35,0,25 error_mm=0
+MATE CL-004_coupon-1 Front Plane offset_mm=10 status=1 created=True
+MATE CL-004_coupon-1 Top Plane offset_mm=0 status=1 created=True
+MATE CL-004_coupon-1 Right Plane offset_mm=0 status=1 created=True
+PLACEMENT CL-004_coupon-1 actual_mm=0,0,10 expected_mm=0,0,10 error_mm=0
+MATE CL-005_M5_bolt-1 Front Plane offset_mm=-7 status=1 created=True
+MATE CL-005_M5_bolt-1 Top Plane offset_mm=0 status=1 created=True
+MATE CL-005_M5_bolt-1 Right Plane offset_mm=-35 status=1 created=True
+PLACEMENT CL-005_M5_bolt-1 actual_mm=-35,0,-7 expected_mm=-35,0,-7 error_mm=8.88178419700125E-16
+MATE CL-006_washer-1 Front Plane offset_mm=-1 status=1 created=True
+MATE CL-006_washer-1 Top Plane offset_mm=0 status=1 created=True
+MATE CL-006_washer-1 Right Plane offset_mm=-35 status=1 created=True
+PLACEMENT CL-006_washer-1 actual_mm=-35,0,-1 expected_mm=-35,0,-1 error_mm=0
+MATE CL-007_nut-1 Front Plane offset_mm=-5 status=1 created=True
+MATE CL-007_nut-1 Top Plane offset_mm=0 status=1 created=True
+MATE CL-007_nut-1 Right Plane offset_mm=-35 status=1 created=True
+PLACEMENT CL-007_nut-1 actual_mm=-35,0,-5 expected_mm=-35,0,-5 error_mm=0
+ASSEMBLY components=9 mates=24 rebuild=True interferences=0
+SAVE CL-000_clamp.SLDASM ok=True errors=0 warnings=0
+SAVE CL-000_clamp.step ok=True errors=0 warnings=0
+SAVE assembly.png ok=True errors=0 warnings=0
+DRAWING CL-001_base native_dimensions=4
+DATUM A attached edge, axis=2
+DATUM B attached edge, axis=1
+DATUM C attached edge, axis=0
+SAVE CL-001_base.SLDDRW ok=True errors=0 warnings=0
+SAVE CL-001_base.pdf ok=True errors=0 warnings=0
+SAVE CL-001_base-drawing.png ok=True errors=0 warnings=0
+DRAWING CL-002_locator_pin native_dimensions=4
+SAVE CL-002_locator_pin.SLDDRW ok=True errors=0 warnings=0
+SAVE CL-002_locator_pin.pdf ok=True errors=0 warnings=0
+SAVE CL-002_locator_pin-drawing.png ok=True errors=0 warnings=0
+DRAWING CL-003_arm native_dimensions=4
+SAVE CL-003_arm.SLDDRW ok=True errors=0 warnings=0
+SAVE CL-003_arm.pdf ok=True errors=0 warnings=0
+SAVE CL-003_arm-drawing.png ok=True errors=0 warnings=0
+DRAWING CL-004_coupon native_dimensions=4
+SAVE CL-004_coupon.SLDDRW ok=True errors=0 warnings=0
+SAVE CL-004_coupon.pdf ok=True errors=0 warnings=0
+SAVE CL-004_coupon-drawing.png ok=True errors=0 warnings=0
+DRAWING CL-005_M5_bolt native_dimensions=4
+SAVE CL-005_M5_bolt.SLDDRW ok=True errors=0 warnings=0
+SAVE CL-005_M5_bolt.pdf ok=True errors=0 warnings=0
+SAVE CL-005_M5_bolt-drawing.png ok=True errors=0 warnings=0
+DRAWING CL-006_washer native_dimensions=4
+SAVE CL-006_washer.SLDDRW ok=True errors=0 warnings=0
+SAVE CL-006_washer.pdf ok=True errors=0 warnings=0
+SAVE CL-006_washer-drawing.png ok=True errors=0 warnings=0
+DRAWING CL-007_nut native_dimensions=4
+SAVE CL-007_nut.SLDDRW ok=True errors=0 warnings=0
+SAVE CL-007_nut.pdf ok=True errors=0 warnings=0
+SAVE CL-007_nut-drawing.png ok=True errors=0 warnings=0
