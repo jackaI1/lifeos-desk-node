@@ -2,6 +2,8 @@
 
 I built a tool that plans cuts for a metal bracket to learn how the underlying idea works. This is a learning project.
 
+I use practice bracket geometry and simulated cuts for the examples.
+
 ## My sample part
 
 I use a 100 × 80 × 6 mm block and a 3 mm centre-cutting end mill, a cutter that can also plunge straight down. The bracket has clipped corners, a 40 × 30 mm pocket cut 2 mm deep, and four 3 mm holes cut 5 mm deep. The outside cut reaches 5.5 mm, leaving a 0.5 mm floor to keep the part attached. These are blind holes, so they do not pass through the block.

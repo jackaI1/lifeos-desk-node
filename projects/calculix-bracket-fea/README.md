@@ -2,6 +2,8 @@
 
 I built a repeatable bracket simulation to learn how the underlying idea works. This is a learning project.
 
+I use example geometry and simulated loads for the numerical checks.
+
 ## What I found
 
 The beam check gives **0.45348 mm** tip movement versus **0.45714 mm** by hand, a **0.80%** difference. Its bending-stress field away from the fixed end has **0.18% RMS error** and **0.76% maximum pointwise error**.

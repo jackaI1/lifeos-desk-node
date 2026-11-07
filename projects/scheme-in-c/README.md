@@ -2,6 +2,8 @@
 
 I built a small program that runs instructions I type to learn how the underlying idea works. This is a learning project.
 
+I use small example programs and simulated controller inputs in the tests.
+
 ## Try it
 
 I use a C compiler, Make, and Python 3 for the tests. On macOS, `xcode-select --install` provides the compiler and Make. On Ubuntu, install `build-essential` and `python3`.
