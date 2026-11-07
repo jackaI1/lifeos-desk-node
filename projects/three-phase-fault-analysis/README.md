@@ -80,4 +80,4 @@ ruff check .
 ruff format --check .
 ```
 
-There are 89 tests, including published answers, independent closed-form equations, current conservation, open ground paths, input errors, relay timing and the command-line plots. GitHub Actions runs them on Python 3.11, 3.12 and 3.13 and saves the example report and plots as downloadable artifacts.
+There are 90 tests, including published answers, independent closed-form equations, current conservation, open ground paths, input errors, relay timing and the command-line plots. GitHub Actions runs them on Python 3.11, 3.12 and 3.13 and saves the example report and plots as downloadable artifacts.
