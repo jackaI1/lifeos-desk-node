@@ -21,6 +21,7 @@ d.COMPONENTS=[
  dict(ref='R3',lib='Device:R',value='100k',fp=R,at=(200,210),nets={'1':'OUT','2':'SUM'}),
  dict(ref='U2',lib='Amplifier_Operational:MCP6001R',value='MCP6001RT-I/OT',fp='Package_TO_SOT_SMD:SOT-23-5',at=(250,100),nets={'1':'OUT','2':d.V3,'3':'REF','4':'SUM','5':d.GND}),
  dict(ref='D1',lib='Device:D_Photo',value='BPW34 photodiode',fp='OptoDevice:Photodiode_Vishay_BPW34',at=(200,70),nets={'1':'SUM','2':d.GND}),
+ dict(ref='C5',lib='Device:C',value='1nF',fp=C,at=(140,165),nets={'1':'REF','2':d.GND}),
  dict(ref='C4',lib='Device:C',value='100nF',fp=C,at=(300,70),nets={'1':d.V3,'2':d.GND}),
  dict(ref='J2',lib='Connector_Generic:Conn_01x02',value='ADC output',fp='Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical',at=(320,130),nets={'1':'OUT','2':d.GND}),
 ]

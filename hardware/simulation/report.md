@@ -18,6 +18,8 @@ raw data and `results.json`. The tool first exports the native drawing to a
 KiCad netlist and checks that the feedback components connect to the actual
 amplifier pins. It then uses the exported component values in the simulation.
 
+![Calculated current gain, frequency response and step response](comparison.png)
+
 ## Hand calculation and results
 
 A transimpedance amplifier turns current into voltage. A 100 kilohm feedback

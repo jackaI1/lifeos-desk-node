@@ -34,7 +34,7 @@ def test_socket_protocol_watchdog_and_atomic_restart(tmp_path):
     with daemon(path) as port:
         assert command(port,b'CONNECT 1 2\n')=='OK\n'
         assert command(port,b'CONNECT 1 3\n')=='ERR\n'
-        for data in [b'CONNECT 0 2\n',b'STATUS 17\n',b'CONNECT 1 2 extra\n',b'X'*100+b'\n',b'STATUS 1\x00\n']:
+        for data in [b'CONNECT 0 2\n',b'STATUS 17\n',b'STATUS 9999999999999999999999999\n',b'CONNECT -1 2\n',b'CONNECT 1 2 extra\n',b'X'*100+b'\n',b'STATUS 1\x00\n']:
             assert command(port,data).startswith('ERR')
         # Reconnect to a fresh pair and acknowledge the simulated hardware.
         assert command(port,b'CONNECT 3 4\n')=='OK\n'

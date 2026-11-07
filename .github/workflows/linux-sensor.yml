@@ -14,6 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update -qq && sudo apt-get install -y build-essential bc bison flex libssl-dev libncurses-dev cpio unzip rsync wget qemu-system-arm device-tree-compiler
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/desk-buildroot/buildroot-2024.02.9/output
+          key: buildroot-arm-6.6.63-${{ hashFiles('linux_sensor/tests/build.sh', 'linux_sensor/buildroot/board/linux.fragment') }}
       - name: Build pinned kernel and out-of-tree modules, boot ARM integration test
         run: linux_sensor/tests/build.sh
       - uses: actions/upload-artifact@v4

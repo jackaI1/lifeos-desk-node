@@ -14,7 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Create ephemeral controller password
-        run: echo "JENKINS_ADMIN_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+        run: |
+          desk_password=$(openssl rand -hex 24)
+          echo "::add-mask::$desk_password"
+          echo "JENKINS_ADMIN_PASSWORD=$desk_password" >> "$GITHUB_ENV"
       - name: Start the pinned controller with its configured pipeline
         env:
           DESK_BRANCH: '${{ github.head_ref || github.ref_name }}'

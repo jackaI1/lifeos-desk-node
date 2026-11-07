@@ -3454,6 +3454,171 @@
 	)
 	(symbol
 		(lib_id "Device:C")
+		(at 139.7 165.1 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "985cb702-299a-5fdf-8409-04dfae4113d2")
+		(property "Reference" "C5"
+			(at 140.33 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1nF"
+			(at 140.33 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 139.7 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 139.7 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 139.7 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ebaccb76-9467-5523-9346-8d784a72b83b")
+		)
+		(pin "2"
+			(uuid "c55bca80-6d7d-5200-9dd6-c9dea0db1561")
+		)
+		(instances
+			(project "light-front-end"
+				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
+					(reference "C5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 139.7 161.29)
+			(xy 139.7 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "492f5f31-8775-5834-af0c-db36c7008b14")
+	)
+	(label "REF"
+		(at 139.7 158.75 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1c577d68-e928-53b0-bdcf-6ed153349099")
+	)
+	(wire
+		(pts
+			(xy 139.7 168.91)
+			(xy 139.7 171.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "07fa44c3-5744-5715-a21a-3b78c398a3d9")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 139.7 171.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5b273244-a504-5c7a-92b0-9c913b350c5f")
+		(property "Reference" "#PWR16"
+			(at 139.7 177.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 139.7 176.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 139.7 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 139.7 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 139.7 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d4caf039-a741-552f-9978-98f30947de67")
+		)
+		(instances
+			(project "light-front-end"
+				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
+					(reference "#PWR16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
 		(at 299.72 71.12 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -3538,8 +3703,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5b273244-a504-5c7a-92b0-9c913b350c5f")
-		(property "Reference" "#PWR16"
+		(uuid "f53b34c2-10dc-59ae-bfd6-c064e9d1d04e")
+		(property "Reference" "#PWR17"
 			(at 299.72 68.58 0)
 			(effects
 				(font
@@ -3584,12 +3749,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "d4caf039-a741-552f-9978-98f30947de67")
+			(uuid "84205897-1823-5970-ace6-0ae9affc44d0")
 		)
 		(instances
 			(project "light-front-end"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR16")
+					(reference "#PWR17")
 					(unit 1)
 				)
 			)
@@ -3614,8 +3779,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f53b34c2-10dc-59ae-bfd6-c064e9d1d04e")
-		(property "Reference" "#PWR17"
+		(uuid "40119265-9ed2-5dc8-837e-877859d95458")
+		(property "Reference" "#PWR18"
 			(at 299.72 83.82 0)
 			(effects
 				(font
@@ -3660,12 +3825,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "84205897-1823-5970-ace6-0ae9affc44d0")
+			(uuid "7abb04f5-b10c-52bc-9a64-c1083090692a")
 		)
 		(instances
 			(project "light-front-end"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR17")
+					(reference "#PWR18")
 					(unit 1)
 				)
 			)
@@ -3779,8 +3944,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "40119265-9ed2-5dc8-837e-877859d95458")
-		(property "Reference" "#PWR18"
+		(uuid "04d70c13-e676-5df8-af4d-7b635b908e87")
+		(property "Reference" "#PWR19"
 			(at 312.42 138.43 0)
 			(effects
 				(font
@@ -3825,12 +3990,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "7abb04f5-b10c-52bc-9a64-c1083090692a")
+			(uuid "46bf9b61-34f6-5c2e-b4fe-6b0887b60529")
 		)
 		(instances
 			(project "light-front-end"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR18")
+					(reference "#PWR19")
 					(unit 1)
 				)
 			)
@@ -3844,8 +4009,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2baf31d0-c04f-5770-96b3-29734d145946")
-		(property "Reference" "#FLG19"
+		(uuid "e40e09ff-75bf-5cf3-b631-2aa4388695ca")
+		(property "Reference" "#FLG20"
 			(at 340.36 69.22 0)
 			(effects
 				(font
@@ -3891,12 +4056,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "07d726e0-6b33-5fc7-8e88-12da944d66c4")
+			(uuid "8bd3293c-70a4-565d-8b63-a385a7e730fe")
 		)
 		(instances
 			(project "light-front-end"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#FLG19")
+					(reference "#FLG20")
 					(unit 1)
 				)
 			)
@@ -3921,8 +4086,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "758f09df-93fd-5b37-a4ae-1c823ad18af3")
-		(property "Reference" "#PWR20"
+		(uuid "2d8c5088-5a47-5d18-8b32-94c640fc90ce")
+		(property "Reference" "#PWR21"
 			(at 340.36 77.47 0)
 			(effects
 				(font
@@ -3967,12 +4132,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "47d04fc8-a1ac-5d77-bb18-5854c7a66414")
+			(uuid "4b24eeab-b8fc-534c-bc50-a1b0f86b7ed7")
 		)
 		(instances
 			(project "light-front-end"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR20")
+					(reference "#PWR21")
 					(unit 1)
 				)
 			)
@@ -3986,8 +4151,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "446f5b54-c515-5e5f-9caf-85ccd24bb965")
-		(property "Reference" "#FLG21"
+		(uuid "e0cdafd8-2ce6-59bb-ba1e-b01cd018ed44")
+		(property "Reference" "#FLG22"
 			(at 360.68 69.22 0)
 			(effects
 				(font
@@ -4033,12 +4198,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "29189689-8e35-5584-931a-83467bbf7005")
+			(uuid "677e4a38-64a1-56a8-8cf6-1c4f13411444")
 		)
 		(instances
 			(project "light-front-end"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#FLG21")
+					(reference "#FLG22")
 					(unit 1)
 				)
 			)
@@ -4063,8 +4228,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "53cf4fa0-84c7-5129-b781-684d9acbddb9")
-		(property "Reference" "#PWR22"
+		(uuid "cb4cd726-f1df-5660-8830-9200e4cf963c")
+		(property "Reference" "#PWR23"
 			(at 360.68 80.01 0)
 			(effects
 				(font
@@ -4109,12 +4274,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "95f07d73-cc97-5a84-b3fe-9431a9cbcad9")
+			(uuid "4a536b46-a816-5d26-a5ba-c9b753c1e872")
 		)
 		(instances
 			(project "light-front-end"
 				(path "/30f70d13-4c2f-5cc3-9521-40fd3bc3cb51"
-					(reference "#PWR22")
+					(reference "#PWR23")
 					(unit 1)
 				)
 			)

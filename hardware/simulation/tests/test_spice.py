@@ -11,7 +11,7 @@ def test_exported_circuit_dc_ac_step_and_ripple(tmp_path):
     assert result['gain_ohm']==pytest.approx(rf,rel=.001)
     assert result['bandwidth_hz']==pytest.approx(1/(2*math.pi*rf*cf),rel=.12)
     assert result['step_final_v']==pytest.approx(1.65+1e-6*rf,abs=.001)
-    assert run_tia(tmp_path/'ripple',ripple=True)['ripple_vpp']<.0001
+    assert run_tia(tmp_path/'ripple',ripple=True)['output_vpp']<.0001
 
 
 @pytest.mark.parametrize('r_factor,c_factor',[(.99,.95),(1.01,1.05),(.99,1.05),(1.01,.95)])

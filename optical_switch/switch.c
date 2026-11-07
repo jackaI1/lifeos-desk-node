@@ -49,13 +49,31 @@ bool switch_load(switch_t *s,const char *path,uint64_t now) {
         if(p&&!copy.fault[i])copy.deadline[i]=now+200;}
     *s=copy;return true;
 }
+static bool port_number(const char **text,unsigned *out) {
+    const char *p=*text;unsigned value=0;bool digit=false;
+    while(*p>='0'&&*p<='9') {
+        digit=true;value=value*10U+(unsigned)(*p-'0');
+        if(value>16U)return false;
+        ++p;
+    }
+    *out=value;*text=p;return digit&&valid(value);
+}
 bool switch_command(switch_t *s,const char *command,char *out,size_t size,uint64_t now) {
-    unsigned a,b;char extra;bool ok=false;
-    if(sscanf(command,"CONNECT %u %u %c",&a,&b,&extra)==2)ok=switch_connect(s,a,b,now);
-    else if(sscanf(command,"DISCONNECT %u %c",&a,&extra)==1)ok=switch_disconnect(s,a);
-    else if(sscanf(command,"ACK %u %c",&a,&extra)==1)ok=switch_ack(s,a);
-    else if(sscanf(command,"STATUS %u %c",&a,&extra)==1&&valid(a)) {
-        int n=snprintf(out,size,"PORT %u PEER %u FAULT %u\n",a,s->peer[a-1],s->fault[a-1]);return n>0&&(size_t)n<size;
+    unsigned a=0,b=0;bool ok=false;const char *p=command;
+    if(!strncmp(p,"CONNECT ",8)) {
+        p+=8;
+        if(port_number(&p,&a)&&*p==' ') {
+            ++p;if(port_number(&p,&b)&&!*p)ok=switch_connect(s,a,b,now);
+        }
+    } else if(!strncmp(p,"DISCONNECT ",11)) {
+        p+=11;if(port_number(&p,&a)&&!*p)ok=switch_disconnect(s,a);
+    } else if(!strncmp(p,"ACK ",4)) {
+        p+=4;if(port_number(&p,&a)&&!*p)ok=switch_ack(s,a);
+    } else if(!strncmp(p,"STATUS ",7)) {
+        p+=7;
+        if(port_number(&p,&a)&&!*p) {
+            int n=snprintf(out,size,"PORT %u PEER %u FAULT %u\n",a,s->peer[a-1],s->fault[a-1]);return n>0&&(size_t)n<size;
+        }
     }
     int n=snprintf(out,size,"%s\n",ok?"OK":"ERR");return n>0&&(size_t)n<size;
 }

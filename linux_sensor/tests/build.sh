@@ -18,6 +18,8 @@ BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.6.63"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$root/linux_sensor/buildroot/board/linux.fragment"
 CONF
 make -C "$br" olddefconfig
+# Always rebuild our package from this checkout when the pinned toolchain is cached.
+if [[ -d "$br/output/build/desk-sensor-1.0" ]]; then make -C "$br" desk-sensor-dirclean; fi
 make -C "$br" -j2
 mkdir -p linux_sensor/build
 cp "$br/output/images/zImage" linux_sensor/build/

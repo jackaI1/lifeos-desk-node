@@ -75,7 +75,7 @@ quit
     magnitude=np.hypot(ac[:,1],ac[:,2]);low=magnitude[0];index=np.where(magnitude<=low/math.sqrt(2))[0]
     bandwidth=float(ac[index[0],0]) if len(index) else None
     return dict(gain_ohm=float(gain),bandwidth_hz=bandwidth,step_final_v=float(tr[np.abs(tr[:,0]-.0009).argmin(),1]),
-                ripple_vpp=float(np.ptp(tr[tr[:,0]>.003,1])),dc=dc,ac=ac,transient=tr)
+                output_vpp=float(np.ptp(tr[tr[:,0]>.003,1])),dc=dc,ac=ac,transient=tr)
 
 
 def run_leak(folder, supply=3.3):
@@ -115,7 +115,7 @@ def main():
         sweep.append(dict(rf=r,cf=c,gain_ohm=x['gain_ohm'],bandwidth_hz=x['bandwidth_hz']))
     report={k:v for k,v in base.items() if k not in ('dc','ac','transient')}
     report.update(hand_gain_ohm=rf,hand_bandwidth_hz=1/(2*math.pi*rf*cf),tolerances=sweep,
-                  ripple=run_tia(out/'ripple',ripple=True)['ripple_vpp'],leak_threshold_ohm=run_leak(out/'leak'))
+                  ripple_vpp=run_tia(out/'ripple',ripple=True)['output_vpp'],leak_threshold_ohm=run_leak(out/'leak'))
     out.mkdir(exist_ok=True,parents=True);(out/'results.json').write_text(json.dumps(report,indent=2))
     import matplotlib
     matplotlib.use('Agg')
