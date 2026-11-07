@@ -1,0 +1,1 @@
+(fp_lib_table (version 7) (lib (name "Leak") (type "KiCad") (uri "${KIPRJMOD}/Leak.pretty") (options "") (descr "KiCad 8 footprint snapshot")))

@@ -2,17 +2,26 @@
 #include "desk_core.h"
 #include <stdio.h>
 #include <string.h>
+#include "replay.h"
+#ifdef DESK_REPLAY_DEBUG
+#include <stdlib.h>
+/* Debug fixture only: production replay never aborts on a sensor error. */
+static void checksum_fault(const uint8_t raw[6]) {
+    fprintf(stderr,"injected checksum crash: expected=%02x received=%02x\n",desk_crc8(raw,2),raw[2]);
+    abort();
+}
+#endif
 
 /* Exact lines, bounded storage, no hidden NUL suffix or silently ignored tail. */
-static int read_line(char out[80]) {
+int desk_replay_read_line(FILE *input, char out[80]) {
     size_t n = 0;
     int ch;
-    while ((ch = getchar()) != EOF && ch != '\n') {
+    while ((ch = fgetc(input)) != EOF && ch != '\n') {
         if (ch == 0 || n == 79) return -1;
         out[n++] = (char)ch;
     }
     out[n] = 0;
-    if (ferror(stdin)) return -1;
+    if (ferror(input)) return -1;
     return ch == EOF && n == 0 ? 0 : 1;
 }
 
@@ -23,7 +32,7 @@ static int hex_value(char ch) {
     return -1;
 }
 
-static bool sensor_bytes(const char *line, uint8_t raw[6]) {
+bool desk_replay_sensor_bytes(const char *line, uint8_t raw[6]) {
     if (strlen(line) != 14 || line[0] != 'S' || line[1] != ' ') return false;
     for (size_t i = 0; i < 6; ++i) {
         int hi = hex_value(line[2 + i * 2]), lo = hex_value(line[3 + i * 2]);
@@ -33,6 +42,7 @@ static bool sensor_bytes(const char *line, uint8_t raw[6]) {
     return true;
 }
 
+#ifndef DESK_REPLAY_LIBRARY
 static bool bitmap(const char *path, const uint8_t frame[DESK_FRAME_SIZE]) {
     FILE *out = fopen(path, "w");
     if (!out) return false;
@@ -63,7 +73,7 @@ int main(int argc, char **argv) {
     }
 
     char line[80];
-    if (read_line(line) != 1 || strcmp(line, "DESK_REPLAY_V1") != 0)
+    if (desk_replay_read_line(stdin,line) != 1 || strcmp(line, "DESK_REPLAY_V1") != 0)
         return fail("expected DESK_REPLAY_V1 header");
     desk_ring_t ring = {0};
     desk_reading_t latest = {0};
@@ -72,7 +82,7 @@ int main(int argc, char **argv) {
     /* Buffer until the complete stream is valid; no partial log on bad input. */
     char logs[4096][200];
     int status;
-    while ((status = read_line(line)) == 1) {
+    while ((status = desk_replay_read_line(stdin,line)) == 1) {
         if (++commands > 4096) return fail("more than 4096 commands");
         if (strcmp(line, "U") == 0) {
             /* Simulate successful acknowledgement of all currently queued readings. */
@@ -84,12 +94,17 @@ int main(int argc, char **argv) {
             online = true;
         } else {
             uint8_t raw[6];
-            if (!sensor_bytes(line, raw)) return fail("expected S plus six hex bytes, or U");
+            if (!desk_replay_sensor_bytes(line, raw)) return fail("expected S plus six hex bytes, or U");
             valid = desk_decode_sht31(raw, &latest);
             if (valid) {
                 latest.sequence = ++samples;
                 desk_ring_push(&ring, latest);
-            } else ++faults;
+            } else {
+                ++faults;
+#ifdef DESK_REPLAY_DEBUG
+                checksum_fault(raw);
+#endif
+            }
             online = false; /* Samples accumulate offline until the next U. */
         }
         if (uart_path && !desk_format_cycle_log(logs[commands - 1], sizeof logs[0],
@@ -122,3 +137,5 @@ int main(int argc, char **argv) {
     puts("}");
     return fflush(stdout) == 0 ? 0 : fail("cannot write summary");
 }
+
+#endif

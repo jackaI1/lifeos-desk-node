@@ -67,6 +67,28 @@ Open `analysis/build/demo/report.md` for the comparison against known true
 readings. The [analysis guide](docs/signal-analysis.md) shows how I use the same
 filters on my saved room logs. All demo readings are generated on the computer.
 
+I can also rehearse damaged controller messages before connecting a controller.
+The recording tool turns bytes into temperatures and heater/fan commands, reports
+missing or damaged messages and turns simulated outputs off when a check fails.
+CAN is a wired message network; its FD variant carries longer messages. To try it:
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r can_monitor/requirements.txt
+.venv/bin/python -m can_monitor.replay --generate /tmp/desk-can.jsonl --faults
+.venv/bin/python -m can_monitor.replay /tmp/desk-can.jsonl --tail 3
+```
+
+The [controller recording guide](docs/can-control.md) explains the errors,
+message rates and Linux virtual network. These are simulated messages, including
+a 64-byte CAN FD snapshot. My current desk board has no CAN transceiver.
+
+For missing room logs, I can separately test delayed or lost network replies and
+save sensor batches through an encrypted message broker. The
+[connection guide](docs/network-monitoring.md) gives the demo commands, network
+layout and alarm rules. The [charging model](power_budget/charging.py) adds a
+calculated charge-time estimate to the existing battery budget.
+
 ## Overview
 
 Instead of opening my calendar, I want to look beside my desk and see what
@@ -200,6 +222,29 @@ CSV input, missing readings, the estimated noise ratio and the filter's limits.
 The filters run after collection; they do not change live readings or thermostat
 commands. Five-minute logs cannot identify rapid electrical noise such as mains
 hum, and smoothing can remove a real rapid change too.
+
+## Rehearse a controller or connection fault
+
+I can check the sensor's Bluetooth packet, Wi-Fi retry decisions and damaged
+GPS or vehicle-data recordings on my computer. I can also run the C++ sensor
+program on an emulated STM32 and follow a deliberately triggered processor
+fault back to its instruction. The [embedded guide](docs/embedded-lab.md)
+explains the commands, what each check means and what is simulated.
+
+For a longer control experiment, my [controller rehearsal](robot_controller/)
+records timing and sensor data while a simulated heater and two-joint arm run.
+Its saved readings feed the same controller-message decoder above. The
+[connection rehearsal](network_lab/) tries two delayed or interrupted upload
+links and a radio waveform with a simulated frequency shift. Both run without
+physical machinery or a paid cloud account.
+
+I also keep a [water-probe board](hardware/leak/) and a
+[light-input circuit calculation](hardware/simulation/report.md) here while I
+learn how to extend the node. They include circuit checks and simulation plots;
+neither circuit has been manufactured. The [Linux sensor experiment](linux_sensor/)
+puts the same checked sensor bytes behind a device file inside an emulated ARM
+computer. The [concurrent receiver](tcp_telemetry/) and
+[port-switch service](optical_switch/) are separate local networking experiments.
 
 ## Parts and wiring
 
@@ -353,3 +398,26 @@ remain unmeasured.
 - [air-core-reactor-calculator](projects/air-core-reactor-calculator/)
 
 - [pll-verification-testbench](projects/pll-verification-testbench/)
+
+The new controller, link, packet, driver and circuit checks are described with
+exact commands in their linked guides. Linux CI exercises the actual virtual
+CAN interface, SNMP agent, encrypted broker, isolated firewall, ARM firmware and
+kernel images. Host simulations never stand in for a manufactured-board result.
+
+For a full local Python regression, I install the combined host dependencies and
+build the three small programs used by its socket and replay tests. I need a C/C++
+compiler and Make, plus the Guile and sigrok tools described above. The circuit
+tests run when the KiCad and ngspice command-line tools are installed:
+
+```sh
+.venv/bin/python -m pip install -r requirements-dev.txt
+make -C replay
+make -C optical_switch test
+.venv/bin/cmake -S tcp_telemetry -B tcp_telemetry/build
+.venv/bin/cmake --build tcp_telemetry/build -j2
+.venv/bin/python -m pytest -q
+```
+
+The checked local run passed 298 tests, with seven Linux integration cases reserved for CI.
+The shared C/C++ Google Test runner passed ten cases under sanitizers; the alert
+runner checks all 35 state/event pairs plus debounce and a seeded replay.

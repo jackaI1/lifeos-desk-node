@@ -1,0 +1,33 @@
+name: Desk probe and analog circuits
+on:
+  push:
+    branches: [main]
+    paths: ['hardware/leak/**', 'hardware/simulation/**', '.github/workflows/circuit-lab.yml']
+  pull_request:
+    paths: ['hardware/leak/**', 'hardware/simulation/**', '.github/workflows/circuit-lab.yml']
+permissions:
+  contents: read
+jobs:
+  circuits:
+    runs-on: ubuntu-24.04
+    container:
+      image: kicad/kicad:8.0
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+      - run: apt-get update -qq && apt-get install -y ngspice python3-venv
+      - run: python3 -m venv /tmp/desk-circuit && /tmp/desk-circuit/bin/pip install -r hardware/simulation/requirements.txt
+      - run: hardware/leak/check.sh
+      - name: Check the native analog schematic and regenerate its netlist
+        run: |
+          mkdir -p hardware/simulation/build
+          kicad-cli sch erc --severity-all --exit-code-violations -o hardware/simulation/build/erc.rpt hardware/simulation/light-front-end.kicad_sch
+          kicad-cli sch export pdf -o hardware/simulation/build/light-front-end.pdf hardware/simulation/light-front-end.kicad_sch
+      - run: /tmp/desk-circuit/bin/python -m pytest hardware/simulation/tests -q
+      - run: /tmp/desk-circuit/bin/python -m hardware.simulation.spice
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe-fabrication-and-spice
+          path: |
+            hardware/leak/build/
+            hardware/simulation/build/

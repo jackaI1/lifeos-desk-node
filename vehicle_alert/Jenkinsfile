@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+    options { timestamps(); timeout(time: 10, unit: 'MINUTES'); disableConcurrentBuilds() }
+    stages {
+        stage('Build and test') {
+            steps { sh 'make -C vehicle_alert test' }
+        }
+        stage('Static analysis') {
+            steps { sh 'make -C vehicle_alert analyze' }
+        }
+    }
+    post {
+        always {
+            junit allowEmptyResults: false, testResults: 'vehicle_alert/build/test-results.xml'
+            archiveArtifacts allowEmptyArchive: false, artifacts: 'vehicle_alert/build/*.xml'
+        }
+    }
+}

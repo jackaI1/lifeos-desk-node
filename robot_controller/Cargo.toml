@@ -1,0 +1,4 @@
+[workspace]
+members = ["core", "supervisor", "embedded"]
+default-members = ["core", "supervisor"]
+resolver = "2"

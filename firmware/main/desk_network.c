@@ -1,4 +1,7 @@
 #include "desk_network.h"
+#include "desk_radio.h"
+#include "desk_health.h"
+#include "esp_timer.h"
 #include "sdkconfig.h"
 #include "esp_crt_bundle.h"
 #include "esp_event.h"
@@ -17,14 +20,27 @@
 #define CONNECTED BIT0
 #define FAILED BIT1
 static const char *TAG="desk_net";
-typedef struct { EventGroupHandle_t events; unsigned attempts; } wifi_wait_t;
+typedef struct { EventGroupHandle_t events; desk_wifi_retry_t retry; esp_timer_handle_t timer; } wifi_wait_t;
+static void reconnect(void *arg) {
+    wifi_wait_t *wait=arg;
+    if (desk_wifi_due(&wait->retry,(uint64_t)esp_timer_get_time()/1000)) esp_wifi_connect();
+}
 static void wifi_event(void *arg,esp_event_base_t base,int32_t id,void *data) {
     (void)data;
     wifi_wait_t *wait=arg;
-    if (base==IP_EVENT && id==IP_EVENT_STA_GOT_IP) xEventGroupSetBits(wait->events,CONNECTED);
-    else if (base==WIFI_EVENT && (id==WIFI_EVENT_STA_START || id==WIFI_EVENT_STA_DISCONNECTED)) {
-        if (wait->attempts++<3) esp_wifi_connect();
-        else xEventGroupSetBits(wait->events,FAILED);
+    if (base==IP_EVENT && id==IP_EVENT_STA_GOT_IP) {
+        wifi_ap_record_t ap={0};
+        if (esp_wifi_sta_get_ap_info(&ap)==ESP_OK) ESP_LOGI(TAG,"WIFI connected rssi=%d attempts=%lu",ap.rssi,(unsigned long)wait->retry.attempts);
+        desk_wifi_connected(&wait->retry);
+        xEventGroupSetBits(wait->events,CONNECTED);
+    } else if (base==WIFI_EVENT && (id==WIFI_EVENT_STA_START || id==WIFI_EVENT_STA_DISCONNECTED)) {
+        xEventGroupClearBits(wait->events,CONNECTED);
+        if (wait->retry.attempts>=6) xEventGroupSetBits(wait->events,FAILED);
+        else {
+            uint32_t delay=desk_wifi_lost(&wait->retry,(uint64_t)esp_timer_get_time()/1000);
+            esp_timer_stop(wait->timer);
+            esp_timer_start_once(wait->timer,(uint64_t)delay*1000);
+        }
     }
 }
 static esp_err_t response_event(esp_http_client_event_t *event) {
@@ -78,10 +94,12 @@ void desk_network_task(void *argument) {
     wifi_wait_t wait={0};
     esp_event_handler_instance_t wifi_handler=NULL, ip_handler=NULL;
     esp_netif_t *netif=NULL;
-    bool wifi_initialized=false, wifi_started=false, sntp_started=false;
+    bool wifi_initialized=false, wifi_started=false, sntp_started=false, health_started=false;
     char *response=NULL,*payload=NULL;
     if (!configuration_valid()) { ESP_LOGW(TAG,"Configure Wi-Fi and desk API in menuconfig"); goto done; }
     wait.events=xEventGroupCreate(); if (!wait.events) goto done;
+    esp_timer_create_args_t timer_args={.callback=reconnect,.arg=&wait,.name="wifi_retry"};
+    if (esp_timer_create(&timer_args,&wait.timer)!=ESP_OK) goto done;
     if (esp_netif_init()!=ESP_OK || esp_event_loop_create_default()!=ESP_OK) goto done;
     netif=esp_netif_create_default_wifi_sta(); if (!netif) goto done;
     wifi_init_config_t init=WIFI_INIT_CONFIG_DEFAULT();
@@ -100,6 +118,7 @@ void desk_network_task(void *argument) {
     EventBits_t bits=xEventGroupWaitBits(wait.events,CONNECTED|FAILED,pdFALSE,pdFALSE,
         pdMS_TO_TICKS(CONFIG_DESK_WIFI_TIMEOUT_SECONDS*1000));
     if (!(bits&CONNECTED)) { ESP_LOGW(TAG,"Wi-Fi deadline reached; retaining offline readings"); goto done; }
+    health_started=xTaskCreate(desk_health_task,"desk_health",3072,wait.events,2,NULL)==pdPASS;
     esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
     esp_sntp_setservername(0,CONFIG_DESK_SNTP_SERVER);
     esp_sntp_init(); sntp_started=true;
@@ -119,6 +138,11 @@ done:
     /* Unregister before stopping, so disconnect events cannot reconnect during shutdown. */
     if (wifi_handler) esp_event_handler_instance_unregister(WIFI_EVENT,ESP_EVENT_ANY_ID,wifi_handler);
     if (ip_handler) esp_event_handler_instance_unregister(IP_EVENT,IP_EVENT_STA_GOT_IP,ip_handler);
+    if (wait.timer) { esp_timer_stop(wait.timer); esp_timer_delete(wait.timer); }
+    if (health_started) {
+        xEventGroupSetBits(wait.events,DESK_HEALTH_STOP);
+        xEventGroupWaitBits(wait.events,DESK_HEALTH_DONE,pdFALSE,pdFALSE,portMAX_DELAY);
+    }
     if (wifi_started) esp_wifi_stop();
     if (wifi_initialized) esp_wifi_deinit();
     if (netif) esp_netif_destroy_default_wifi(netif);

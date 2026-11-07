@@ -1,0 +1,11 @@
+# Apply INSIDE the dedicated gateway namespace, never on the owner's host.
+table inet desk {
+ chain input {
+  type filter hook input priority 0; policy drop;
+  ct state established,related accept
+  iifname "lo" accept
+  ip saddr 10.77.0.2 tcp dport 8883 accept
+ }
+ chain forward { type filter hook forward priority 0; policy drop; }
+ chain output { type filter hook output priority 0; policy accept; }
+}

@@ -1,0 +1,26 @@
+jenkins:
+  numExecutors: 1
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          password: ${JENKINS_ADMIN_PASSWORD}
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+jobs:
+  - script: >
+      pipelineJob('desk-fsm') {
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url('https://github.com/jackaI1/lifeos-desk-node.git') }
+                branch(System.getenv('DESK_BRANCH') ?: 'main')
+              }
+            }
+            scriptPath('vehicle_alert/Jenkinsfile')
+          }
+        }
+      }

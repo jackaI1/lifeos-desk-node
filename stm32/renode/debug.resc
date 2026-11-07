@@ -1,0 +1,5 @@
+include @stm32/renode/Sht31.cs
+mach create
+machine LoadPlatformDescription @stm32/renode/desk.repl
+sysbus LoadELF @stm32/build/bare.elf
+machine StartGdbServer 3333

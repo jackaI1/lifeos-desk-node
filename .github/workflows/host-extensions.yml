@@ -1,0 +1,67 @@
+name: Desk host extensions
+on:
+  push:
+    branches: [main]
+    paths: ['host_tests/**', 'firmware/**', 'replay/**', 'telematics/**', 'vehicle_alert/**', 'tcp_telemetry/**', 'optical_switch/**', '.github/workflows/host-extensions.yml']
+  pull_request:
+    paths: ['host_tests/**', 'firmware/**', 'replay/**', 'telematics/**', 'vehicle_alert/**', 'tcp_telemetry/**', 'optical_switch/**', '.github/workflows/host-extensions.yml']
+permissions:
+  contents: read
+jobs:
+  c-core:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+    env:
+      CC: '${{ matrix.compiler }}'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install pytest==8.3.5
+      - run: sudo apt-get update -qq && sudo apt-get install -y cppcheck gdb
+      - run: cmake -S host_tests -B host_tests/build -DCMAKE_BUILD_TYPE=Debug && cmake --build host_tests/build -j2
+      - run: ctest --test-dir host_tests/build --output-on-failure --output-junit results.xml
+      - run: host_tests/build/telematics-replay < telematics/example.log
+      - run: make -C vehicle_alert test analyze
+      - run: make -C optical_switch test && python -m pytest optical_switch/tests -q
+      - name: Scripted deliberately injected checksum crash
+        env: {ASAN_OPTIONS: detect_leaks=0}
+        run: gdb -q -batch -x host_tests/checksum.gdb host_tests/build/replay-debug | tee host_tests/build/gdb.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: host-reports-${{ matrix.compiler }}
+          path: |
+            host_tests/build/results.xml
+            host_tests/build/gdb.txt
+            vehicle_alert/build/*.xml
+  tcp:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: '${{ matrix.os }}'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install pytest==8.3.5
+      - run: cmake -S tcp_telemetry -B tcp_telemetry/build -DCMAKE_BUILD_TYPE=Debug
+      - run: cmake --build tcp_telemetry/build --config Debug -j2
+      - if: runner.os != 'Windows'
+        run: python -m pytest tcp_telemetry/tests -q
+      - if: runner.os == 'Windows'
+        env: {DESK_TCP_BINARY: 'tcp_telemetry/build/Debug/desk-tcp.exe'}
+        run: python -m pytest tcp_telemetry/tests -q
+  tcp-thread-sanitizer:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install pytest==8.3.5
+      - run: cmake -S tcp_telemetry -B tcp_telemetry/build -DDESK_TSAN=ON && cmake --build tcp_telemetry/build -j2
+      - name: Reduce ASLR entropy for GCC ThreadSanitizer address layout
+        run: sudo sysctl vm.mmap_rnd_bits=28
+      - run: python -m pytest tcp_telemetry/tests -q

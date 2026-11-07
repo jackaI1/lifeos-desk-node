@@ -1,0 +1,15 @@
+.git
+.venv
+**/.venv
+**/__pycache__
+**/build
+**/target
+**/node_modules
+.env
+**/.env
+*.sqlite3*
+**/*.sqlite3*
+*.key
+**/*.key
+*.pem
+**/*.pem

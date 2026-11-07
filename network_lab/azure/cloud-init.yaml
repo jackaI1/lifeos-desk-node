@@ -1,0 +1,26 @@
+#cloud-config
+package_update: true
+packages: [python3, python3-venv, git]
+write_files:
+  - path: /etc/systemd/system/desk-link-node.service
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=Desk nested TLS measurement node
+      After=network-online.target
+      [Service]
+      EnvironmentFile=/etc/desk-link-node.env
+      WorkingDirectory=/opt/desk-lab
+      ExecStart=/opt/desk-lab/.venv/bin/python -m network_lab.timed_tls --cert ${DESK_CERT} --key ${DESK_KEY} --host 0.0.0.0 --port 443
+      Restart=on-failure
+      NoNewPrivileges=true
+      ProtectSystem=strict
+      PrivateTmp=true
+      [Install]
+      WantedBy=multi-user.target
+runcmd:
+  - [git, clone, --depth, '1', 'https://github.com/jackaI1/lifeos-desk-node.git', /opt/desk-lab]
+  - [python3, -m, venv, /opt/desk-lab/.venv]
+  - [/opt/desk-lab/.venv/bin/pip, install, -r, /opt/desk-lab/network_lab/requirements.txt]
+# Certificate/key paths must be supplied by the owner before enabling the service.
+# No private key or invented public endpoint is part of this template.

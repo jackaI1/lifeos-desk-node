@@ -1,0 +1,27 @@
+name: ARM Linux sensor drivers
+on:
+  push:
+    branches: [main]
+    paths: ['linux_sensor/**', '.github/workflows/linux-sensor.yml']
+  pull_request:
+    paths: ['linux_sensor/**', '.github/workflows/linux-sensor.yml']
+permissions:
+  contents: read
+jobs:
+  buildroot-qemu:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y build-essential bc bison flex libssl-dev libncurses-dev cpio unzip rsync wget qemu-system-arm device-tree-compiler
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/desk-buildroot/buildroot-2024.02.9/output
+          key: buildroot-arm-6.6.63-${{ hashFiles('linux_sensor/tests/build.sh', 'linux_sensor/buildroot/board/linux.fragment') }}
+      - name: Build pinned kernel and out-of-tree modules, boot ARM integration test
+        run: linux_sensor/tests/build.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arm-linux-sensor-evidence
+          path: linux_sensor/build/

@@ -1,0 +1,43 @@
+name: STM32 C++ emulator
+on:
+  push:
+    branches: [main]
+    paths: ['stm32/**', '.github/workflows/stm32.yml']
+  pull_request:
+    paths: ['stm32/**', '.github/workflows/stm32.yml']
+permissions:
+  contents: read
+jobs:
+  emulator:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned Renode and ARM command-line toolchain
+        run: |
+          curl -fLsS https://github.com/renode/renode/releases/download/v1.17.0/renode-1.17.0.linux-portable.tar.gz -o /tmp/renode.tar.gz
+          mkdir -p /tmp/desk-renode
+          tar -xzf /tmp/renode.tar.gz -C /tmp/desk-renode
+          renode_binary=$(find /tmp/desk-renode -maxdepth 3 -type f -name renode -perm /111 | head -1)
+          test -n "$renode_binary"
+          renode_dir=$(dirname "$renode_binary")
+          echo "$renode_dir" >> "$GITHUB_PATH"
+          echo "RENODE_DIR=$renode_dir" >> "$GITHUB_ENV"
+          sudo apt-get update -qq
+          sudo apt-get install -y gcc-arm-none-eabi libstdc++-arm-none-eabi-newlib gdb-multiarch
+      - run: python3 -m pip install -r "$RENODE_DIR/tests/requirements.txt"
+      - run: make -C stm32 -j2
+      - run: python3 stm32/tests/check_symbols.py
+      - name: Actual bare-metal and statically allocated FreeRTOS ELFs on Renode
+        run: renode-test stm32/renode/firmware.robot --results-dir stm32/renode/results
+      - name: Trace a hard fault to its ARM instruction
+        run: stm32/renode/gdb-test.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stm32-emulator-evidence
+          path: |
+            stm32/build/*.elf
+            stm32/build/debug/
+            stm32/renode/results/

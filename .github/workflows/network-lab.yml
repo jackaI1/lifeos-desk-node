@@ -1,0 +1,39 @@
+name: Satellite-style network lab
+on:
+  push:
+    branches: [main]
+    paths: ['network_lab/**', 'networking/**', '.github/workflows/network-lab.yml']
+  pull_request:
+    paths: ['network_lab/**', 'networking/**', '.github/workflows/network-lab.yml']
+permissions:
+  contents: read
+jobs:
+  simulated-links:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r network_lab/requirements.txt
+      - run: python -m pytest network_lab/tests -q
+      - run: python -m network_lab.links
+      - name: Compile the Azure deployment without an account
+        run: az bicep build --file network_lab/azure/main.bicep --outfile /tmp/desk-azure.json
+  ofdm:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y gnuradio octave python3-pytest python3-numpy
+      - run: DESK_GNURADIO=1 /usr/bin/python3 -m pytest network_lab/tests/test_ofdm.py -q
+      - run: /usr/bin/python3 -m network_lab.ofdm
+  android-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.10.2'}
+      - run: gradle -p network_lab/android :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with: {name: android-link-measurement, path: network_lab/android/app/build/outputs/apk/debug/*.apk}

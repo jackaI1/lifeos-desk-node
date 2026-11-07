@@ -1,0 +1,18 @@
+/dts-v1/;
+/plugin/;
+/ {
+ fragment@0 {
+  target-path = "/";
+  __overlay__ {
+   desk-i2c {
+    compatible = "lifeos,sim-i2c";
+    #address-cells = <1>;
+    #size-cells = <0>;
+    sensor@44 {
+     compatible = "lifeos,sht31-sim";
+     reg = <0x44>;
+    };
+   };
+  };
+ };
+};
