@@ -2,123 +2,17 @@
 
 I built a small desk display and room monitor because I wanted to see my next class at a glance and keep temperature and humidity readings in LifeOS.
 
-I can compare the original USB board with a smaller battery design before
-ordering either one. From this folder, with Python 3.11 or newer, run:
+The display is meant to show my next class or task beside the latest room
+reading. LifeOS is my planning system. The device program wakes about every
+five minutes, reads the sensor and sends readings over Wi-Fi to a small program
+beside LifeOS, where they become daily room-log notes.
 
-```sh
-python3 -m power_budget.compare
-```
-
-It shows where current goes and estimates battery life. With the documented
-example assumptions, calculated average input current falls from 11.960 mA to
-6.715 mA. These are datasheet calculations, not measurements. The new
-[48 × 54 mm battery board](hardware/revb/README.md) has a charger and a regulator
-that uses less current itself. I still need to build it and fill in the
-[bench measurement sheet](docs/power-and-battery.md#bench-sheet-intentionally-empty).
-I also have an [antenna matching calculator](docs/antenna-matching.md) that reads
-radio measurements and suggests small components to reduce reflections. Its
-included example uses clearly labelled synthetic data; I have not measured an antenna.
-
-I use a wiring plan for removable sensor and programming leads so I can cut
-and label each wire and check it before powering the board. With Python 3.11 or
-newer, I can make the documents without a board or extra packages:
-
-```sh
-python3 -m harness.check harness/example.json
-python3 -m harness.generate harness/example.json --output harness/build
-```
-
-Open `harness/build/harness.svg` for the drawing and the CSV files for the cut
-list, labels and continuity and polarity test sheet. The example covers the J2
-sensor expansion and J3 programming header. The [harness guide](docs/harness.md)
-explains how to change lengths and pin assignments and check the real wiring.
-
-I also keep a purchasing record for the board so I can check replacements and
-missing material declarations before ordering parts. It covers all 31 components,
-with nine replacement candidates and a spreadsheet for an assembler. With
-Python 3.11+, KiCad 8 and its command-line tools installed, I can try it without
-a board or an account:
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r hardware/components/requirements.txt
-.venv/bin/python -m hardware.components --boards 10
-```
-
-Open `hardware/build/components/desk-node-cm.xlsx`, or download the
-[example spreadsheet](hardware/components/review/desk-node-cm.xlsx). The
-[parts guide](docs/components.md) shows how I load the same records into InvenTree,
-a free parts manager, and explains the risk report. RoHS and REACH are rules about
-restricted substances; missing manufacturer evidence stays marked unverified.
-The replacement parts are candidates that still need board testing.
-
-I can also check whether sudden jumps in the room log are likely to be noise.
-The analysis tool smooths isolated spikes and faster variations, then shows which
-repeating changes remain. To try it without a board, with Python 3.11 or newer,
-run from this folder:
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r analysis/requirements.txt
-.venv/bin/python -m analysis.demo
-```
-
-Open `analysis/build/demo/report.md` for the comparison against known true
-readings. The [analysis guide](docs/signal-analysis.md) shows how I use the same
-filters on my saved room logs. All demo readings are generated on the computer.
-
-I can also rehearse damaged controller messages before connecting a controller.
-The recording tool turns bytes into temperatures and heater/fan commands, reports
-missing or damaged messages and turns simulated outputs off when a check fails.
-CAN is a wired message network; its FD variant carries longer messages. To try it:
-
-```sh
-python3 -m venv .venv
-.venv/bin/pip install -r can_monitor/requirements.txt
-.venv/bin/python -m can_monitor.replay --generate /tmp/desk-can.jsonl --faults
-.venv/bin/python -m can_monitor.replay /tmp/desk-can.jsonl --tail 3
-```
-
-The [controller recording guide](docs/can-control.md) explains the errors,
-message rates and Linux virtual network. These are simulated messages, including
-a 64-byte CAN FD snapshot. My current desk board has no CAN transceiver.
-
-For missing room logs, I can separately test delayed or lost network replies and
-save sensor batches through an encrypted message broker. The
-[connection guide](docs/network-monitoring.md) gives the demo commands, network
-layout and alarm rules. The [charging model](power_budget/charging.py) adds a
-calculated charge-time estimate to the existing battery budget.
-
-## Overview
-
-Instead of opening my calendar, I want to look beside my desk and see what
-is next. This personal project brings together a small screen, a room sensor
-and LifeOS, my planning system. The screen is designed to show the next class
-or task deadline alongside the latest temperature and humidity.
-
-The device program, called firmware, wakes about every five minutes. It reads
-the sensor, fetches the next event over Wi-Fi and sends readings to a small
-program running beside LifeOS. That program saves daily room-log notes. I have
-software checks and a circuit-board design, but I have not bench-tested an
-assembled device. Screen operation, sensor accuracy and power draw still need
-physical checks.
-
-Before connecting a sensor, I can rehearse a long outage on my computer. I write
-a short list of pretend readings, run it through the same reading queue and screen
-code used by the device, and see which readings survive. I can also save an image
-of the screen. The replay below needs no board, LifeOS account or network service.
-
-I can also check recordings of the sensor wires and the device's serial log.
-The capture tool turns recorded highs and lows into messages, then points out
-rejected messages, missing acknowledgements and damaged readings. I can try it
-with generated clean and damaged recordings before connecting a board.
-
-I can also use the room readings to try a thermostat on my computer. I choose a
-target temperature, watch simulated heating and fan outputs respond, and read or
-change settings through the same kinds of connections used in building controls.
-The computer can simulate the room too, so I can try this part without a board or
-a LifeOS account. Start with the commands below; the parts and flashing steps
-follow for the physical desk display.
+I can try the sensor queue and screen on my computer with the outage demo below.
+It uses the same code as the device, with pretend readings and uploads. For the
+physical display, I use the [parts and wiring](#parts-and-wiring) and
+[build and flash](#build-and-flash) steps. I have software checks and a board
+design; I still need to bench-test an assembled device, including its screen,
+sensor accuracy and power draw.
 
 ## Try a sensor outage without a board
 
@@ -245,6 +139,95 @@ neither circuit has been manufactured. The [Linux sensor experiment](linux_senso
 puts the same checked sensor bytes behind a device file inside an emulated ARM
 computer. The [concurrent receiver](tcp_telemetry/) and
 [port-switch service](optical_switch/) are separate local networking experiments.
+
+## Plan the board and connections
+
+I can compare the original USB board with a smaller battery design before
+ordering either one. From this folder, with Python 3.11 or newer, run:
+
+```sh
+python3 -m power_budget.compare
+```
+
+It shows where current goes and estimates battery life. With the documented
+example assumptions, calculated average input current falls from 11.960 mA to
+6.715 mA. These are datasheet calculations, not measurements. The new
+[48 × 54 mm battery board](hardware/revb/README.md) has a charger and a regulator
+that uses less current itself. I still need to build it and fill in the
+[bench measurement sheet](docs/power-and-battery.md#bench-sheet-intentionally-empty).
+I also have an [antenna matching calculator](docs/antenna-matching.md) that reads
+radio measurements and suggests small components to reduce reflections. Its
+included example uses clearly labelled synthetic data; I have not measured an antenna.
+
+I use a wiring plan for removable sensor and programming leads so I can cut
+and label each wire and check it before powering the board. With Python 3.11 or
+newer, I can make the documents without a board or extra packages:
+
+```sh
+python3 -m harness.check harness/example.json
+python3 -m harness.generate harness/example.json --output harness/build
+```
+
+Open `harness/build/harness.svg` for the drawing and the CSV files for the cut
+list, labels and continuity and polarity test sheet. The example covers the J2
+sensor expansion and J3 programming header. The [harness guide](docs/harness.md)
+explains how to change lengths and pin assignments and check the real wiring.
+
+I also keep a purchasing record for the board so I can check replacements and
+missing material declarations before ordering parts. It covers all 31 components,
+with nine replacement candidates and a spreadsheet for an assembler. With
+Python 3.11+, KiCad 8 and its command-line tools installed, I can try it without
+a board or an account:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r hardware/components/requirements.txt
+.venv/bin/python -m hardware.components --boards 10
+```
+
+Open `hardware/build/components/desk-node-cm.xlsx`, or download the
+[example spreadsheet](hardware/components/review/desk-node-cm.xlsx). The
+[parts guide](docs/components.md) shows how I load the same records into InvenTree,
+a free parts manager, and explains the risk report. RoHS and REACH are rules about
+restricted substances; missing manufacturer evidence stays marked unverified.
+The replacement parts are candidates that still need board testing.
+
+I can also check whether sudden jumps in the room log are likely to be noise.
+The analysis tool smooths isolated spikes and faster variations, then shows which
+repeating changes remain. To try it without a board, with Python 3.11 or newer,
+run from this folder:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r analysis/requirements.txt
+.venv/bin/python -m analysis.demo
+```
+
+Open `analysis/build/demo/report.md` for the comparison against known true
+readings. The [analysis guide](docs/signal-analysis.md) shows how I use the same
+filters on my saved room logs. All demo readings are generated on the computer.
+
+I can also rehearse damaged controller messages before connecting a controller.
+The recording tool turns bytes into temperatures and heater/fan commands, reports
+missing or damaged messages and turns simulated outputs off when a check fails.
+CAN is a wired message network; its FD variant carries longer messages. To try it:
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r can_monitor/requirements.txt
+.venv/bin/python -m can_monitor.replay --generate /tmp/desk-can.jsonl --faults
+.venv/bin/python -m can_monitor.replay /tmp/desk-can.jsonl --tail 3
+```
+
+The [controller recording guide](docs/can-control.md) explains the errors,
+message rates and Linux virtual network. These are simulated messages, including
+a 64-byte CAN FD snapshot. My current desk board has no CAN transceiver.
+
+For missing room logs, I can separately test delayed or lost network replies and
+save sensor batches through an encrypted message broker. The
+[connection guide](docs/network-monitoring.md) gives the demo commands, network
+layout and alarm rules. The [charging model](power_budget/charging.py) adds a
+calculated charge-time estimate to the existing battery budget.
 
 ## Parts and wiring
 
