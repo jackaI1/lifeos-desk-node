@@ -110,7 +110,8 @@ The example is a public standard NMEA example plus synthetic OBD bytes, not a
 recording of Jack's movements or a real vehicle. The table-driven alert library
 keeps warning and latched-fault states separate. Ignition must be off before a
 clear request can start; a fault during its 500 ms debounce returns to the
-latched state. A backwards clock or invalid event fails closed. The unit tests
+latched state. A one-second readiness deadline also becomes a warning on a
+timer tick. A backwards clock or invalid event fails closed. The unit tests
 cover all 35 state/event pairs and a seeded 10,000-event replay. The
 [deviation notes](../vehicle_alert/deviations.md) explain the automated MISRA
 subset check. This is not a MISRA compliance certification.

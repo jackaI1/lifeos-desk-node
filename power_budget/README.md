@@ -1,5 +1,8 @@
 # Desk-node power estimates
 
+I built a power calculator because I wanted to compare the desk node's USB and
+battery designs before buying parts or measuring an assembled board.
+
 I use `python3 -m power_budget.compare` to compare Rev A and Rev B using the
 firmware sleep setting, datasheet currents and explicit assumptions. The
 [power guide](../docs/power-and-battery.md) explains each input, the runtime

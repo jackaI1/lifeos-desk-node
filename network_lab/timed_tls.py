@@ -3,6 +3,7 @@ from contextlib import contextmanager
 import hashlib
 import json
 import math
+import statistics
 import socket
 import socketserver
 import ssl
@@ -73,14 +74,44 @@ def node(server_context,host='127.0.0.1',port=0):
     class Handler(socketserver.BaseRequestHandler):
         def handle(self):
             self.request.settimeout(2)
+            self.request.setsockopt(socket.IPPROTO_TCP,socket.TCP_NODELAY,1)
             try:
                 with server_context.wrap_socket(self.request,server_side=True) as outer:
                     connection=Nested(outer,server_context,server=True)
+                    timings=[]
+                    shared_key=None
                     while True:
-                        data=connection.read();request=json.loads(data)
-                        if request.get('operation')=='close':break
-                        if request.get('operation')!='probe' or type(request.get('sequence')) is not int:raise ValueError('bad probe')
-                        connection.write(json.dumps(dict(sequence=request['sequence'],received_ns=time.monotonic_ns())).encode())
+                        request=json.loads(connection.read())
+                        operation=request.get('operation')
+                        if operation=='close':break
+                        if operation=='probe':
+                            if type(request.get('sequence')) is not int:raise ValueError('bad probe')
+                            connection.write(json.dumps(dict(sequence=request['sequence'],received_ns=time.monotonic_ns())).encode())
+                        elif operation=='paired_probe':
+                            sequence=request['sequence']
+                            if type(sequence) is not int or sequence!=len(timings) or sequence>=256:raise ValueError('bad paired sequence')
+                            # Controlled endpoint delay supplies the correlated lab trace.
+                            time.sleep(.005 if sequence%2==0 else .025)
+                            connection.write(json.dumps(dict(sequence=sequence)).encode())
+                            start=time.monotonic_ns()
+                            connection.write(json.dumps(dict(reverse_probe=sequence)).encode())
+                            if json.loads(connection.read())!={'reverse_ack':sequence}:raise ValueError('bad reverse probe')
+                            timings.append((time.monotonic_ns()-start)/1e6)
+                            connection.write(b'{"paired_ack":true}')
+                        elif operation=='reconcile':
+                            indices=request['indices'];hints=request['syndromes']
+                            if not indices or len(indices)%7 or len(set(indices))!=len(indices) or any(type(i) is not int or not 0<=i<len(timings) for i in indices):raise ValueError('bad selected samples')
+                            threshold=statistics.median(timings)
+                            peer=[int(timings[i]>threshold) for i in indices]
+                            corrected=correct(peer,hints)
+                            shared_key=hashlib.sha256(bytes(corrected)).digest()
+                            connection.write(json.dumps(dict(confirmation=hashlib.sha256(shared_key).hexdigest())).encode())
+                        elif operation=='sealed':
+                            if shared_key is None:raise ValueError('no confirmed timing key')
+                            plaintext=decrypt_experiment(shared_key,bytes.fromhex(request['packet']))
+                            response=encrypt_experiment(shared_key,plaintext)
+                            connection.write(json.dumps(dict(packet=response.hex())).encode())
+                        else:raise ValueError('unknown operation')
             except (OSError,EOFError,ValueError):pass
     class Server(socketserver.ThreadingTCPServer):daemon_threads=False
     with Server((host,port),Handler) as server:
@@ -95,6 +126,7 @@ def probe(address,context,count=32):
     if not 8<=count<=256:raise ValueError('probe count must be 8..256')
     readings=[]
     with socket.create_connection(address,timeout=2) as raw:
+        raw.setsockopt(socket.IPPROTO_TCP,socket.TCP_NODELAY,1)
         with context.wrap_socket(raw,server_hostname='localhost') as outer:
             inner=Nested(outer,context)
             for sequence in range(count):
@@ -119,6 +151,15 @@ def syndrome(block):
     return value
 
 
+def correct(peer,hints):
+    if not peer or len(peer)%7 or len(hints)!=len(peer)//7 or any(type(x) is not int or not 0<=x<8 for x in hints):raise ValueError('invalid Hamming helper data')
+    result=list(peer)
+    for block,hint in enumerate(hints):
+        offset=block*7;index=syndrome(peer[offset:offset+7])^hint
+        if index:result[offset+index-1]^=1
+    return result
+
+
 def reconcile(reference,peer):
     """Hamming syndrome corrects at most one differing bit per seven positions.
 
@@ -126,10 +167,8 @@ def reconcile(reference,peer):
     confirmation, not a proof of secret entropy or a complete key-agreement scheme.
     """
     if len(reference)!=len(peer) or not reference or len(reference)%7:raise ValueError('equal multiples of seven required')
-    corrected=list(peer)
-    for offset in range(0,len(peer),7):
-        index=syndrome(reference[offset:offset+7])^syndrome(peer[offset:offset+7])
-        if index:corrected[offset+index-1]^=1
+    hints=[syndrome(reference[i:i+7]) for i in range(0,len(reference),7)]
+    corrected=correct(peer,hints)
     if corrected!=list(reference):raise ValueError('too many mismatches; abort experiment')
     return hashlib.sha256(bytes(corrected)).digest()
 
@@ -142,6 +181,42 @@ def encrypt_experiment(key,payload):
 
 
 def decrypt_experiment(key,packet):return AESGCM(key).decrypt(packet[:12],packet[12:],b'desk-rtt-lab-v1')
+
+
+def paired_session(address,context,payload=b'desk temperature=21.5',count=28):
+    """Both ends measure a real round trip, reconcile bits, confirm and encrypt.
+
+    The endpoint delays are synthetic and public. This demonstrates mechanics,
+    not secret key entropy; independently authenticated TLS protects the session.
+    """
+    if not 14<=count<=256:raise ValueError('14..256 paired probes required')
+    with socket.create_connection(address,timeout=2) as raw:
+        raw.setsockopt(socket.IPPROTO_TCP,socket.TCP_NODELAY,1)
+        with context.wrap_socket(raw,server_hostname='localhost') as outer:
+            connection=Nested(outer,context);samples=[]
+            for sequence in range(count):
+                start=time.monotonic_ns()
+                connection.write(json.dumps(dict(operation='paired_probe',sequence=sequence)).encode())
+                if json.loads(connection.read())!={'sequence':sequence}:raise ValueError('wrong forward probe')
+                samples.append((time.monotonic_ns()-start)/1e6)
+                if json.loads(connection.read())!={'reverse_probe':sequence}:raise ValueError('wrong reverse probe')
+                time.sleep(.005 if sequence%2==0 else .025)
+                connection.write(json.dumps(dict(reverse_ack=sequence)).encode())
+                if json.loads(connection.read())!={'paired_ack':True}:raise ValueError('missing pair ACK')
+            quantised=bits(samples,statistics.median(samples),guard=1)
+            indices=list(quantised);indices=indices[:len(indices)//7*7]
+            if not indices:raise ValueError('no usable timing variation')
+            reference=[quantised[i] for i in indices]
+            hints=[syndrome(reference[i:i+7]) for i in range(0,len(reference),7)]
+            key=hashlib.sha256(bytes(reference)).digest()
+            connection.write(json.dumps(dict(operation='reconcile',indices=indices,syndromes=hints)).encode())
+            confirmation=json.loads(connection.read())['confirmation']
+            if confirmation!=hashlib.sha256(key).hexdigest():raise ValueError('timing keys disagree; abort')
+            connection.write(json.dumps(dict(operation='sealed',packet=encrypt_experiment(key,payload).hex())).encode())
+            received=decrypt_experiment(key,bytes.fromhex(json.loads(connection.read())['packet']))
+            if received!=payload:raise ValueError('decrypted data mismatch')
+            connection.write(b'{"operation":"close"}')
+            return dict(paired_probes=count,retained_bits=len(reference),confirmed=True,received=received.decode(),outer_tls=outer.version(),inner_tls=connection.inner.version())
 
 
 def main():

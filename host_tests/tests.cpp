@@ -43,6 +43,8 @@ TEST(Telematics, RecordedGgaAndRmc) {
     std::string rmc="$GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A";
     ASSERT_TRUE(nmea_parse(rmc.data(),rmc.size(),&fix)); EXPECT_NEAR(fix.speed_kph,41.4848,1e-6);
     for(size_t n=0;n<gga.size();++n) EXPECT_FALSE(nmea_parse(gga.data(),n,&fix));
+    auto below=sentence("GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,-12.5,M,-5.4,M,,");
+    EXPECT_TRUE(nmea_parse(below.data(),below.size(),&fix));
     gga[20]^=1; EXPECT_FALSE(nmea_parse(gga.data(),gga.size(),&fix));
 }
 TEST(Telematics, RejectMalformedFieldsEvenWithValidChecksum) {
@@ -51,6 +53,7 @@ TEST(Telematics, RejectMalformedFieldsEvenWithValidChecksum) {
         "GPGGA,246000,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,",
         "GPGGA,123519,4807.038,X,01131.000,E,1,08,0.9,545.4,M,46.9,M,,",
         "GPGGA,123519,4807.,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,",
+        "GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,12.5,M,bad,M,,",
         "GPRMC,123519,V,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W",
         "GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,310294,003.1,W"}) {
         auto data=sentence(body); EXPECT_FALSE(nmea_parse(data.data(),data.size(),&fix))<<data;
@@ -92,6 +95,8 @@ TEST(Alert, HeldFaultDebounceTimeoutAndRandomReplay) {
     alert_step(&f,ALERT_FAULT,551); alert_step(&f,ALERT_CLEAR,552); alert_step(&f,ALERT_FAULT,553); EXPECT_EQ(f.state,ALERT_LATCHED);
     std::mt19937 random(42); for(uint32_t i=554;i<10554;++i) { alert_step(&f,static_cast<uint8_t>(random()%7),i); ASSERT_LT(f.state,5); if(f.state>=2) ASSERT_TRUE(alert_alarm(&f)); }
     alert_step(&f,ALERT_ON,0); EXPECT_EQ(f.state,ALERT_LATCHED);
+    alert_init(&f); alert_step(&f,ALERT_ON,0); alert_step(&f,ALERT_TICK,999); EXPECT_EQ(f.state,ALERT_READY);
+    alert_step(&f,ALERT_TICK,1000); EXPECT_EQ(f.state,ALERT_WARNING);
 }
 extern "C" {
 #include "replay.h"

@@ -34,6 +34,10 @@ void alert_step(alert_t *fsm, uint8_t event, uint32_t now)
             ((now - fsm->since) >= ((uint32_t)500U))) {
             next = ALERT_OFF;
         }
+        if ((fsm->state == ALERT_READY) && (event == ALERT_TICK) &&
+            ((now - fsm->since) >= ((uint32_t)1000U))) {
+            next = ALERT_WARNING;
+        }
         if (next != fsm->state) {
             fsm->since = now;
         }

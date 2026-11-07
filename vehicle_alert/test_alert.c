@@ -11,8 +11,10 @@ int main(void) {
     alert_t f; alert_init(&f); alert_step(&f,ALERT_FAULT,1); alert_step(&f,ALERT_CLEAR,2);
     alert_step(&f,ALERT_TICK,501); assert(f.state==ALERT_CLEARING);
     alert_step(&f,ALERT_TICK,502); assert(f.state==ALERT_OFF); ++tests;
+    alert_init(&f);alert_step(&f,ALERT_ON,0);alert_step(&f,ALERT_TICK,999);assert(f.state==ALERT_READY);
+    alert_step(&f,ALERT_TICK,1000);assert(f.state==ALERT_WARNING);
     uint32_t seed=42;
-    for(uint32_t i=503;i<10503;++i) { seed=seed*UINT32_C(1664525)+UINT32_C(1013904223); alert_step(&f,(uint8_t)(seed%7U),i); assert(f.state<5); }
+    for(uint32_t i=1001;i<11001;++i) { seed=seed*UINT32_C(1664525)+UINT32_C(1013904223); alert_step(&f,(uint8_t)(seed%7U),i); assert(f.state<5); }
     ++tests;
     printf("%u state/transition and seeded replay checks passed\n",tests);
     FILE *out=fopen("test-results.xml","w");

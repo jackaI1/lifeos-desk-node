@@ -21,6 +21,21 @@ static bool number(const char *text, double *out) {
     *out=value;
     return digit && text[strlen(text)-1]!='.';
 }
+static bool signed_number(const char *text,double *out) {
+    bool negative=*text=='-';double value;
+    if(negative)++text;
+    if(!number(text,&value))return false;
+    *out=negative?-value:value;return true;
+}
+static bool station(const char *text) {
+    unsigned value=0;
+    if(strlen(text)>4)return false;
+    for(size_t i=0;text[i];++i) {
+        if(text[i]<'0'||text[i]>'9')return false;
+        value=value*10U+(unsigned)(text[i]-'0');
+    }
+    return value<=1023;
+}
 static bool integer(const char *s, unsigned maximum, uint8_t *out) {
     if (!*s) return false;
     unsigned n=0;
@@ -81,15 +96,21 @@ bool nmea_parse(const char *sentence, size_t length, gps_fix_t *out) {
     if (strlen(fields[0])!=5 || !((fields[0][0]=='G'&&fields[0][1]=='P') || (fields[0][0]=='G'&&fields[0][1]=='N'))) return false;
     gps_fix_t result={0}; memcpy(result.kind,fields[0]+2,3);
     if (!strcmp(result.kind,"GGA")) {
-        double altitude,hdop;
+        double altitude,hdop,geoid,age;
         if (count!=15 || !utc(fields[1]) || !coordinate(fields[2],fields[3],true,&result.latitude) ||
             !coordinate(fields[4],fields[5],false,&result.longitude) || !integer(fields[6],8,&result.fix) || result.fix==0 ||
-            !integer(fields[7],99,&result.satellites) || !number(fields[8],&hdop) || !number(fields[9],&altitude) || strcmp(fields[10],"M")) return false;
+            !integer(fields[7],99,&result.satellites) || !number(fields[8],&hdop) || !signed_number(fields[9],&altitude) || strcmp(fields[10],"M") ||
+            !signed_number(fields[11],&geoid) || strcmp(fields[12],"M") ||
+            (*fields[13] && !number(fields[13],&age)) || !station(fields[14])) return false;
     } else if (!strcmp(result.kind,"RMC")) {
-        double knots,course;
+        double knots,course,variation;
         if (count<12 || count>13 || !utc(fields[1]) || strcmp(fields[2],"A") ||
             !coordinate(fields[3],fields[4],true,&result.latitude) || !coordinate(fields[5],fields[6],false,&result.longitude) ||
             !number(fields[7],&knots) || knots>1000 || !number(fields[8],&course) || course>=360 || !date(fields[9])) return false;
+        if (*fields[10]) {
+            if(!number(fields[10],&variation) || variation>180 || (strcmp(fields[11],"E") && strcmp(fields[11],"W")))return false;
+        } else if(*fields[11])return false;
+        if(count==13 && (strlen(fields[12])!=1 || !strchr("ADEF MNRSP",fields[12][0]) || fields[12][0]==' '))return false;
         result.speed_kph=knots*1.852; result.fix=1;
     } else return false;
     *out=result; return true;

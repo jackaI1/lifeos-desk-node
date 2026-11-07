@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 import pytest
-from network_lab.timed_tls import bits,contexts,decrypt_experiment,encrypt_experiment,node,probe,reconcile
+from network_lab.timed_tls import bits,contexts,decrypt_experiment,encrypt_experiment,node,probe,reconcile,paired_session
 
 
 def test_actual_double_tls_nodes_exchange_timed_packets(tmp_path):
@@ -11,6 +11,10 @@ def test_actual_double_tls_nodes_exchange_timed_packets(tmp_path):
         a=probe(first,client,8);b=probe(second,client,8)
         assert len(a)==len(b)==8
         assert all(x>0 for x in a+b)
+        result=paired_session(first,client,count=14)
+        assert result['confirmed'] and result['retained_bits']>=7
+        assert result['received']=='desk temperature=21.5'
+        assert result['outer_tls'] and result['inner_tls']
         # Exercise quantisation on actual packet timings; a stable local link may
         # supply zero usable variation. It never invents entropy from that case.
         threshold=sum(a)/len(a);quantised=bits(a,threshold,guard=0)

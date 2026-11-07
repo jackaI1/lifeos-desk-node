@@ -91,10 +91,12 @@ with `--host 0.0.0.0 --port 443`. I remove that resource group when finished.
 
 I also experiment with quantising RTT samples into bits, discarding values near
 a threshold. Hamming syndromes reconcile at most one mismatch per seven-bit
-block, and an AES-GCM round trip checks that the resulting keys match. Tests
-separate actual packet timing from synthetic paired timing samples used for
-controlled bit-error injection. A stable local link may produce no useful bits.
+block, and an AES-GCM round trip checks that the resulting keys match. The paired-session integration test measures a forward and reverse round trip
+at both real TLS endpoints. A public 5/25 ms endpoint-delay pattern supplies
+controlled correlation. The peers exchange Hamming helper data, confirm the
+resulting keys, then exchange and decrypt an AES-GCM payload through both TLS
+layers. Separate tests inject controlled bit errors into the reconciliation. A stable local link may produce no useful bits.
 RTT does not establish secret entropy, the helper data leaks information and
-the experiment's final equality check is an oracle, not a deployable peer
-agreement protocol. TLS supplies the actual transport security; I do not use
+the fixed delay trace supplies predictable bits. This is not a deployable secret
+key-agreement protocol. TLS supplies the actual transport security; I do not use
 these timing bits as production encryption keys.

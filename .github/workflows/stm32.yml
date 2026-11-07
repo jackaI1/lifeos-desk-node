@@ -21,6 +21,7 @@ jobs:
           sudo apt-get install -y /tmp/renode.deb gcc-arm-none-eabi libstdc++-arm-none-eabi-newlib gdb-multiarch
       - run: python3 -m pip install -r /opt/renode/tests/requirements.txt
       - run: make -C stm32 -j2
+      - run: python3 stm32/tests/check_symbols.py
       - name: Actual bare-metal and statically allocated FreeRTOS ELFs on Renode
         run: renode-test stm32/renode/firmware.robot --results-dir stm32/renode/results
       - name: Trace a hard fault to its ARM instruction
