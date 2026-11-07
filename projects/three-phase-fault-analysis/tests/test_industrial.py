@@ -44,11 +44,15 @@ def test_fault_currents_match_independent_impedance_calculations():
 
 
 def test_outputs(tmp_path, monkeypatch):
+    import json
     import sys
 
     from three_phase_fault.industrial import main
 
     monkeypatch.setattr(sys, "argv", ["industrial", "--output", str(tmp_path)])
     main()
-    assert (tmp_path / "report.json").is_file()
+    report = json.loads((tmp_path / "report.json").read_text())
+    assert report["buses"][1]["fault_ka"] == pytest.approx(24.45, rel=0.002)
+    assert report["buses"][2]["fault_ka"] == pytest.approx(9.82, rel=0.002)
+    assert any("Breaker" in warning for warning in report["violations"])
     assert (tmp_path / "one-line.png").stat().st_size > 1000
