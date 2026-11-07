@@ -1,4 +1,6 @@
 set pagination off
+set trace-commands on
+set remotetimeout 5
 set confirm off
 target remote :3333
 break firmware_main
