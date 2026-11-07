@@ -1,0 +1,25 @@
+services:
+  broker:
+    image: eclipse-mosquitto:2.0.22
+    ports: ["127.0.0.1:8883:8883"]
+    volumes:
+      - ./deploy/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./build/certs:/mosquitto/certs:ro
+  gateway:
+    build:
+      context: ..
+      dockerfile: networking/deploy/Dockerfile
+    command: [gateway, --ca, /certs/ca.crt, --host, broker, --database, /data/room.sqlite3]
+    volumes:
+      - ./build/certs:/certs:ro
+      - ./build/data:/data
+    ports: ["127.0.0.1:8093:8093"]
+    depends_on: [broker]
+  sensor:
+    build:
+      context: ..
+      dockerfile: networking/deploy/Dockerfile
+    profiles: [send]
+    command: [publish, --ca, /certs/ca.crt, --host, broker]
+    volumes: ["./build/certs:/certs:ro"]
+    depends_on: [broker]

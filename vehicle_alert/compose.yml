@@ -1,0 +1,10 @@
+services:
+  jenkins:
+    build: ./jenkins
+    environment:
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?set a local demo password}
+      DESK_BRANCH: ${DESK_BRANCH:-main}
+    ports: ["127.0.0.1:8088:8080"]
+    volumes: ["jenkins-home:/var/jenkins_home"]
+volumes:
+  jenkins-home:

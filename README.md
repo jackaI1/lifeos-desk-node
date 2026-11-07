@@ -67,6 +67,28 @@ Open `analysis/build/demo/report.md` for the comparison against known true
 readings. The [analysis guide](docs/signal-analysis.md) shows how I use the same
 filters on my saved room logs. All demo readings are generated on the computer.
 
+I can also rehearse damaged controller messages before connecting a controller.
+The recording tool turns bytes into temperatures and heater/fan commands, reports
+missing or damaged messages and turns simulated outputs off when a check fails.
+CAN is a wired message network; its FD variant carries longer messages. To try it:
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r can_monitor/requirements.txt
+.venv/bin/python -m can_monitor.replay --generate /tmp/desk-can.jsonl --faults
+.venv/bin/python -m can_monitor.replay /tmp/desk-can.jsonl --tail 3
+```
+
+The [controller recording guide](docs/can-control.md) explains the errors,
+message rates and Linux virtual network. These are simulated messages, including
+a 64-byte CAN FD snapshot. My current desk board has no CAN transceiver.
+
+For missing room logs, I can separately test delayed or lost network replies and
+save sensor batches through an encrypted message broker. The
+[connection guide](docs/network-monitoring.md) gives the demo commands, network
+layout and alarm rules. The [charging model](power_budget/charging.py) adds a
+calculated charge-time estimate to the existing battery budget.
+
 ## Overview
 
 Instead of opening my calendar, I want to look beside my desk and see what

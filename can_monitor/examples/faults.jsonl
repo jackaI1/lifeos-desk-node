@@ -1,0 +1,13 @@
+{"time": 0.0, "id": 256, "data": "5802006c02232826", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.1, "id": 256, "data": "5902016c02232811", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.2, "id": 256, "data": "5a02026c022328", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.3, "id": 256, "data": "5b02036c0223287f", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.4, "id": 1911, "data": "5c02046c022328fa", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.5, "id": 256, "data": "5d02056c022328cd", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.6, "id": 256, "data": "ff02066c02232894", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.7, "id": 256, "data": "5f02076c022328a3", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.8, "id": 256, "data": "62022a6c02000034", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 0.9, "id": 256, "data": "6102096c02232862", "fd": false, "brs": false, "dlc": 8, "extended": false}
+{"time": 1.0, "id": 257, "data": "6202006c020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000051", "fd": true, "brs": true, "dlc": 64, "extended": false}
+{"time": 1.1, "id": 257, "data": "6202016c0200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a2", "fd": true, "brs": true, "dlc": 64, "extended": false}
+{"time": 5.0, "id": 257, "data": "6202026c0200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000aa", "fd": true, "brs": true, "dlc": 64, "extended": false}

@@ -1,0 +1,6 @@
+config BR2_PACKAGE_DESK_SENSOR
+ bool "desk-sensor"
+ depends on BR2_LINUX_KERNEL
+ depends on BR2_INSTALL_LIBSTDCPP
+ help
+   Virtual I2C adapter, checked sensor driver and C++ diagnostic service.

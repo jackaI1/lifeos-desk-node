@@ -1,0 +1,22 @@
+VERSION "Desk thermal simulation v1"
+NS_ :
+    BA_DEF_
+    BA_
+BS_:
+BU_: Desk Controller
+BO_ 256 Thermal: 8 Desk
+ SG_ Temperature : 0|16@1+ (0.1,-40) [-40|200] "degC" Controller
+ SG_ Counter : 16|8@1+ (1,0) [0|255] "" Controller
+ SG_ Setpoint : 24|16@1+ (0.1,-40) [10|30] "degC" Controller
+ SG_ Heater : 40|8@1+ (1,0) [0|100] "%" Controller
+ SG_ Fan : 48|8@1+ (1,0) [0|100] "%" Controller
+ SG_ Checksum : 56|8@1+ (1,0) [0|255] "" Controller
+BO_ 257 ThermalFD: 64 Desk
+ SG_ Temperature : 0|16@1+ (0.1,-40) [-40|200] "degC" Controller
+ SG_ Counter : 16|8@1+ (1,0) [0|255] "" Controller
+ SG_ Setpoint : 24|16@1+ (0.1,-40) [10|30] "degC" Controller
+ SG_ Heater : 40|8@1+ (1,0) [0|100] "%" Controller
+ SG_ Fan : 48|8@1+ (1,0) [0|100] "%" Controller
+ SG_ Checksum : 504|8@1+ (1,0) [0|255] "" Controller
+BA_DEF_ BO_ "VFrameFormat" ENUM "StandardCAN","ExtendedCAN","reserved","J1939PG","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","reserved","StandardCAN_FD","ExtendedCAN_FD";
+BA_ "VFrameFormat" BO_ 257 14;

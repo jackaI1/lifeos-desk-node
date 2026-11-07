@@ -1,0 +1,13 @@
+#!/bin/sh
+case "$1" in
+start)
+ modprobe desk_bus || { echo 'FAIL: bus module'; poweroff -f; exit 1; }
+ modprobe desk_sensor || { echo 'FAIL: sensor module'; poweroff -f; exit 1; }
+ /usr/bin/desk-sensor-service /dev/desk-sensor
+ status=$?
+ rmmod desk_sensor
+ rmmod desk_bus
+ if [ "$status" = 0 ]; then echo 'DESK_QEMU_PASS'; else echo 'DESK_QEMU_FAIL'; fi
+ poweroff -f
+ ;;
+esac

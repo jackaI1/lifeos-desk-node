@@ -1,6 +1,7 @@
 #include "desk_core.h"
 #include "desk_drivers.h"
 #include "desk_network.h"
+#include "desk_ble.h"
 #include "sdkconfig.h"
 #include "esp_log.h"
 #include "esp_attr.h"
@@ -85,6 +86,7 @@ void app_main(void) {
         sample.reading.sequence=retained.next_sequence++;
         desk_ring_push(&retained.ring,sample.reading);
     }
+    if (sample.valid && desk_ble_start(&sample.reading)!=ESP_OK) ESP_LOGW(TAG,"BLE sample service unavailable");
     uint8_t mac[6]; ESP_ERROR_CHECK(esp_read_mac(mac,ESP_MAC_WIFI_STA));
     char device[13];
     snprintf(device,sizeof device,"%02x%02x%02x%02x%02x%02x",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
