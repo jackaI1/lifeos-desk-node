@@ -1342,7 +1342,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
+		(property "Footprint" "Leak:PinHeader_1x04_P2.54mm_Vertical"
 			(at 50.8 71.12 0)
 			(effects
 				(font
@@ -1620,7 +1620,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+		(property "Footprint" "Leak:PinHeader_1x02_P2.54mm_Vertical"
 			(at 50.8 129.54 0)
 			(effects
 				(font
@@ -1794,7 +1794,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
+		(property "Footprint" "Leak:SOT-23-5"
 			(at 139.7 99.06 0)
 			(effects
 				(font
@@ -2097,7 +2097,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Leak:R_0603_1608Metric"
 			(at 88.9 71.12 0)
 			(effects
 				(font
@@ -2271,7 +2271,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Leak:R_0603_1608Metric"
 			(at 88.9 119.38 0)
 			(effects
 				(font
@@ -2445,7 +2445,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Leak:R_0603_1608Metric"
 			(at 88.9 165.1 0)
 			(effects
 				(font
@@ -2619,7 +2619,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Leak:R_0603_1608Metric"
 			(at 139.7 160.02 0)
 			(effects
 				(font
@@ -2739,7 +2739,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Leak:R_0603_1608Metric"
 			(at 190.5 71.12 0)
 			(effects
 				(font
@@ -2913,7 +2913,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Leak:R_0603_1608Metric"
 			(at 238.76 71.12 0)
 			(effects
 				(font
@@ -3087,7 +3087,7 @@
 				)
 			)
 		)
-		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
+		(property "Footprint" "Leak:LED_0603_1608Metric"
 			(at 238.76 119.38 0)
 			(effects
 				(font
@@ -3207,7 +3207,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Leak:C_0603_1608Metric"
 			(at 190.5 165.1 0)
 			(effects
 				(font

@@ -29,5 +29,12 @@
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY (5U << 4)
 #define INCLUDE_vTaskDelay 1
 #define INCLUDE_vTaskDelete 1
-#define configASSERT(x) do { if(!(x)) { __asm volatile("cpsid i"); for(;;){} } } while(0)
+#define configASSERT(x)                                                                            \
+    do {                                                                                           \
+        if (!(x)) {                                                                                \
+            __asm volatile("cpsid i");                                                             \
+            for (;;) {                                                                             \
+            }                                                                                      \
+        }                                                                                          \
+    } while (0)
 #endif

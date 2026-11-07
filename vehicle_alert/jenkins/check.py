@@ -1,4 +1,5 @@
 """Trigger the real configured Jenkins pipeline and require a successful build."""
+from pathlib import Path
 import base64
 import json
 import os
@@ -30,7 +31,13 @@ while time.monotonic()-start<420:
     try:
         build=json.loads(request('/job/desk-fsm/lastBuild/api/json'))
         if not build['building']:
+            reports=Path('vehicle_alert/build');reports.mkdir(parents=True,exist_ok=True)
+            for artifact in ('cppcheck.xml','test-results.xml'):
+                try:(reports/('jenkins-'+artifact)).write_bytes(request('/job/desk-fsm/lastBuild/artifact/vehicle_alert/build/'+artifact))
+                except urllib.error.HTTPError:pass
             if build['result']!='SUCCESS':
+                report=reports/'jenkins-cppcheck.xml'
+                if report.exists():print(report.read_text()[-3500:])
                 log=request('/job/desk-fsm/lastBuild/consoleText').decode()
                 raise SystemExit(log[-4000:])
             print('PASS: Jenkins pipeline built C, ran 37 checks, checked MISRA and archived reports')

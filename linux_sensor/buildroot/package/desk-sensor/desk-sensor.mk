@@ -4,7 +4,7 @@ DESK_SENSOR_SITE_METHOD = local
 DESK_SENSOR_LICENSE = GPL-2.0
 
 define DESK_SENSOR_BUILD_CMDS
- $(TARGET_CXX) -std=c++17 -Wall -Wextra -Werror -O2 $(@D)/service.cpp -o $(@D)/desk-sensor-service
+ $(TARGET_CXX) -std=c++17 -pthread -Wall -Wextra -Werror -O2 $(@D)/service.cpp -o $(@D)/desk-sensor-service
 endef
 
 define DESK_SENSOR_INSTALL_TARGET_CMDS

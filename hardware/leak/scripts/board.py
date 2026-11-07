@@ -26,7 +26,7 @@ else:
  library=Path(os.getenv('KICAD8_FOOTPRINT_DIR','/Applications/KiCad/KiCad.app/Contents/SharedSupport/footprints'))
  if not library.is_dir():library=Path('/usr/share/kicad/footprints')
  for c in design.COMPONENTS:
-  lib,name=c['fp'].split(':');fp=p.FootprintLoad(str(library/(lib+'.pretty')),name)
+  lib,name=c['fp'].split(':');fp=p.FootprintLoad(str(ROOT/'Leak.pretty' if lib=='Leak' else library/(lib+'.pretty')),name)
   fp.SetFPID(p.LIB_ID(lib,name));fp.SetReference(c['ref']);fp.SetValue(c['value']);fp.SetPath(p.KIID_PATH('/'+uid('sym',c['ref'])));fp.SetSheetname('Root');fp.SetSheetfile('leak-node.kicad_sch')
   board.Add(fp);x,y,rot=PLACEMENT[c['ref']];fp.SetPosition(p.VECTOR2I_MM(100+x,100+y));fp.SetOrientationDegrees(rot)
   fp.Reference().SetVisible(False);fp.Value().SetVisible(False)

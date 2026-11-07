@@ -17,7 +17,12 @@ extern "C" {
 #define ALERT_CLEAR ((uint8_t)4U)
 #define ALERT_TICK ((uint8_t)5U)
 #define ALERT_TIMEOUT ((uint8_t)6U)
-typedef struct { uint8_t state; bool ignition; uint32_t since; uint32_t clock; } alert_t;
+typedef struct {
+    uint8_t state;
+    bool ignition;
+    uint32_t since;
+    uint32_t clock;
+} alert_t;
 void alert_init(alert_t *fsm);
 void alert_step(alert_t *fsm, uint8_t event, uint32_t now);
 bool alert_alarm(const alert_t *fsm);

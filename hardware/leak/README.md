@@ -7,8 +7,8 @@ and its output changes for a microcontroller to read. This is an unmanufactured
 prototype, not a dependable flood alarm.
 
 `leak-node.kicad_sch` is the circuit drawing and `leak-node.kicad_pcb` is its
-45 by 35 mm, two-copper-layer layout. Footprints are embedded in the board and
-the library tables name the stock KiCad 8 libraries. The MCU header is J1:
+45 by 35 mm, two-copper-layer layout. The exact footprints are kept in `Leak.pretty` and embedded in the board;
+`bom.csv` records values, footprints and manufacturer part numbers. The MCU header is J1:
 1=3.3 V, 2=ground, 3=active-low alert, 4=probe voltage for an ADC. J2 connects
 the two external conductive probe contacts. The board does not include an MCU.
 

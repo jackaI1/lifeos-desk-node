@@ -23,6 +23,9 @@ jobs:
           DESK_BRANCH: '${{ github.head_ref || github.ref_name }}'
         run: docker compose -f vehicle_alert/compose.yml up -d --build
       - run: python3 vehicle_alert/jenkins/check.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: jenkins-pipeline-reports, path: 'vehicle_alert/build/jenkins-*.xml'}
       - name: Show bounded diagnostics on failure
         if: failure()
         run: docker compose -f vehicle_alert/compose.yml logs --tail 80

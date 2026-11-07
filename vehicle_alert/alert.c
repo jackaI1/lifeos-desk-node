@@ -1,21 +1,22 @@
 #include "alert.h"
 /* State table: 255 means keep current state. Fault input dominates debounce. */
-void alert_init(alert_t *fsm)
-{
+void alert_init(alert_t *fsm) {
     fsm->state = ALERT_OFF;
     fsm->ignition = false;
     fsm->since = ((uint32_t)0U);
     fsm->clock = ((uint32_t)0U);
 }
-void alert_step(alert_t *fsm, uint8_t event, uint32_t now)
-{
+void alert_step(alert_t *fsm, uint8_t event, uint32_t now) {
     static const uint8_t transitions[5][7] = {
         {ALERT_READY, ALERT_OFF, ALERT_OFF, ALERT_LATCHED, ALERT_OFF, ALERT_OFF, ALERT_OFF},
-        {ALERT_READY, ALERT_OFF, ALERT_WARNING, ALERT_LATCHED, ALERT_READY, ALERT_READY, ALERT_WARNING},
-        {ALERT_WARNING, ALERT_OFF, ALERT_WARNING, ALERT_LATCHED, ALERT_WARNING, ALERT_WARNING, ALERT_WARNING},
-        {ALERT_LATCHED, ALERT_LATCHED, ALERT_LATCHED, ALERT_LATCHED, ALERT_CLEARING, ALERT_LATCHED, ALERT_LATCHED},
-        {ALERT_LATCHED, ALERT_CLEARING, ALERT_CLEARING, ALERT_LATCHED, ALERT_CLEARING, ALERT_CLEARING, ALERT_CLEARING}
-    };
+        {ALERT_READY, ALERT_OFF, ALERT_WARNING, ALERT_LATCHED, ALERT_READY, ALERT_READY,
+         ALERT_WARNING},
+        {ALERT_WARNING, ALERT_OFF, ALERT_WARNING, ALERT_LATCHED, ALERT_WARNING, ALERT_WARNING,
+         ALERT_WARNING},
+        {ALERT_LATCHED, ALERT_LATCHED, ALERT_LATCHED, ALERT_LATCHED, ALERT_CLEARING, ALERT_LATCHED,
+         ALERT_LATCHED},
+        {ALERT_LATCHED, ALERT_CLEARING, ALERT_CLEARING, ALERT_LATCHED, ALERT_CLEARING,
+         ALERT_CLEARING, ALERT_CLEARING}};
     uint8_t next = ALERT_LATCHED;
     if ((fsm->state < ((uint8_t)5U)) && (event < ((uint8_t)7U)) && (now >= fsm->clock)) {
         fsm->clock = now;
@@ -44,8 +45,7 @@ void alert_step(alert_t *fsm, uint8_t event, uint32_t now)
     }
     fsm->state = next;
 }
-bool alert_alarm(const alert_t *fsm)
-{
+bool alert_alarm(const alert_t *fsm) {
     bool result = true;
     if ((fsm->state == ALERT_OFF) || (fsm->state == ALERT_READY)) {
         result = false;

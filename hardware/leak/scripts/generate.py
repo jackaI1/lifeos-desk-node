@@ -22,3 +22,5 @@ project.PROJECT['net_settings']['netclass_patterns']=[]
 project.PROJECT['meta']['filename']=design.PROJECT+'.kicad_pro'
 (out/(design.PROJECT+'.kicad_pro')).write_text(json.dumps(project.PROJECT,indent=2)+'\n')
 project.lib_tables(str(out))
+
+(out/'fp-lib-table').write_text('(fp_lib_table (version 7) (lib (name "Leak") (type "KiCad") (uri "${KIPRJMOD}/Leak.pretty") (options "") (descr "KiCad 8 footprint snapshot")))\n')

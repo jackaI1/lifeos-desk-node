@@ -86,7 +86,7 @@
 	(net 4 "/REF")
 	(net 5 "/SENSE")
 	(net 6 "GND")
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "Leak:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "0d300b5d-17a9-4c61-96a7-42a5093fae1d")
 		(at 112 110)
@@ -298,7 +298,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+	(footprint "Leak:PinHeader_1x02_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "0d6631a5-08b6-436f-b5c6-23e9b4fa932c")
 		(at 139 108)
@@ -572,7 +572,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "Leak:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "3459d62c-c624-4bd1-b535-e0a7d33ff5f7")
 		(at 125 110)
@@ -784,7 +784,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "Leak:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "55e0b2d4-b103-419d-a0ee-c032fae37efe")
 		(at 112 127)
@@ -996,7 +996,7 @@
 			)
 		)
 	)
-	(footprint "LED_SMD:LED_0603_1608Metric"
+	(footprint "Leak:LED_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "5701537a-acbd-4285-a2cf-b1a0ca2ac6d5")
 		(at 122 127 180)
@@ -1228,7 +1228,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "Leak:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "8797bdbe-3297-4cf9-bcef-fbb28772b1f3")
 		(at 133 110)
@@ -1440,7 +1440,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
+	(footprint "Leak:PinHeader_1x04_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "ac3bd0bf-1250-4434-91e3-972d233cb053")
 		(at 106 106)
@@ -1742,7 +1742,7 @@
 			)
 		)
 	)
-	(footprint "Package_TO_SOT_SMD:SOT-23-5"
+	(footprint "Leak:SOT-23-5"
 		(layer "F.Cu")
 		(uuid "b0d24345-b0f7-4539-987a-7beb5096d2a2")
 		(at 125 116)
@@ -2017,7 +2017,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "Leak:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "bbb82b32-9815-4dda-b79d-c59e71a524bf")
 		(at 118 112)
@@ -2229,7 +2229,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "Leak:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "ca553d20-4b68-4053-b5fb-eea1b2e2b346")
 		(at 132 121)
@@ -2441,7 +2441,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "Leak:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "e219a2c6-1fed-4642-b25e-aa23a2aa926a")
 		(at 118 120)

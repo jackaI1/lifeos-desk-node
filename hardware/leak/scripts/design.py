@@ -16,3 +16,7 @@ COMPONENTS=[
 ]
 PWR_FLAGS=[(V3,(270,70)),(GND,(290,70))]
 NOTES=[((30,30),'3.3V conductive probe front end; active-low wet output; external probe; not a safety alarm'),((30,220),'1M pull-up and 10M feedback give hysteresis. Keep the probe traces clean and short. Prototype, not manufactured.')]
+
+# Keep the exact footprint geometry local and portable with this board.
+for component in COMPONENTS:
+ component["fp"]="Leak:"+component["fp"].split(":")[1]
