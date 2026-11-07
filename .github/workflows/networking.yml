@@ -1,7 +1,7 @@
 name: Desk network monitoring and telemetry
 on:
   push:
-    branches: [main, skills/auto-can-bus-can-fd]
+    branches: [main]
     paths: ['networking/**', 'firmware/tools/**', '.github/workflows/networking.yml']
   pull_request:
     paths: ['networking/**', 'firmware/tools/**', '.github/workflows/networking.yml']

@@ -1,7 +1,7 @@
 name: CAN monitor
 on:
   push:
-    branches: [main, skills/auto-can-bus-can-fd]
+    branches: [main]
     paths: ['can_monitor/**', '.github/workflows/can-monitor.yml']
   pull_request:
     paths: ['can_monitor/**', '.github/workflows/can-monitor.yml']
@@ -22,7 +22,7 @@ jobs:
       - name: Create owned Linux virtual CAN interface
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y linux-modules-extra-$(uname -r) can-utils
+          sudo apt-get install -y can-utils
           sudo modprobe vcan
           sudo ip link add dev deskcan0 type vcan
           sudo ip link set dev deskcan0 mtu 72 up

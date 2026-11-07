@@ -51,3 +51,6 @@ linux_sensor/*.mod*
 linux_sensor/Module.symvers
 linux_sensor/modules.order
 linux_sensor/.*.cmd
+robot_controller/target/
+stm32/build/
+stm32/renode/results/

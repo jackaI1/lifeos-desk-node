@@ -21,10 +21,11 @@ ip -n "$sensor" link set lo up
 cat > networking/build/firewall-broker.conf <<CONF
 user root
 listener 8883
-listener 8884
 cafile $root/networking/build/certs/ca.crt
 certfile $root/networking/build/certs/server.crt
 keyfile $root/networking/build/certs/server.key
+allow_anonymous true
+listener 8884
 allow_anonymous true
 CONF
 ip netns exec "$gw" mosquitto -c "$root/networking/build/firewall-broker.conf" > networking/build/firewall-broker.log 2>&1 &

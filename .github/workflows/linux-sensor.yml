@@ -1,7 +1,7 @@
 name: ARM Linux sensor drivers
 on:
   push:
-    branches: [main, skills/auto-can-bus-can-fd]
+    branches: [main]
     paths: ['linux_sensor/**', '.github/workflows/linux-sensor.yml']
   pull_request:
     paths: ['linux_sensor/**', '.github/workflows/linux-sensor.yml']

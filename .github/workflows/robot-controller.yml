@@ -1,0 +1,29 @@
+name: Rust controller simulation
+on:
+  push:
+    branches: [main]
+    paths: ['robot_controller/**', '.github/workflows/robot-controller.yml']
+  pull_request:
+    paths: ['robot_controller/**', '.github/workflows/robot-controller.yml']
+permissions:
+  contents: read
+jobs:
+  controller:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.85.1
+        with: {targets: thumbv7m-none-eabi}
+      - run: sudo apt-get update -qq && sudo apt-get install -y qemu-system-arm
+      - run: cargo test --manifest-path robot_controller/Cargo.toml
+      - name: Linux PTY serial supervisor, measured jitter and two-joint simulation
+        run: cargo run --manifest-path robot_controller/Cargo.toml -p desk-supervisor -- /tmp/desk-control.csv
+      - name: Build and execute the actual no_std ARM ELF
+        working-directory: robot_controller
+        env:
+          RUSTFLAGS: '-C link-arg=-Tlink.x -L embedded'
+        run: |
+          cargo build -p desk-embedded-sim --target thumbv7m-none-eabi
+          timeout 30 qemu-system-arm -M lm3s6965evb -nographic -semihosting-config enable=on,target=native -kernel target/thumbv7m-none-eabi/debug/desk-embedded-sim
+      - uses: actions/upload-artifact@v4
+        with: {name: rust-process-data, path: /tmp/desk-control.csv}

@@ -4,8 +4,8 @@ void alert_init(alert_t *fsm)
 {
     fsm->state = ALERT_OFF;
     fsm->ignition = false;
-    fsm->since = UINT32_C(0);
-    fsm->clock = UINT32_C(0);
+    fsm->since = ((uint32_t)0U);
+    fsm->clock = ((uint32_t)0U);
 }
 void alert_step(alert_t *fsm, uint8_t event, uint32_t now)
 {
@@ -17,7 +17,7 @@ void alert_step(alert_t *fsm, uint8_t event, uint32_t now)
         {ALERT_LATCHED, ALERT_CLEARING, ALERT_CLEARING, ALERT_LATCHED, ALERT_CLEARING, ALERT_CLEARING, ALERT_CLEARING}
     };
     uint8_t next = ALERT_LATCHED;
-    if ((fsm->state < UINT8_C(5)) && (event < UINT8_C(7)) && (now >= fsm->clock)) {
+    if ((fsm->state < ((uint8_t)5U)) && (event < ((uint8_t)7U)) && (now >= fsm->clock)) {
         fsm->clock = now;
         if (event == ALERT_ON) {
             fsm->ignition = true;
@@ -31,7 +31,7 @@ void alert_step(alert_t *fsm, uint8_t event, uint32_t now)
             next = ALERT_LATCHED;
         }
         if ((fsm->state == ALERT_CLEARING) && (event == ALERT_TICK) &&
-            ((now - fsm->since) >= UINT32_C(500))) {
+            ((now - fsm->since) >= ((uint32_t)500U))) {
             next = ALERT_OFF;
         }
         if (next != fsm->state) {

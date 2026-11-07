@@ -106,3 +106,22 @@ TEST(Replay, ExactParsingAndLineLimits) {
     std::fwrite(embedded,1,sizeof embedded,stream); std::rewind(stream);
     EXPECT_EQ(desk_replay_read_line(stream,out),-1); std::fclose(stream);
 }
+#include "drivers.hpp"
+class FakeI2c final:public desk::I2c {
+public:
+ desk::Result fault=desk::Result::ok;bool corrupt=false;
+ desk::Result transfer(uint8_t address,const uint8_t* tx,size_t txsize,uint8_t* rx,size_t size)override{
+  EXPECT_EQ(address,0x44);EXPECT_EQ(txsize,2U);EXPECT_EQ(tx[0],0x24);EXPECT_EQ(size,6U);
+  if(fault!=desk::Result::ok)return fault;
+  const uint8_t sample[]={0x66,0x66,0x93,0x80,0,0xa2};std::memcpy(rx,sample,6);if(corrupt)rx[2]^=1;return desk::Result::ok;
+ }
+};
+class FakeUart final:public desk::Uart {public:std::string output;size_t fail_after=100;bool byte(uint8_t b)override{if(output.size()>=fail_after)return false;output.push_back(static_cast<char>(b));return true;}};
+TEST(Stm32, SharedDriversHandleSensorFaultsAndBoundedUart){
+ FakeI2c bus;desk::Sensor sensor(bus);int32_t t=-1;uint32_t h=0;
+ ASSERT_EQ(sensor.read(t,h),desk::Result::ok);EXPECT_EQ(t,25000);EXPECT_EQ(h,50001U);
+ for(auto fault:{desk::Result::nack,desk::Result::timeout}){bus.fault=fault;EXPECT_EQ(sensor.read(t,h),fault);}
+ bus.fault=desk::Result::ok;bus.corrupt=true;EXPECT_EQ(sensor.read(t,h),desk::Result::crc);
+ FakeUart uart;desk::Logger log(uart);EXPECT_TRUE(log.text("sample\n"));EXPECT_EQ(uart.output,"sample\n");
+ EXPECT_FALSE(log.text("1234",4));uart.fail_after=uart.output.size();EXPECT_FALSE(log.text("x"));
+}

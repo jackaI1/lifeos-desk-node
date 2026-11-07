@@ -1,0 +1,7 @@
+[package]
+name = "desk-supervisor"
+version = "0.1.0"
+edition = "2021"
+[dependencies]
+desk-control-core = { path = "../core" }
+libc = "=0.2.177"

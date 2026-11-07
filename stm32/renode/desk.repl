@@ -1,0 +1,2 @@
+using "platforms/cpus/stm32f4.repl"
+sensor: Sensors.DeskSht31 @ i2c1 0x44
