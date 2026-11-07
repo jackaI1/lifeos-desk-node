@@ -1,0 +1,28 @@
+name: Jenkins pipeline rehearsal
+on:
+  push:
+    branches: [main]
+    paths: ['vehicle_alert/**', '.github/workflows/jenkins.yml']
+  pull_request:
+    paths: ['vehicle_alert/**', '.github/workflows/jenkins.yml']
+permissions:
+  contents: read
+jobs:
+  pipeline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create ephemeral controller password
+        run: echo "JENKINS_ADMIN_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+      - name: Start the pinned controller with its configured pipeline
+        env:
+          DESK_BRANCH: '${{ github.head_ref || github.ref_name }}'
+        run: docker compose -f vehicle_alert/compose.yml up -d --build
+      - run: python3 vehicle_alert/jenkins/check.py
+      - name: Show bounded diagnostics on failure
+        if: failure()
+        run: docker compose -f vehicle_alert/compose.yml logs --tail 80
+      - name: Delete the owned controller and its state
+        if: always()
+        run: docker compose -f vehicle_alert/compose.yml down -v --remove-orphans

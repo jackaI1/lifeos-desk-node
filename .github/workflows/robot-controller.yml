@@ -18,6 +18,13 @@ jobs:
       - run: cargo test --manifest-path robot_controller/Cargo.toml
       - name: Linux PTY serial supervisor, measured jitter and two-joint simulation
         run: cargo run --manifest-path robot_controller/Cargo.toml -p desk-supervisor -- /tmp/desk-control.csv
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Replay the Rust process data through the DBC CAN layer
+        run: |
+          pip install -r can_monitor/requirements.txt
+          python -m can_monitor.thermal --rust-csv /tmp/desk-control.csv --output /tmp/rust-can.jsonl
+          python -m can_monitor.replay /tmp/rust-can.jsonl > /tmp/rust-can-report.json
       - name: Build and execute the actual no_std ARM ELF
         working-directory: robot_controller
         env:

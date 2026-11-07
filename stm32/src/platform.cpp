@@ -13,7 +13,7 @@ public:StmUart(){reg(0x40023840)|=1U<<17;reg(0x4000440c)=0x2008;}
 };
 class StmI2c final:public desk::I2c{
  desk::Result wait(uint32_t bits){for(unsigned n=0;n<100000;++n){auto sr=reg(0x40005414);if(sr&0x400U)return desk::Result::nack;if((sr&bits)==bits)return desk::Result::ok;}return desk::Result::timeout;}
- desk::Result start(uint8_t addr){reg(0x40005400)|=0x100;auto r=wait(1);if(r!=desk::Result::ok)return r;reg(0x40005410)=addr;r=wait(2);(void)reg(0x40005418);return r;}
+ desk::Result start(uint8_t addr){reg(0x40005400)|=0x100;auto r=wait(1);if(r!=desk::Result::ok)return r;reg(0x40005410)=addr;r=wait(2);auto status2=static_cast<uint32_t>(reg(0x40005418));(void)status2;return r;}
 public:StmI2c(){reg(0x40023840)|=1U<<21;reg(0x40005404)=16;reg(0x4000541c)=80;reg(0x40005420)=17;reg(0x40005400)=0x401;}
  desk::Result transfer(uint8_t address,const uint8_t* tx,size_t txsize,uint8_t* rx,size_t rxsize)override{
   auto result=start(static_cast<uint8_t>(address<<1));

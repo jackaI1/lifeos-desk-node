@@ -54,3 +54,8 @@ linux_sensor/.*.cmd
 robot_controller/target/
 stm32/build/
 stm32/renode/results/
+hardware/leak/build/
+hardware/simulation/build/
+network_lab/android/.gradle/
+network_lab/android/**/build/
+network_lab/android/local.properties
