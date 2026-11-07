@@ -12,11 +12,14 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
       - name: Install pinned Renode and ARM command-line toolchain
         run: |
           curl -fLsS https://github.com/renode/renode/releases/download/v1.15.3/renode_1.15.3_amd64.deb -o /tmp/renode.deb
           sudo apt-get update -qq
           sudo apt-get install -y /tmp/renode.deb gcc-arm-none-eabi libstdc++-arm-none-eabi-newlib gdb-multiarch
+      - run: python3 -m pip install -r /opt/renode/tests/requirements.txt
       - run: make -C stm32 -j2
       - name: Actual bare-metal and statically allocated FreeRTOS ELFs on Renode
         run: renode-test stm32/renode/firmware.robot --results-dir stm32/renode/results

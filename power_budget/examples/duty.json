@@ -1,0 +1,5 @@
+[
+  {"name":"sleep including always-powered OLED", "seconds":300, "ma":3.0652},
+  {"name":"sensor conversion including OLED", "seconds":0.02, "ma":3.6},
+  {"name":"WiFi transmit including OLED", "seconds":2, "ma":242.055}
+]

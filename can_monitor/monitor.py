@@ -86,7 +86,7 @@ class Monitor:
             errors.append('format')
         if len(frame.data) != spec.length or frame.dlc != spec.length:
             errors.append('length')
-        if frame.is_fd != spec.is_fd or (frame.is_fd and not frame.bitrate_switch):
+        if frame.is_fd != spec.is_fd or frame.bitrate_switch != frame.is_fd:
             errors.append('format')
         if not errors:
             if checksum(frame) != frame.data[-1]:

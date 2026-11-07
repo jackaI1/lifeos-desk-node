@@ -99,11 +99,18 @@ def check_trace(rows, *, budget_ma, cutoff_v=3.4, max_temperature_c=45):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--profile', help='JSON array of seconds/ma duty-cycle phases')
+    p.add_argument('--capacity-mah', type=float, default=500)
+    p.add_argument('--voltage', type=float, default=3.7)
+    p.add_argument('--temperature-c', type=float, default=25)
     p.add_argument('--trace', help='CSV seconds,ma,voltage,temperature_c, simulated or measured')
     p.add_argument('--budget-ma', type=float, default=10)
     p.add_argument('--output', help='optional simulated charging CSV')
     a = p.parse_args()
-    if a.trace:
+    if a.profile:
+        with open(a.profile) as stream:
+            result = duty_cycle(json.load(stream), capacity_mah=a.capacity_mah, voltage=a.voltage, temperature_c=a.temperature_c)
+    elif a.trace:
         with open(a.trace, newline='') as stream: result = check_trace(list(csv.DictReader(stream)), budget_ma=a.budget_ma)
     else:
         result = charge()
@@ -112,7 +119,7 @@ def main():
                 writer = csv.DictWriter(stream, fieldnames=list(result['trace'][0]))
                 writer.writeheader(); writer.writerows(result['trace'])
         result = {k: v for k, v in result.items() if k != 'trace'}
-        result['duty_cycle'] = duty_cycle([dict(seconds=300, ma=.065), dict(seconds=.02, ma=.6), dict(seconds=2, ma=239)])
+        result['duty_cycle'] = duty_cycle([dict(seconds=300, ma=3.0652), dict(seconds=.02, ma=3.6), dict(seconds=2, ma=242.055)])
     print(json.dumps(result, indent=2, allow_nan=False))
 
 

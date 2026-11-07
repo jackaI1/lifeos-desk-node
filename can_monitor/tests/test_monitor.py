@@ -27,7 +27,7 @@ def test_crc_independent_reference_and_standard_vector():
     assert checksum(f) != before
 
 
-@pytest.mark.parametrize('fault', ['checksum', 'length', 'dlc', 'unknown_id', 'extended', 'remote', 'error', 'fd', 'brs', 'counter', 'range'])
+@pytest.mark.parametrize('fault', ['checksum', 'length', 'dlc', 'unknown_id', 'extended', 'remote', 'error', 'fd', 'classic_brs', 'brs', 'counter', 'range'])
 def test_each_fault_forces_safe_outputs(fault):
     m = Monitor()
     assert m.process(make_frame(19, 0, heater=90, fan=80), 0)['safe']['heater'] == 90
@@ -41,6 +41,7 @@ def test_each_fault_forces_safe_outputs(fault):
     elif fault == 'error': f.is_error_frame = True
     elif fault == 'fd': f.is_fd = True
     elif fault == 'brs': f.bitrate_switch = False
+    elif fault == 'classic_brs': f.bitrate_switch = True
     elif fault == 'counter': f = make_frame(20, 3)
     elif fault == 'range':
         f.data[5] = 101

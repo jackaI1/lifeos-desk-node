@@ -403,3 +403,9 @@ The new controller, link, packet, driver and circuit checks are described with
 exact commands in their linked guides. Linux CI exercises the actual virtual
 CAN interface, SNMP agent, encrypted broker, isolated firewall, ARM firmware and
 kernel images. Host simulations never stand in for a manufactured-board result.
+
+For a full local Python regression after installing each guide's dependencies,
+I build the replay executable first, then run `python -m pytest -q`. The checked
+local run passed 298 tests, with seven Linux integration cases reserved for CI.
+The shared C/C++ Google Test runner passed ten cases under sanitizers; the alert
+runner checks all 35 state/event pairs plus debounce and a seeded replay.

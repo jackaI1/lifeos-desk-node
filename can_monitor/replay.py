@@ -32,10 +32,17 @@ def generate(path, faults=False):
 def load(path):
     previous = -math.inf
     with open(path, encoding='utf8') as stream:
-        for i, line in enumerate(stream):
+        i = 0
+        while line := stream.readline(1025):
             if i >= 100000 or len(line) > 1024:
                 raise ValueError('recording exceeds 100000 frames or 1024 bytes per line')
+            i += 1
             row = json.loads(line)
+            for flag in ('fd', 'brs', 'extended'):
+                if flag in row and type(row[flag]) is not bool:
+                    raise ValueError('frame flags must be JSON booleans')
+            if type(row['id']) is not int or not 0 <= row['id'] <= 0x1fffffff:
+                raise ValueError('invalid CAN identifier')
             timestamp = row['time']
             if isinstance(timestamp, bool) or not math.isfinite(timestamp) or timestamp < previous or timestamp < 0:
                 raise ValueError('timestamps must be finite, nonnegative and ordered')
