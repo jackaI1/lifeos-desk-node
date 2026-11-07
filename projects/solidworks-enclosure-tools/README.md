@@ -2,6 +2,8 @@
 
 I built this to explore solidworks enclosure tools. This is a learning project.
 
+I use example enclosure geometry and CAD-generated reference properties.
+
 ## Open the model
 
 Download the repo and keep `cad/A` together. Open [the assembly](cad/A/ED-000_desk_device_A.SLDASM). `Default` is closed. `Hatch_open_90` shows the hatch at 90 degrees about the reference servo output axis. I use two fixed hatch instances with configuration-specific suppression, with one active at a time. Both positions survive closing and reopening the assembly. These are saved positions, not a motion simulation.

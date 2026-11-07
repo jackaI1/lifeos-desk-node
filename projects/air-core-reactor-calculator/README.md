@@ -2,6 +2,8 @@
 
 I built a coil calculator to learn how the underlying idea works. This is a learning project.
 
+I use illustrative coil geometries and computed fields for the examples.
+
 ## Run a saved example
 
 I can also use the command line without opening the page:

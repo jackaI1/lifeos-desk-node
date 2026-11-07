@@ -2,6 +2,8 @@
 
 I built a short-circuit calculator to learn how the underlying idea works. This is a learning project.
 
+I use example circuits and simulated faults for the checks.
+
 ## Try a study
 
 With Python 3.11 or newer, run these commands from the downloaded repository:
