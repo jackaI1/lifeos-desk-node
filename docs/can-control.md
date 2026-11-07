@@ -2,8 +2,14 @@
 
 I built a recording decoder because I wanted to see what damaged or missing
 controller readings would do before connecting anything to my desk node. CAN is
-a wired message network; CAN FD allows longer messages. Everything here is a
-computer simulation. There is no CAN transceiver on my current ESP32 board.
+a wired message network used to share small readings and commands between
+controllers. I use eight-byte classic CAN messages for temperatures and outputs,
+and a 64-byte CAN FD message for a longer diagnostic snapshot. A DBC file is a
+message dictionary: it tells the decoder which bytes mean a temperature or
+percentage. The FD message also sets the bit-rate-switch flag, which requests a
+faster data phase on real hardware; a virtual bus checks the flag, not physical
+speed. Everything here is a computer simulation. There is no CAN transceiver on
+my current ESP32 board.
 
 From the repository root, with Python 3.11 or newer:
 
