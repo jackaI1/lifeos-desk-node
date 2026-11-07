@@ -11,6 +11,7 @@ import struct
 import threading
 import time
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from networking.lifecycle import serving
 
 
 def exact(sock,size):
@@ -115,11 +116,8 @@ def node(server_context,host='127.0.0.1',port=0):
             except (OSError,EOFError,ValueError):pass
     class Server(socketserver.ThreadingTCPServer):daemon_threads=False
     with Server((host,port),Handler) as server:
-        worker=threading.Thread(target=server.serve_forever,kwargs={'poll_interval':.01});worker.start()
-        try:yield server.server_address
-        finally:
-            server.shutdown();worker.join(timeout=3)
-            if worker.is_alive():raise RuntimeError('TLS node failed to stop')
+        with serving(server, 'nested TLS measurement node') as address:
+            yield address
 
 
 def probe(address,context,count=32):

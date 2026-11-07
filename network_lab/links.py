@@ -12,6 +12,7 @@ import threading
 import time
 import zlib
 from networking.links import Link
+from networking.lifecycle import serving
 
 
 def encode(sequence,payload):
@@ -52,11 +53,8 @@ def channel(delays):
     class Server(socketserver.ThreadingUDPServer):
         daemon_threads=False
     with Server(('127.0.0.1',0),Handler) as server:
-        worker=threading.Thread(target=server.serve_forever,kwargs={'poll_interval':.01});worker.start()
-        try:yield server.server_address
-        finally:
-            server.shutdown();worker.join(timeout=3)
-            if worker.is_alive():raise RuntimeError('link server failed to stop')
+        with serving(server, 'simulated lossy UDP link') as address:
+            yield address
 
 
 class Manager:

@@ -22,6 +22,7 @@ def test_real_snmp_agent(tmp_path):
     config.write_text(f'agentaddress udp:127.0.0.1:{port}\nrocommunity desk-demo 127.0.0.1\npass_persist {BASE} {sys.executable} -m networking.snmp {snapshot}\n')
     with (tmp_path/'agent.log').open('w') as log:
         process = subprocess.Popen([shutil.which('snmpd'), '-f', '-Lo', '-C', '-c', str(config)], stdout=log, stderr=log)
+        (tmp_path/'owned-resource.json').write_text(json.dumps(dict(owner='SNMP wire test',pid=process.pid,started=time.time(),port=port,cleanup=f'terminate PID {process.pid} and wait')))
         try:
             for _ in range(30):
                 result = subprocess.run(['snmpget', '-v2c', '-c', 'desk-demo', '-On', '-t', '.1', '-r', '0', f'127.0.0.1:{port}', BASE+'.2.0'], capture_output=True, text=True)

@@ -10,6 +10,7 @@ import threading
 import time
 import uuid
 from pathlib import Path
+from .lifecycle import serving
 
 
 class Link:
@@ -88,14 +89,8 @@ def simulated_node(pattern=(0,), *, host='127.0.0.1'):
         daemon_threads = False
         block_on_close = True
     with Server((host, 0), Handler) as server:
-        thread = threading.Thread(target=server.serve_forever, kwargs={'poll_interval': .02})
-        thread.start()
-        try:
-            yield server.server_address
-        finally:
-            server.shutdown()
-            thread.join(timeout=2)
-            if thread.is_alive(): raise RuntimeError('node failed to stop')
+        with serving(server, 'simulated ESP32 TCP node') as address:
+            yield address
 
 
 def main():

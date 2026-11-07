@@ -13,6 +13,7 @@ def test_schema_dedup_storage_and_real_read_api(tmp_path):
         for _ in range(2): assert store.ingest(topic, json.dumps(batch).encode())
         assert len(store.readings(batch['device'])) == 1
         server = api(store, port=0)
+        (tmp_path/'owned-resource.json').write_text(json.dumps(dict(owner='MQTT read API test',pid=__import__('os').getpid(),started=__import__('time').time(),port=server.server_port,cleanup='server.shutdown(); thread.join(); server.server_close()')))
         thread = threading.Thread(target=server.serve_forever, kwargs={'poll_interval': .01})
         thread.start()
         try:
