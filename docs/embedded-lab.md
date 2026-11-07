@@ -31,9 +31,10 @@ With the Python environment from the main README:
 ```sh
 python3 -m firmware.tools.check_radio captured-radio.txt
 firmware/tests/run_host_tests.sh
-cmake -S host_tests -B host_tests/build -DCMAKE_BUILD_TYPE=Debug
-cmake --build host_tests/build -j2
-ctest --test-dir host_tests/build --output-on-failure
+.venv/bin/python -m pip install cmake==3.31.6
+.venv/bin/cmake -S host_tests -B host_tests/build -DCMAKE_BUILD_TYPE=Debug
+.venv/bin/cmake --build host_tests/build -j2
+.venv/bin/ctest --test-dir host_tests/build --output-on-failure
 ```
 
 `captured-radio.txt` holds one hexadecimal BLE payload or one `WIFI connected

@@ -77,7 +77,15 @@ networking/deploy/certificates.sh
 .venv/bin/python -m network_lab.timed_tls --cert networking/build/certs/server.crt --key networking/build/certs/server.key
 ```
 
-The foreground node listens on loopback port 8443; Ctrl-C stops it. For a cloud
+The foreground node listens on loopback port 8443; Ctrl-C stops it. In another
+terminal, I run the real paired-probe client:
+
+```sh
+.venv/bin/python -m network_lab.timed_tls --peer localhost --port 8443 --ca networking/build/certs/ca.crt
+```
+
+The client checks the peer name in both TLS layers; `--hostname` selects a DNS
+identity when connecting to a fixed IP address. For a cloud
 node I supply real certificate/key paths and choose the bind address explicitly.
 `azure/main.bicep` defines two small Azure Linux nodes, a private network and an
 inbound rule restricted to the caller's address on 443. CI compiles the template

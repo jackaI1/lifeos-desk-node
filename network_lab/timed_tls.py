@@ -120,13 +120,13 @@ def node(server_context,host='127.0.0.1',port=0):
             yield address
 
 
-def probe(address,context,count=32):
+def probe(address,context,count=32,hostname=None):
     if not 8<=count<=256:raise ValueError('probe count must be 8..256')
     readings=[]
     with socket.create_connection(address,timeout=2) as raw:
         raw.setsockopt(socket.IPPROTO_TCP,socket.TCP_NODELAY,1)
-        with context.wrap_socket(raw,server_hostname='localhost') as outer:
-            inner=Nested(outer,context)
+        with context.wrap_socket(raw,server_hostname=hostname or address[0]) as outer:
+            inner=Nested(outer,context,hostname=hostname or address[0])
             for sequence in range(count):
                 start=time.monotonic_ns();inner.write(json.dumps(dict(operation='probe',sequence=sequence)).encode());reply=json.loads(inner.read())
                 if reply['sequence']!=sequence:raise ValueError('reordered probe')
@@ -181,7 +181,7 @@ def encrypt_experiment(key,payload):
 def decrypt_experiment(key,packet):return AESGCM(key).decrypt(packet[:12],packet[12:],b'desk-rtt-lab-v1')
 
 
-def paired_session(address,context,payload=b'desk temperature=21.5',count=28):
+def paired_session(address,context,payload=b'desk temperature=21.5',count=28,hostname=None):
     """Both ends measure a real round trip, reconcile bits, confirm and encrypt.
 
     The endpoint delays are synthetic and public. This demonstrates mechanics,
@@ -190,8 +190,8 @@ def paired_session(address,context,payload=b'desk temperature=21.5',count=28):
     if not 14<=count<=256:raise ValueError('14..256 paired probes required')
     with socket.create_connection(address,timeout=2) as raw:
         raw.setsockopt(socket.IPPROTO_TCP,socket.TCP_NODELAY,1)
-        with context.wrap_socket(raw,server_hostname='localhost') as outer:
-            connection=Nested(outer,context);samples=[]
+        with context.wrap_socket(raw,server_hostname=hostname or address[0]) as outer:
+            connection=Nested(outer,context,hostname=hostname or address[0]);samples=[]
             for sequence in range(count):
                 start=time.monotonic_ns()
                 connection.write(json.dumps(dict(operation='paired_probe',sequence=sequence)).encode())
@@ -220,9 +220,18 @@ def paired_session(address,context,payload=b'desk temperature=21.5',count=28):
 def main():
     import argparse
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--cert',required=True);p.add_argument('--key',required=True)
+    p.add_argument('--cert');p.add_argument('--key');p.add_argument('--ca')
+    p.add_argument('--peer',help='run paired probes against this node instead of starting a server')
+    p.add_argument('--hostname',help='expected certificate DNS name; defaults to peer address')
     p.add_argument('--host',default='127.0.0.1');p.add_argument('--port',type=int,default=8443)
-    a=p.parse_args();context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);context.load_cert_chain(a.cert,a.key)
+    a=p.parse_args()
+    if a.peer:
+        if not a.ca:p.error('--peer requires --ca')
+        context=ssl.create_default_context(cafile=a.ca)
+        print(json.dumps(paired_session((a.peer,a.port),context,hostname=a.hostname),indent=2))
+        return
+    if not a.cert or not a.key:p.error('server requires --cert and --key')
+    context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);context.load_cert_chain(a.cert,a.key)
     try:
         with node(context,a.host,a.port) as address:
             print(f'Nested TLS node listening on {address}',flush=True)
