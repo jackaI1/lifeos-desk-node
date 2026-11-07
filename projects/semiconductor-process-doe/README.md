@@ -32,3 +32,5 @@ For thickness x and time t, the model is `x² + A x = B t + x0² + A x0`, with `
 
 The implementation is in `semiconductor_doe/oxidation.py` and `semiconductor_doe/experiment.py`; the command and plots are in `semiconductor_doe/__main__.py`. The tests recover known oxidation and experiment parameters, check uncertainty and verify recipe constraints. GitHub Actions installs the package, runs the tests and executes the example on Linux.
 
+
+I ran all four tests during the move, and all four passed. The checks cover parameter recovery, recipe constraints and a noisy-data uncertainty interval. These small checks do not validate a manufacturing process.
