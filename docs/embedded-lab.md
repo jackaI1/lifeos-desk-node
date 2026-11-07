@@ -71,7 +71,7 @@ including bounded polling for transmit/receive flags and explicit NACK/timeout
 returns. The sensor model returns SHT31 wire bytes with the same checksum as the
 desk sensor. Host fake buses inject NACKs, timeouts and damaged CRC bytes.
 
-With an ARM GCC toolchain, Renode 1.15.3 and `gdb-multiarch` on Linux:
+With an ARM GCC toolchain, Renode 1.17.0 and `gdb-multiarch` on Linux:
 
 ```sh
 make -C stm32 -j2

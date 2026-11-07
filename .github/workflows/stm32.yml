@@ -16,10 +16,17 @@ jobs:
         with: {python-version: '3.11'}
       - name: Install pinned Renode and ARM command-line toolchain
         run: |
-          curl -fLsS https://github.com/renode/renode/releases/download/v1.15.3/renode_1.15.3_amd64.deb -o /tmp/renode.deb
+          curl -fLsS https://github.com/renode/renode/releases/download/v1.17.0/renode-1.17.0.linux-portable.tar.gz -o /tmp/renode.tar.gz
+          mkdir -p /tmp/desk-renode
+          tar -xzf /tmp/renode.tar.gz -C /tmp/desk-renode
+          renode_binary=$(find /tmp/desk-renode -maxdepth 3 -type f -name renode -perm /111 | head -1)
+          test -n "$renode_binary"
+          renode_dir=$(dirname "$renode_binary")
+          echo "$renode_dir" >> "$GITHUB_PATH"
+          echo "RENODE_DIR=$renode_dir" >> "$GITHUB_ENV"
           sudo apt-get update -qq
-          sudo apt-get install -y /tmp/renode.deb gcc-arm-none-eabi libstdc++-arm-none-eabi-newlib gdb-multiarch
-      - run: python3 -m pip install -r /opt/renode/tests/requirements.txt
+          sudo apt-get install -y gcc-arm-none-eabi libstdc++-arm-none-eabi-newlib gdb-multiarch
+      - run: python3 -m pip install -r "$RENODE_DIR/tests/requirements.txt"
       - run: make -C stm32 -j2
       - run: python3 stm32/tests/check_symbols.py
       - name: Actual bare-metal and statically allocated FreeRTOS ELFs on Renode
