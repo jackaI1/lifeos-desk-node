@@ -23,7 +23,16 @@ def test_generator_is_standby():
     assert not net.sgen.iloc[0].in_service
 
 
-def test_fault_currents_match_independent_impedance_calculations():
+@pytest.mark.parametrize(
+    ("bus_name", "cable_ohm"),
+    [
+        pytest.param("Main switchboard", 0j, id="main-switchboard"),
+        pytest.param(
+            "Motor control centre", complex(0.124, 0.08) * 0.12, id="motor-control-centre"
+        ),
+    ],
+)
+def test_fault_currents_match_independent_impedance_calculations(bus_name, cable_ohm):
     import math
 
     result = run_study(build_network())
@@ -34,12 +43,11 @@ def test_fault_currents_match_independent_impedance_calculations():
     xt = math.sqrt(0.06**2 - 0.01**2)
     kt = 0.95 * 1.1 / (1 + 0.6 * xt)
     transformer = complex(0.01, xt) * 0.4**2 * kt
-    expected_main = 1.1 * 0.4 / (math.sqrt(3) * abs(source + transformer))
-    expected_mcc = (
-        1.1 * 0.4 / (math.sqrt(3) * abs(source + transformer + complex(0.124, 0.08) * 0.12))
+    expected_ka = 1.1 * 0.4 / (math.sqrt(3) * abs(source + transformer + cable_ohm))
+    bus = next(bus for bus in result["buses"] if bus["name"] == bus_name)
+    assert bus["fault_ka"] == pytest.approx(expected_ka, rel=0.002), (
+        f"{bus_name}: pandapower {bus['fault_ka']:.6f} kA, independent {expected_ka:.6f} kA"
     )
-    assert result["buses"][1]["fault_ka"] == pytest.approx(expected_main, rel=0.002)
-    assert result["buses"][2]["fault_ka"] == pytest.approx(expected_mcc, rel=0.002)
     assert any("Breaker" in warning for warning in result["violations"])
 
 

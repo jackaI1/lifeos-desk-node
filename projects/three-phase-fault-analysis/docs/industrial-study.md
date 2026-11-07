@@ -10,7 +10,7 @@ Refer impedances to the 0.4 kV side. For the utility, the 250 MVA short-circuit 
 
 | Fault location | Additional impedance | Hand result | pandapower |
 | --- | --- | ---: | ---: |
-| Main switchboard | none | 24.45 kA | 24.45 kA |
-| Motor control centre | 0.12 × (0.124 + j0.08) ohm cable | 9.82 kA | 9.82 kA |
+| Main switchboard | none | 24.448457 kA | 24.448457 kA |
+| Motor control centre | 0.12 × (0.124 + j0.08) ohm cable | 9.824932 kA | 9.824932 kA |
 
-The automated test evaluates these expressions independently and requires agreement within 0.2%. The [pandapower short-circuit documentation](https://pandapower.readthedocs.io/en/stable/shortcircuit/run.html) describes the method and [transformer correction](https://github.com/e2nIEE/pandapower/blob/develop/doc/shortcircuit/branch_elements.rst). Actual studies need verified equipment data, motor contributions and an engineer's review.
+The main-switchboard comparison checks the utility impedance referred to 400 V and the IEC transformer correction. The motor-control-centre comparison also checks the added cable resistance and reactance. Both results agree to the six decimal places shown; the automated tests evaluate these expressions independently and require agreement within 0.2%. These checks validate the maximum three-phase fault currents for this utility-fed example, not the load-flow results, motor contributions or generator operation. The [pandapower short-circuit documentation](https://pandapower.readthedocs.io/en/stable/shortcircuit/run.html) describes the method and [transformer correction](https://github.com/e2nIEE/pandapower/blob/develop/doc/shortcircuit/branch_elements.rst). Actual studies need verified equipment data, motor contributions and an engineer's review.
