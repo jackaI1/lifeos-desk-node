@@ -4,7 +4,7 @@ on:
     paths-ignore: ['projects/**']
     branches: [main]
   pull_request:
-    paths: ['replay/**', 'firmware/components/desk_core/**', 'firmware/tests/vendor/**', '.github/workflows/replay.yml', 'README.md', 'docs/sensor-replay.md']
+    paths: ['replay/**', 'firmware/components/desk_core/**', 'firmware/tests/vendor/**', '.github/workflows/replay.yml', 'README.md', 'docs/sensor-replay.md', 'docs/parallel-replay.md']
 permissions:
   contents: read
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Install Guile on macOS
         if: runner.os == 'macOS'
         run: brew install guile
-      - name: Scheme unit tests and C replay integration under sanitizers
+      - name: Scheme tests, C replay, parallel pool under ThreadSanitizer, and AddressSanitizer/UBSan runs
         run: make -C replay test
       - name: Compile and replay the documented outage
         run: |
