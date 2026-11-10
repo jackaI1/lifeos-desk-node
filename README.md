@@ -35,6 +35,45 @@ The [replay guide](docs/sensor-replay.md) explains how I change the readings,
 repeat a sequence and view the image. These checks run the real sensor decoder,
 queue and screen renderer, but the sensor and successful upload are simulated.
 
+## Replay many scenarios at once
+
+I built a parallel mode for the desk-node replay because I run a whole set of
+sensor scenarios every time I change the firmware, and replaying them one after
+another is slow. The replay now takes several scenario files and runs them on
+several threads. A thread is a worker inside one program, so the workers can use
+different processor cores at the same time. The program prints one summary line
+per file, in the order I gave the files.
+
+```sh
+make -C replay
+guile --no-auto-compile -L replay/scheme replay/compile.scm < replay/examples/outage.scm > replay/build/outage.wire
+replay/build/desk-replay --jobs 4 replay/build/outage.wire replay/build/outage.wire
+```
+
+Each line is the same summary the single-file mode prints. `--jobs 1` runs
+everything on one thread, and the output is byte-for-byte the same for any number
+of threads. The tests run 240 jobs at 2 to 64 threads and compare every byte.
+If one file is bad, the program prints the first bad file's name and reason to the
+error output, prints nothing else, and exits with an error.
+
+The main thread reads each file into one of eight slots in a block of shared
+memory. Workers take the next file in order, replay it, and keep their results in
+their own lists. At the end the results are put back in file order and printed.
+One mutex, which is a lock, and two condition variables, which let a thread wait
+for a signal, keep two threads from touching the same slot at once.
+
+On my Mac, 2000 copies of a 4,095-sample scenario took 0.17 seconds on one thread,
+0.08 seconds on two and 0.04 seconds on four. Past four threads, the main thread's
+file reading is the likely limit. The parallel mode prints only the summaries. The
+screen image (`--pbm`) and UART log (`--uart-log`) still need the single-file
+mode, and each file must be under 64 KiB.
+
+CI builds the replay with ThreadSanitizer, which reports threads that touch
+shared memory without a lock, and with AddressSanitizer, which reports bad memory
+access. Both run in the sensor replay job on Linux and macOS. The locking rules,
+the shared memory block and the reasons for each choice are in the
+[threading design](docs/parallel-replay.md).
+
 ## Check a wire recording without a board
 
 I use sigrok, a tool that reads logic-analyzer recordings, to decode the sensor
@@ -323,7 +362,8 @@ make -C replay test
 The harness suite checks seven example wires and rejects duplicate pins, missing grounds and undersized wire. These run on a computer without an ESP32 toolchain. Continuous integration (CI), the
 automated checks on GitHub, also builds the default SPI and legacy I²C display
 firmware. The replay checks run Scheme scenarios and the C program on Linux and
-macOS, checking for invalid memory access as well as the expected results.
+macOS, checking for invalid memory access, data races between threads, and the
+expected results.
 The room-control tests use actual local network connections and need no
 hardware. Neither suite proves that a physical board or HVAC system works.
 The capture suite adds 36 pytest cases using the real sigrok decoders, including

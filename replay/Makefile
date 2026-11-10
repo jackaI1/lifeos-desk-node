@@ -15,7 +15,7 @@ $(BUILD)/cJSON.o: $(VENDOR)/cJSON.c $(VENDOR)/cJSON.h | $(BUILD)
 	$(CC) -std=c11 $(CFLAGS) -Wno-deprecated-declarations -c $< -o "$@"
 
 $(BUILD)/desk-replay: replay.c $(CORE)/desk_core.c $(CORE)/include/desk_core.h $(BUILD)/cJSON.o
-	$(CC) $(WARN) $(CFLAGS) -I$(CORE)/include -I$(VENDOR) replay.c $(CORE)/desk_core.c $(BUILD)/cJSON.o -lm -o "$@"
+	$(CC) $(WARN) $(CFLAGS) -I$(CORE)/include -I$(VENDOR) replay.c $(CORE)/desk_core.c $(BUILD)/cJSON.o -lm -pthread -o "$@"
 
 test:
 	./tests/run.sh
