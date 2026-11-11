@@ -14,6 +14,10 @@ These blocks do the same job in Verilog and SystemVerilog, which are hardware de
 | `src/reading_buffer.v` | Keeps the last eight good readings. Its control flops form a scan chain, and a March C- self-test checks its memory. |
 | `src/march_bist.v` | The March C- memory self-test: six passes that write and read every word. |
 | `src/sensor_path.v` | The top block: the frame check feeding the buffer. |
+| `src/uart_rx.v`, `src/uart_tx.v` | Serial receiver and transmitter, 8N1 (8 data bits, no parity, 1 stop bit), with the divider as a parameter. |
+| `board/icebreaker/desk_board_top.v` | Board top for the iCEBreaker (iCE40UP5K, 12 MHz). Serial transfers in, the three frame counts out, LEDs. |
+| `board/icebreaker/icebreaker.pcf` | Pins: clock 35, serial RX 6, serial TX 9, green LED 37, red LED 11. |
+| `board/icebreaker/host.py` | Computer side: builds frames with the sensor checksum, sends transfers, prints the counts. |
 
 ## How it is checked
 
@@ -22,6 +26,8 @@ These blocks do the same job in Verilog and SystemVerilog, which are hardware de
 - `make test-crc` runs a Verilator testbench on the word checker. It uses every word from the replay scenarios and 2,000 random words with flipped checksum bits, so both good and bad verdicts are tested. The test also checks that the number of bad frames equals the `faults` count that the replay tool prints for the same files.
 - `make test-dft` runs a Verilator testbench on the reading buffer. It checks the buffer against a software queue for 20,000 random cycles, shifts patterns through the scan chain, and then injects each stuck-at fault, forced to 0 or to 1, into every memory bit and every control flop. The self-test has to report each one at the right word.
 - `make synth` runs Yosys to map the sensor path onto iCE40 FPGA cells and reports the logic depth.
+- `make test-board` runs a Verilator testbench on the board top. It acts as the computer: it sends serial bytes at 115200 baud and decodes the six reply bytes. It checks good, bad, cut-short and zero-length transfers, two frames in one transfer, and the red LED.
+- `make board` builds the iCEBreaker bitstream: Yosys for synthesis, nextpnr-ice40 for place and route at a 12 MHz target, and icepack. `scripts/board_report.py` fails the build if the clock target is missed. This needs `yosys`, `nextpnr-ice40` and `fpga-icestorm`. The Ubuntu job in CI runs it.
 
 The CI workflow `.github/workflows/rtl-checksum-selftest.yml` runs all of this on macOS. The OpenROAD place-and-route flow has its own folder, `flow/`, and workflow.
 
@@ -54,8 +60,14 @@ OpenROAD is an open-source chip design flow. It is the free equivalent of the Sy
 
 Every run meets timing. The 1.2 ns runs leave little margin, so a slower clock is safer for a real board. Power is OpenROAD's estimate with its default switching activity, not a measurement.
 
+## Board
+
+The board top runs the sensor path on an iCEBreaker: the computer sends `N` (1 to 255), then `N` sensor bytes, at 115200 baud over the board's USB serial port. The board replies with six bytes: good, bad and truncated counts, each high byte first. Wait for the reply before sending the next transfer. Run it from a computer with `python3 board/icebreaker/host.py --port <port> --demo`.
+
+The serial lines and the LEDs use the pins in `board/icebreaker/icebreaker.pcf`, which follow the icestorm example file for this board. Check them against your board revision before you flash.
+
 ## Limits
 
-- These blocks are not on a board. They have been simulated and synthesized, not built into a chip or run on an FPGA.
+- The board build has been simulated and built into a bitstream in CI. I have not yet flashed an assembled board from this build.
 - The reading buffer's self-test overwrites the stored readings, so I would run it only when the buffer is empty.
 - The fault injection hooks (`mem_fault_*` and `scan_fault_*`) exist for the testbench. Tie them to zero in a real design.

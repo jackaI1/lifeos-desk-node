@@ -22,4 +22,18 @@ $(BUILD)/dft_tb: $(RTL)/reading_buffer.v $(RTL)/march_bist.v $(RTL)/sht31_crc8_s
 	  --Mdir $(BUILD)/dft --prefix Vreading_buffer -o $(CURDIR)/$@ \
 	  $(RTL)/reading_buffer.v $(RTL)/march_bist.v dft_tb.cpp > $(BUILD)/dft-build.log 2>&1 || (tail -40 $(BUILD)/dft-build.log; exit 1)
 
-.PHONY: crc dft
+board: $(BUILD)/board_tb
+	$(BUILD)/board_tb | tee ../../build/board_tb.log | tail -1
+	@grep -q '^RESULT transfers=[0-9]* failures=0$$' ../../build/board_tb.log
+
+$(BUILD)/board_tb: $(RTL)/uart_rx.v $(RTL)/uart_tx.v $(RTL)/sensor_path.v $(RTL)/sht31_frame_check.sv \
+  $(RTL)/sht31_crc8_step.v $(RTL)/reading_buffer.v $(RTL)/march_bist.v \
+  ../../board/icebreaker/desk_board_top.v board_tb.cpp
+	@mkdir -p $(BUILD)
+	$(VERILATOR) --cc --exe --build -Wall -Wno-DECLFILENAME -Wno-UNUSED -Wno-fatal --top-module desk_board_top \
+	  --Mdir $(BUILD)/board --prefix Vdesk_board_top -o $(CURDIR)/$@ \
+	  $(RTL)/uart_rx.v $(RTL)/uart_tx.v $(RTL)/sensor_path.v $(RTL)/sht31_frame_check.sv \
+	  $(RTL)/sht31_crc8_step.v $(RTL)/reading_buffer.v $(RTL)/march_bist.v \
+	  ../../board/icebreaker/desk_board_top.v board_tb.cpp > $(BUILD)/board-build.log 2>&1 || (tail -40 $(BUILD)/board-build.log; exit 1)
+
+.PHONY: crc dft board
