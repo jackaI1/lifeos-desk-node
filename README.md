@@ -392,6 +392,22 @@ reading is dropped and the screen shows a loss count. Turning the power off lose
 those pending readings; they are not saved to flash. Invalid sensor readings
 are not turned into made-up values.
 
+## Read the room sensor from my phone
+
+I added Bluetooth Low Energy to the desk node because I wanted to read the room temperature and humidity from my phone without needing Wi-Fi. Bluetooth Low Energy is a short-range radio that uses very little power. The desk node now advertises as `Desk room sensor`, so my phone can find it, connect and read the latest values. The default build leaves Bluetooth out, so existing builds work as before.
+
+After each wake, the node takes its usual reading, uploads it over Wi-Fi as before, and then keeps Bluetooth on for a short window, 30 seconds by default. While a phone is connected, the node reads the sensor again every 10 seconds. It sends a notification only when the temperature has moved by 0.1 °C or the humidity by 0.5 %, and never more than one every 10 seconds. When the window ends, the radio shuts off until the next wake.
+
+The values use the standard Environmental Sensing service from the Bluetooth standards group, so any generic Bluetooth app can read them. The firmware uses NimBLE, the small Bluetooth stack that ships with ESP-IDF, the official ESP32 software kit. Temperature is a signed 16-bit number in hundredths of a degree (characteristic `0x2A6E`). Humidity is an unsigned 16-bit number in hundredths of a percent (`0x2A6F`). The encoding and the notification rule are plain C in [`firmware/components/desk_ess`](firmware/components/desk_ess/). The host tests in [`firmware/tests/test_ess.c`](firmware/tests/test_ess.c) run them under AddressSanitizer and UBSan, with out-of-range values and bad checksums included: 37 checks.
+
+How to try it:
+
+1. Build the Bluetooth version with `idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ble.defaults" set-target esp32`, then `idf.py build` and flash it.
+2. On a phone, open nRF Connect (a free Bluetooth scanner app), scan, and tap `Desk room sensor` within 30 seconds of a wake. The node wakes every 5 minutes by default.
+3. Read the temperature characteristic (`0x2A6E`). It shows two bytes such as `59 08`. Decode them with `python3 firmware/tools/ess_decode.py temperature "59 08"`, which prints `21.37 degC`.
+
+The phone only sees the node during the window after each wake. It is not a live stream. A shorter sleep interval gives more windows but uses more power. I have not run this on a real board yet. CI builds the Bluetooth version next to the default one, and runs the encoder tests on every push. The [firmware README](firmware/README.md#bluetooth-low-energy-optional-build) has the build details.
+
 ## Send readings over a wired CAN link
 
 I built a wired CAN link for the desk node because Wi-Fi drops, and when it does I lose the room readings until it comes back. CAN is a wired message bus: devices share two wires, and each short message reaches every device on the bus. The node sends its latest temperature, humidity and fault flags once per wake cycle, using the ESP32's built-in CAN controller. A second device on the bus, or my laptop with a recording, can read them later.

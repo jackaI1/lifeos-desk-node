@@ -8,12 +8,7 @@ CONFIG_ESP_MAIN_TASK_STACK_SIZE=6144
 CONFIG_ESP_CONSOLE_UART_DEFAULT=y
 CONFIG_ESP_CONSOLE_UART_BAUDRATE=115200
 
-# BLE shares the wake window with Wi-Fi; no calendar data is advertised.
-CONFIG_BT_ENABLED=y
-CONFIG_BT_BLUEDROID_ENABLED=y
-CONFIG_BT_BLE_ENABLED=y
-CONFIG_BT_CLASSIC_ENABLED=n
-CONFIG_BTDM_CTRL_MODE_BLE_ONLY=y
-# BLE + HTTPS needs more than the default 1 MB factory partition on the 4 MB module.
+# Bluetooth is off in the default build; see sdkconfig.ble.defaults.
+# Wi-Fi plus HTTPS needs more than the default 1 MB factory partition on the 4 MB module.
 CONFIG_PARTITION_TABLE_SINGLE_APP_LARGE=y
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y

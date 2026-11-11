@@ -67,6 +67,12 @@ static void publish_can(const desk_reading_t *reading) {
 }
 #endif
 
+#if CONFIG_DESK_BLE_ENABLE
+static bool ble_sample(void *context,desk_reading_t *reading) {
+    return desk_sensor_read(context,reading)==ESP_OK;
+}
+#endif
+
 static void sleep_now(void) {
     /* Also safe on a deadline path where the network task has not cleaned up. */
     esp_wifi_stop();
@@ -109,7 +115,6 @@ void app_main(void) {
         sample.reading.sequence=retained.next_sequence++;
         desk_ring_push(&retained.ring,sample.reading);
     }
-    if (sample.valid && desk_ble_start(&sample.reading)!=ESP_OK) ESP_LOGW(TAG,"BLE sample service unavailable");
 #if CONFIG_DESK_CAN_ENABLE
     publish_can(sample.valid?&sample.reading:NULL);
 #endif
@@ -137,5 +142,10 @@ void app_main(void) {
     if (desk_display_frame(&drivers,frame)!=ESP_OK) ESP_LOGW(TAG,"Display unavailable");
     if (desk_uart_log_cycle(sample.valid?&sample.reading:NULL,retained.ring.count,
                             retained.ring.dropped,result.upload_acked)!=ESP_OK) ESP_LOGW(TAG,"Cycle log unavailable");
+#if CONFIG_DESK_BLE_ENABLE
+    /* Bounded BLE window after the upload: advertise, serve reads, then sleep. */
+    if (sample.valid && desk_ble_window(ble_sample,&drivers,&sample.reading,CONFIG_DESK_BLE_WINDOW_SECONDS)!=ESP_OK)
+        ESP_LOGW(TAG,"BLE window unavailable");
+#endif
     sleep_now();
 }
