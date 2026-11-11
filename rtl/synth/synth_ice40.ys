@@ -1,0 +1,11 @@
+# Synthesize the sensor path for an iCE40 FPGA-style target and report what it uses.
+# Run from rtl/ with `make synth`.
+#   build/sensor_path_ice40.json  netlist
+#   build/synth_stat.txt          cell counts after mapping
+#   build/synth_ltp.txt           longest path through the mapped logic, in cells
+read_verilog -sv src/sht31_crc8_step.v src/crc8_word_stream.v src/sht31_frame_check.sv \
+    src/march_bist.v src/reading_buffer.v src/sensor_path.v
+hierarchy -check -top sensor_path
+synth_ice40 -top sensor_path -json build/sensor_path_ice40.json
+tee -q -o build/synth_stat.txt stat
+tee -q -o build/synth_ltp.txt ltp -noff

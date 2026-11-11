@@ -1,0 +1,29 @@
+name: OpenROAD place-and-route sweep (sensor path)
+on:
+  push:
+    branches: [main]
+    paths: ['rtl/**', '.github/workflows/openroad-sensor-path.yml']
+  pull_request:
+    paths: ['rtl/**', '.github/workflows/openroad-sensor-path.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  flow:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      # The OpenROAD flow runs in its own container image. The run fails when the
+      # chosen clock constraint has negative setup slack (see rtl/flow/collect.py).
+      - name: Run Yosys, floorplan, placement, clock tree and routing for each constraint
+        run: |
+          mkdir -p rtl/build
+          docker run --rm -v "$GITHUB_WORKSPACE/rtl:/work" -w /OpenROAD-flow-scripts/flow \
+            openroad/orfs:latest bash /work/flow/run_sweep.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: openroad-sweep
+          path: rtl/build/openroad
+          if-no-files-found: ignore

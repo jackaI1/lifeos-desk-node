@@ -350,6 +350,30 @@ I built a set of simulations for the case because I wanted to know whether it fi
 
 The first run found one thing to change: with the 3.2 mm mounting holes on my board, an M3 screw misses the worst-case fit by 0.115 mm, and a 3.5 mm hole passes. The numbers are in [mechanical/docs/study.md](mechanical/docs/study.md), and the setup steps are in the [mechanical README](mechanical/README.md). The checks run in GitHub Actions on every change to that folder.
 
+## Check my room readings for odd values
+
+I built a small anomaly check for the temperature and humidity readings because I want the desk node to notice a sensor spike or a stuck value itself, before it reaches my room log. A small neural network learns what a normal reading looks like from a log, and a window of four readings gets a high score when it looks wrong. I shrank the model to eight-bit integers, so it could run on the ESP32 later. The C code uses only integer arithmetic.
+
+On a simulated log with known faults, the eight-bit model gets the same accuracy as the full-precision model (0.968 on the held-out part), agrees with it on 99.56 % of windows, and uses 223 bytes for its weights instead of 592. It catches spikes, humidity jumps and dropouts every time. It misses stuck readings, because four identical values look like a calm room. The [anomaly README](anomaly_int8/README.md) has the numbers and the per-layer scales, and [anomaly_int8/docs/results.md](anomaly_int8/docs/results.md) has the full report. To run it:
+
+```sh
+cd anomaly_int8 && python3 -m venv .venv && . .venv/bin/activate
+python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.9.1 && python -m pip install -r requirements.txt
+python -m pytest && python -m anomaly_int8 run
+```
+
+## Check the sensor checksum in hardware
+
+The sensor sends a checksum with each reading, and the firmware throws away readings whose checksum does not match. I wrote the same check as logic blocks in Verilog, the language that describes chips and FPGAs, because a hardware version is one option for the sensor path later. The blocks are tested in simulation against the same scenario files the firmware tests use, including the ones with deliberately corrupted checksums. The [rtl README](rtl/README.md) explains each block.
+
+The word checker agrees with the replay tool on all 2,204 words I tested, and the reading buffer's built-in self-test finds all 512 memory stuck-at faults I injected, and all 22 scan-chain faults. The sensor path also maps onto 588 LUT4 cells and 440 flip-flops in Yosys for an iCE40 FPGA.
+
+```sh
+cd rtl && python3 -m venv .venv && . .venv/bin/activate && python -m pip install -r requirements.txt
+make test PY=python3     # lint, cocotb frame tests, Verilator benches, cross-checks
+make synth               # FPGA-style synthesis and logic depth
+```
+
 ## Checks and remaining hardware work
 
 Run the software tests from the repository root:
@@ -388,6 +412,8 @@ wiring, screen output, reconnects, sensor faults and measured current.
 [Design notes](firmware/docs/design.md), the [device API](firmware/docs/api.md)
 and [validation notes](firmware/docs/validation.md) explain the software behavior
 and what remains unverified.
+
+The anomaly detector runs 23 pytest checks, including the C routine against the Python reference. The RTL folder runs its cocotb and Verilator benches and the replay cross-checks, and CI runs them on macOS.
 
 The battery and antenna tools add 28 checks for charge integration, firmware
 sleep timing, runtime units, invalid inputs, independently calculated circuit
