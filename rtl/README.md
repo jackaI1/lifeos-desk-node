@@ -41,6 +41,19 @@ The 440 flip-flops are mostly the eight-word buffer, which I store in flops rath
 
 The March C- test finds any stuck-at fault in a memory cell, which is what the table shows. It does not find every kind of memory fault, for example coupling between two cells.
 
+## Place and route with OpenROAD
+
+OpenROAD is an open-source chip design flow. It is the free equivalent of the Synopsys and Cadence tools, and it runs here on the open Nangate45 cell library. The folder `flow/` runs the whole flow on `sensor_path`: Yosys synthesis, floorplan, placement, clock tree and routing. `flow/run_sweep.sh` repeats it for clock periods of 2.0, 1.6 and 1.2 ns and for core utilizations of 30 % and 50 %. `flow/collect.py` reads the final metrics for each run and writes [docs/openroad-sweep.md](docs/openroad-sweep.md). The CI job `.github/workflows/openroad-sensor-path.yml` runs the sweep in the `openroad/orfs` container and fails if the chosen constraint, 1.2 ns at 30 % utilization, has negative setup slack.
+
+| Period | Utilization | Worst setup slack | Cell area | Power |
+|---|---|---|---|---|
+| 2.0 ns | 30 % | 0.688 ns | 4516 um^2 | 3.5 mW |
+| 1.6 ns | 30 % | 0.408 ns | 4525 um^2 | 4.4 mW |
+| 1.2 ns | 30 % | 0.113 ns | 4541 um^2 | 5.9 mW |
+| 1.2 ns | 50 % | 0.080 ns | 4504 um^2 | 5.7 mW |
+
+Every run meets timing. The 1.2 ns runs leave little margin, so a slower clock is safer for a real board. Power is OpenROAD's estimate with its default switching activity, not a measurement.
+
 ## Limits
 
 - These blocks are not on a board. They have been simulated and synthesized, not built into a chip or run on an FPGA.

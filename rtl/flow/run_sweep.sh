@@ -22,4 +22,4 @@ for period in $PERIODS; do
     cp -r "reports/nangate45/sensor_path/$variant" "$OUT/reports/" 2>/dev/null || true
   done
 done
-python3 /work/flow/collect.py "$OUT" --periods $PERIODS --utils $UTILS
+python3 /work/flow/collect.py "$OUT" --periods $PERIODS --utils $UTILS --chosen-period 1.2 --chosen-util 30 --docs /work/docs/openroad-sweep.md

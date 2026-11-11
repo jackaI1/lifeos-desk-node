@@ -374,6 +374,10 @@ make test PY=python3     # lint, cocotb frame tests, Verilator benches, cross-ch
 make synth               # FPGA-style synthesis and logic depth
 ```
 
+## Place and route the sensor block
+
+I ran the sensor block through OpenROAD, an open-source chip design flow, to check that it can run at the speeds I would need for a chip or an FPGA version of the sensor path. The flow does synthesis, placement and routing on the open Nangate45 cell library. I swept the clock period and the core utilization and recorded the timing slack, area and power for each run. Every run meets timing, the tightest at 1.2 ns with 0.080 ns to spare, and CI fails if the chosen 1.2 ns constraint ever stops closing. The table and the commands are in [rtl/README.md](rtl/README.md) and [rtl/docs/openroad-sweep.md](rtl/docs/openroad-sweep.md).
+
 ## Checks and remaining hardware work
 
 Run the software tests from the repository root:

@@ -7,16 +7,12 @@ the chosen constraint has negative setup slack, which is the CI gate.
 """
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
-SLACK_KEYS = ['timing__setup__ws', 'timing__setup__worst_slack']
-AREA_KEYS = ['design__instance__area', 'design__instance__area__stdcell']
-POWER_KEYS = ['power__total', 'power__total__total']
-SLACK_TEXT = re.compile(r'(?:worst slack|wns|worst_slack)[^\n\-\d]*(-?\d+\.\d+)', re.IGNORECASE)
-AREA_TEXT = re.compile(r'(?:design area|instance area)[^\n\d]*(\d+(?:\.\d+)?)', re.IGNORECASE)
-POWER_TEXT = re.compile(r'Total\s+[\d.e+-]+\s+[\d.e+-]+\s+[\d.e+-]+\s+([\d.e+-]+)', re.IGNORECASE)
+SLACK_KEYS = ['finish__timing__setup__ws']
+AREA_KEYS = ['finish__design__instance__area']
+POWER_KEYS = ['finish__power__total']
 
 
 def _from_json(files, keys):
@@ -33,28 +29,12 @@ def _from_json(files, keys):
     return None
 
 
-def _from_text(files, pattern):
-    for path in files:
-        if path.suffix not in ('.log', '.rpt', '.txt'):
-            continue
-        match = pattern.search(path.read_text(errors='replace'))
-        if match:
-            return float(match.group(1))
-    return None
-
-
 def measure(out, variant):
-    files = sorted(p for p in (out / 'logs' / variant).rglob('*') if p.is_file())
-    files += sorted(p for p in (out / 'reports' / variant).rglob('*') if p.is_file())
+    # The final metrics are written by the 6_report step into logs/<variant>/6_report.json.
+    files = sorted((out / 'logs' / variant).glob('6_report.json'))
     slack = _from_json(files, SLACK_KEYS)
-    if slack is None:
-        slack = _from_text(files, SLACK_TEXT)
     area = _from_json(files, AREA_KEYS)
-    if area is None:
-        area = _from_text(files, AREA_TEXT)
     power = _from_json(files, POWER_KEYS)
-    if power is None:
-        power = _from_text(files, POWER_TEXT)
     return {'worst_setup_slack_ns': slack, 'area_um2': area, 'power_w': power}
 
 
