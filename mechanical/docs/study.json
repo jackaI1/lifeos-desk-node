@@ -1,0 +1,527 @@
+{
+  "cantilever": {
+    "closed_form_deflection_mm": 0.45714285714285713,
+    "fem_deflection_mm": 0.4541779191637631,
+    "deflection_error": 0.006485801829268188,
+    "closed_form_root_stress_mpa": 24.0,
+    "bending_stress_rms_error": 0.0001792519029063009,
+    "bending_stress_max_error": 0.0009124168296501278,
+    "bending_stress_elements": 12271,
+    "elements": 24801
+  },
+  "sweep": [
+    {
+      "peak_von_mises_mpa": 24.32035659581116,
+      "peak_element": 128772,
+      "peak_xyz_mm": [
+        4.488,
+        58.763,
+        13.845
+      ],
+      "p95_von_mises_mpa": 11.021747990148373,
+      "max_displacement_mm": 0.13207223456054343,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -1200.0000000000005
+      ],
+      "reaction_force_n": [
+        9.400132636108807e-08,
+        -2.700134313223329e-08,
+        1199.9999956266736
+      ],
+      "force_balance_error": 3.6453502792859984e-09,
+      "elements": 90269,
+      "nodes": 159948,
+      "load_case": "screw",
+      "applied_n": 1200.0,
+      "wall_mm": 2.0,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 27.6,
+      "safety_factor": 2.055890907808967,
+      "margin_of_safety": 1.0558909078089669
+    },
+    {
+      "peak_von_mises_mpa": 3.5100983767618303,
+      "peak_element": 127460,
+      "peak_xyz_mm": [
+        30.5,
+        1.744,
+        13.789
+      ],
+      "p95_von_mises_mpa": 0.21898869542832686,
+      "max_displacement_mm": 0.016701239536659338,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -50.00000000000001
+      ],
+      "reaction_force_n": [
+        -9.99898319403758e-10,
+        -3.1700953599018187e-09,
+        50.000000267049145
+      ],
+      "force_balance_error": 5.3413965065006845e-09,
+      "elements": 90269,
+      "nodes": 159948,
+      "load_point_deflection_mm": -0.013777535507246374,
+      "load_case": "drop",
+      "applied_n": 50.0,
+      "wall_mm": 2.0,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 26.7,
+      "safety_factor": 14.244615003106118,
+      "margin_of_safety": 13.244615003106118
+    },
+    {
+      "peak_von_mises_mpa": 24.551247206254136,
+      "peak_element": 129983,
+      "peak_xyz_mm": [
+        3.033,
+        60.982,
+        2.28
+      ],
+      "p95_von_mises_mpa": 9.68312438372834,
+      "max_displacement_mm": 0.129985760408804,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -1200.0000000000005
+      ],
+      "reaction_force_n": [
+        1.689855780841662e-08,
+        -8.200012841729082e-08,
+        1199.999994967623
+      ],
+      "force_balance_error": 4.194228192108034e-09,
+      "elements": 97926,
+      "nodes": 171179,
+      "load_case": "screw",
+      "applied_n": 1200.0,
+      "wall_mm": 2.5,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 31.1,
+      "safety_factor": 2.0365564152383713,
+      "margin_of_safety": 1.0365564152383713
+    },
+    {
+      "peak_von_mises_mpa": 2.8023123767343914,
+      "peak_element": 124943,
+      "peak_xyz_mm": [
+        32.481,
+        1.775,
+        14.254
+      ],
+      "p95_von_mises_mpa": 0.18718180400273218,
+      "max_displacement_mm": 0.013887557757623369,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -49.99999999999997
+      ],
+      "reaction_force_n": [
+        -3.3101711079621394e-09,
+        -8.698033228637704e-10,
+        50.00000003329978
+      ],
+      "force_balance_error": 6.695045458326991e-10,
+      "elements": 97926,
+      "nodes": 171179,
+      "load_point_deflection_mm": -0.011171979663265306,
+      "load_case": "drop",
+      "applied_n": 50.0,
+      "wall_mm": 2.5,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 32.6,
+      "safety_factor": 17.842407725532127,
+      "margin_of_safety": 16.842407725532127
+    },
+    {
+      "peak_von_mises_mpa": 25.2248322929226,
+      "peak_element": 165303,
+      "peak_xyz_mm": [
+        3.57,
+        60.531,
+        2.802
+      ],
+      "p95_von_mises_mpa": 4.710875848447923,
+      "max_displacement_mm": 0.13030103920658115,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -1200.0000000000007
+      ],
+      "reaction_force_n": [
+        -4.04005573530321e-08,
+        -7.200046516791449e-08,
+        1200.00000000148
+      ],
+      "force_balance_error": 6.881164068493306e-11,
+      "elements": 128905,
+      "nodes": 212836,
+      "load_case": "screw",
+      "applied_n": 1200.0,
+      "wall_mm": 3.0,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 59.3,
+      "safety_factor": 1.9821737333821101,
+      "margin_of_safety": 0.9821737333821101
+    },
+    {
+      "peak_von_mises_mpa": 2.3469168393571405,
+      "peak_element": 146982,
+      "peak_xyz_mm": [
+        32.531,
+        1.604,
+        14.718
+      ],
+      "p95_von_mises_mpa": 0.17055335028760282,
+      "max_displacement_mm": 0.011786508938324088,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -49.999999999999964
+      ],
+      "reaction_force_n": [
+        -8.587966403948197e-09,
+        6.395038935390138e-09,
+        50.00000028439519
+      ],
+      "force_balance_error": 5.691934470444205e-09,
+      "elements": 128905,
+      "nodes": 212836,
+      "load_point_deflection_mm": -0.009470265032,
+      "load_case": "drop",
+      "applied_n": 50.0,
+      "wall_mm": 3.0,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 58.5,
+      "safety_factor": 21.304546953481246,
+      "margin_of_safety": 20.304546953481246
+    },
+    {
+      "peak_von_mises_mpa": 27.92917440487932,
+      "peak_element": 176850,
+      "peak_xyz_mm": [
+        60.987,
+        4.054,
+        3.303
+      ],
+      "p95_von_mises_mpa": 3.768382191504146,
+      "max_displacement_mm": 0.13079370586766859,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -1200.0000000000005
+      ],
+      "reaction_force_n": [
+        -3.209422680597238e-12,
+        1.999554152569355e-09,
+        1199.9999970014965
+      ],
+      "force_balance_error": 2.4987538783597705e-09,
+      "elements": 142017,
+      "nodes": 231490,
+      "load_case": "screw",
+      "applied_n": 1200.0,
+      "wall_mm": 3.5,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 73.4,
+      "safety_factor": 1.7902426786831491,
+      "margin_of_safety": 0.7902426786831491
+    },
+    {
+      "peak_von_mises_mpa": 2.1973249430962736,
+      "peak_element": 154096,
+      "peak_xyz_mm": [
+        32.714,
+        2.374,
+        15.188
+      ],
+      "p95_von_mises_mpa": 0.156087715515638,
+      "max_displacement_mm": 0.01117520902207368,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -50.00000000000005
+      ],
+      "reaction_force_n": [
+        4.496063052278658e-10,
+        7.800074331827613e-09,
+        49.99999969387932
+      ],
+      "force_balance_error": 6.124408414226766e-09,
+      "elements": 142017,
+      "nodes": 231490,
+      "load_point_deflection_mm": -0.008534426283333334,
+      "load_case": "drop",
+      "applied_n": 50.0,
+      "wall_mm": 3.5,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 74.2,
+      "safety_factor": 22.754941255772792,
+      "margin_of_safety": 21.754941255772792
+    },
+    {
+      "peak_von_mises_mpa": 28.428815041624045,
+      "peak_element": 196056,
+      "peak_xyz_mm": [
+        61.471,
+        4.573,
+        3.832
+      ],
+      "p95_von_mises_mpa": 3.1548243877490116,
+      "max_displacement_mm": 0.131438138591084,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -1200.000000000001
+      ],
+      "reaction_force_n": [
+        1.700304126276557e-09,
+        4.0003161398392774e-08,
+        1200.000001859145
+      ],
+      "force_balance_error": 1.54964595873451e-09,
+      "elements": 157784,
+      "nodes": 253881,
+      "load_case": "screw",
+      "applied_n": 1200.0,
+      "wall_mm": 4.0,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 96.5,
+      "safety_factor": 1.758778898339326,
+      "margin_of_safety": 0.758778898339326
+    },
+    {
+      "peak_von_mises_mpa": 1.9689448362678261,
+      "peak_element": 66615,
+      "peak_xyz_mm": [
+        34.052,
+        2.656,
+        15.615
+      ],
+      "p95_von_mises_mpa": 0.14400594044193138,
+      "max_displacement_mm": 0.010082294168300416,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -49.999999999999964
+      ],
+      "reaction_force_n": [
+        -5.919940174509486e-09,
+        5.380005584687348e-09,
+        49.99999989163091
+      ],
+      "force_balance_error": 2.1732779688299754e-09,
+      "elements": 157784,
+      "nodes": 253881,
+      "load_point_deflection_mm": -0.00767218530612245,
+      "load_case": "drop",
+      "applied_n": 50.0,
+      "wall_mm": 4.0,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 2100,
+        "poisson": 0.38,
+        "yield_mpa": 50,
+        "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+      },
+      "seconds": 97.3,
+      "safety_factor": 25.394312262590347,
+      "margin_of_safety": 24.394312262590347
+    }
+  ],
+  "machined": [
+    {
+      "peak_von_mises_mpa": 24.378819299803617,
+      "peak_element": 128762,
+      "peak_xyz_mm": [
+        60.212,
+        4.439,
+        13.825
+      ],
+      "p95_von_mises_mpa": 11.254236050867295,
+      "max_displacement_mm": 0.0039960670755106896,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -1200.0000000000005
+      ],
+      "reaction_force_n": [
+        -1.6080171386324187e-08,
+        -1.800170916911338e-08,
+        1199.9999965481568
+      ],
+      "force_balance_error": 2.876606717739858e-09,
+      "elements": 90269,
+      "nodes": 159948,
+      "load_case": "screw",
+      "applied_n": 1200.0,
+      "wall_mm": 2.0,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 68900,
+        "poisson": 0.33,
+        "yield_mpa": 276,
+        "source": "6061-T6 handbook values, the same yield value used in calculix-bracket-fea"
+      },
+      "seconds": 26.8,
+      "safety_factor": 11.321302996910244,
+      "margin_of_safety": 10.321302996910244
+    },
+    {
+      "peak_von_mises_mpa": 3.5016065936859313,
+      "peak_element": 127460,
+      "peak_xyz_mm": [
+        30.5,
+        1.744,
+        13.789
+      ],
+      "p95_von_mises_mpa": 0.2089640000018118,
+      "max_displacement_mm": 0.000507926729693197,
+      "applied_force_n": [
+        0.0,
+        0.0,
+        -50.00000000000001
+      ],
+      "reaction_force_n": [
+        1.1600080663956039e-08,
+        1.1015990464885804e-10,
+        50.0000001702286
+      ],
+      "force_balance_error": 3.4124682438573913e-09,
+      "elements": 90269,
+      "nodes": 159948,
+      "load_point_deflection_mm": -0.00042251032173913037,
+      "load_case": "drop",
+      "applied_n": 50.0,
+      "wall_mm": 2.0,
+      "mesh_mm": 1.0,
+      "material": {
+        "youngs_mpa": 68900,
+        "poisson": 0.33,
+        "yield_mpa": 276,
+        "source": "6061-T6 handbook values, the same yield value used in calculix-bracket-fea"
+      },
+      "seconds": 26.2,
+      "safety_factor": 78.820961925786,
+      "margin_of_safety": 77.820961925786
+    }
+  ],
+  "harsh_drop": {
+    "peak_von_mises_mpa": 35.10098376761831,
+    "peak_element": 127460,
+    "peak_xyz_mm": [
+      30.5,
+      1.744,
+      13.789
+    ],
+    "p95_von_mises_mpa": 2.1898869542832684,
+    "max_displacement_mm": 0.16701239536659337,
+    "applied_force_n": [
+      0.0,
+      0.0,
+      -500.00000000000006
+    ],
+    "reaction_force_n": [
+      -9.998447477661443e-09,
+      -3.170082194367845e-08,
+      500.0000026705346
+    ],
+    "force_balance_error": 5.341482866248695e-09,
+    "elements": 90269,
+    "nodes": 159948,
+    "load_point_deflection_mm": -0.13777535507246375,
+    "load_case": "drop",
+    "applied_n": 500.0,
+    "wall_mm": 2.0,
+    "mesh_mm": 1.0,
+    "material": {
+      "youngs_mpa": 2100,
+      "poisson": 0.38,
+      "yield_mpa": 50,
+      "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+    },
+    "seconds": 26.1,
+    "safety_factor": 1.4244615003106116,
+    "margin_of_safety": 0.4244615003106116
+  },
+  "mesh_check": [
+    {
+      "mesh_mm": 2.0,
+      "elements": 19462,
+      "peak_mpa": 27.310178690024827,
+      "p95_mpa": 20.2328831380493,
+      "deflection_mm": 0.13092663827776416
+    },
+    {
+      "mesh_mm": 1.4,
+      "elements": 34963,
+      "peak_mpa": 25.746868035462825,
+      "p95_mpa": 20.283604006442317,
+      "deflection_mm": 0.13206374474274535
+    },
+    {
+      "mesh_mm": 1.0,
+      "elements": 90269,
+      "peak_mpa": 24.32035659581116,
+      "p95_mpa": 11.021747990148373,
+      "deflection_mm": 0.13207223456054343
+    }
+  ]
+}
