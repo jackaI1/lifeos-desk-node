@@ -64,7 +64,7 @@ esp_err_t desk_can_send(const desk_can_status_t *status) {
     twai_status_info_t info;
     esp_err_t err = twai_get_status_info(&info);
     if (err != ESP_OK) return err;
-    if (info.state == TWAI_STATE_BUSOFF) {
+    if (info.state == TWAI_STATE_BUS_OFF) {
         /* Recovery completes in the background; the next cycle restarts the driver. */
         ESP_LOGW(TAG, "bus-off; starting recovery");
         twai_initiate_recovery();
