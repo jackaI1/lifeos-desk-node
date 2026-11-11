@@ -25,6 +25,8 @@ jobs:
           kicad-cli sch export pdf -o hardware/simulation/build/light-front-end.pdf hardware/simulation/light-front-end.kicad_sch
       - run: /tmp/desk-circuit/bin/python -m pytest hardware/simulation/tests -q
       - run: /tmp/desk-circuit/bin/python -m hardware.simulation.spice
+      - name: Write the OrCAD PSpice netlist and check it in ngspice
+        run: /tmp/desk-circuit/bin/python -m hardware.simulation.orcad --out hardware/simulation/build/orcad
       - uses: actions/upload-artifact@v4
         with:
           name: probe-fabrication-and-spice
