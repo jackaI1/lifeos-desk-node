@@ -1,0 +1,4 @@
+# Bench automation: PyVISA talks SCPI, pyvisa-sim serves the simulated instruments.
+pyvisa==1.16.2
+pyvisa-sim==0.7.1
+pytest==8.3.5

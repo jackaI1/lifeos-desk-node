@@ -294,6 +294,21 @@ sensor, and USB-C power supply. The screen plugs into it. A separate USB-to-UART
 adapter loads the firmware and lets me read its logs. The
 [board guide](hardware/README.md) explains the connections, parts and files needed to order or build one. This version has not been manufactured yet.
 
+## Check the power-up on a bench
+
+I built a bench check because I need the same power-up measurements every time I change the board, and I want them written down. The script drives a programmable power supply and an oscilloscope. It sets the 5 V input, turns it on, and records the ripple on the 3.3 V regulator's output (the small repeating wiggle on a supply line) and how long after the 5 V input that output comes up. It also reads how much current the board draws. Each result is compared with a limit in a text file, and each run is saved in a folder named with the time it ran.
+
+I don't have the lab instruments here, so the check runs against simulated ones. It sends SCPI, the standard text commands most bench supplies and scopes use, through PyVISA, a Python library that talks to instruments. A second library, pyvisa-sim, answers those commands from a file that describes a simple board. To run it:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r bench/requirements.txt
+.venv/bin/python -m bench
+.venv/bin/python -m bench --inject ripple
+```
+
+The first run passes all five checks: 8 mVpp of ripple (limit 30), a 1.5 ms delay for the regulator (limit 0.2 to 10 ms) and 60 mA of input current (limit 150 mA). The `--inject` option adds a fault to the simulated board. `ripple` adds 60 mVpp, and `late-rail` starts the regulator 14 ms late. Each fault fails the check it targets and nothing else, and the tests check that. Each run writes a CSV of measurements, a CSV of the captured waveforms and a short report into `bench/build/runs/`. The limits in `bench/limits.toml` are bring-up targets I picked, not datasheet numbers. The [bench guide](docs/bench-automation.md) covers the commands, how the simulator models the board and how to point the script at real instruments.
+
 ## Export the light-input circuit for OrCAD
 
 I built an OrCAD export because I wanted to learn Cadence OrCAD, a circuit
@@ -376,6 +391,21 @@ Up to 64 readings wait for upload across sleep cycles. If that fills, the oldest
 reading is dropped and the screen shows a loss count. Turning the power off loses
 those pending readings; they are not saved to flash. Invalid sensor readings
 are not turned into made-up values.
+
+## Send readings over a wired CAN link
+
+I built a wired CAN link for the desk node because Wi-Fi drops, and when it does I lose the room readings until it comes back. CAN is a wired message bus: devices share two wires, and each short message reaches every device on the bus. The node sends its latest temperature, humidity and fault flags once per wake cycle, using the ESP32's built-in CAN controller. A second device on the bus, or my laptop with a recording, can read them later.
+
+The analyzer reads a recorded CAN log and flags what I care about: a gap in the heartbeat (the regular message that shows the node is alive), values outside the range the message layout allows, the node's own sensor and queue fault flags, and bus-off, when the controller stops sending because too many of its messages failed. It runs on a computer with no board attached:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r can_monitor/requirements.txt
+.venv/bin/python -m can_monitor.analyze can_monitor/examples/candump/desk_node_clean.log
+.venv/bin/python -m can_monitor.analyze can_monitor/examples/candump/desk_node_faults.log
+```
+
+The clean log passes. The second file is the same log with damage I added on purpose: 10 readings missing, a humidity of 105 %, a sensor fault, a bus-off event, a damaged line and a time that goes backwards. The analyzer reports each one and exits with status 1. Both logs come from a simulated node on a virtual bus, not from a real board. The [CAN guide](docs/can-log-analysis.md) lists every finding, the byte layout and the firmware switch (`CONFIG_DESK_CAN_ENABLE`). The desk board has no CAN transceiver yet, so the link has not run on a real bus. CI builds the firmware with the CAN link enabled, runs the C encoder tests, and checks the same bytes against the message file in Python.
 
 ## Check the case before printing
 
@@ -484,6 +514,14 @@ saves the power report and predicted radio-reflection sweeps. These checks cover
 the design and calculations; current, runtime, charging and radio performance
 remain unmeasured.
 
+
+The CAN log analyzer adds 45 pytest checks, covering the candump reader, every finding, the simulator's output and the byte vectors the firmware test uses. The whole CAN folder runs 80 tests, and one Linux-only socket test is skipped on macOS. The bench check adds 36 tests for the limit logic, the simulated runs and the command-line exit codes:
+
+```sh
+.venv/bin/python -m pytest can_monitor/tests -q
+.venv/bin/python -m pip install -r bench/requirements.txt
+.venv/bin/python -m pytest bench/tests -q
+```
 
 ## Other things I've built here
 

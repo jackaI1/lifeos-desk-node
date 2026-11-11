@@ -1,0 +1,28 @@
+# Pass/fail limits for the desk-node power-up check.
+#
+# These are project targets for bring-up, not numbers taken from a datasheet.
+# They should be replaced with the values from the final power budget and the
+# regulator datasheet before a measured result is treated as a board pass.
+
+[supply]
+vbus_setpoint_v = 5.0           # USB input rail set on the bench supply
+setpoint_tolerance_v = 0.05     # the readback must match the setpoint within this
+max_input_current_ma = 150.0    # steady current drawn from the 5 V supply
+
+[rail_vbus]
+tolerance_fraction = 0.05       # steady-state mean must be within +/-5 % of the setpoint
+
+[rail_3v3]
+nominal_v = 3.3
+tolerance_fraction = 0.05       # steady-state mean must be within +/-5 % of nominal
+max_ripple_mvpp = 30.0          # peak-to-peak ripple in the steady window
+
+[sequence]
+ready_fraction = 0.9            # a rail is "ready" at 90 % of its nominal voltage
+min_delay_ms = 0.2              # 3V3 must come up at least this long after VBUS
+max_delay_ms = 10.0             # and no later than this
+
+[capture]
+window_ms = 30.0               # scope record length, starting when the supply output turns on
+points = 6000                   # 5 us per point
+steady_window_ms = 5.0          # last part of the record used for steady-state and ripple

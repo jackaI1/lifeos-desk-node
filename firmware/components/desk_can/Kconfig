@@ -1,0 +1,22 @@
+menu "Desk CAN link"
+
+config DESK_CAN_ENABLE
+    bool "Send readings and heartbeat over CAN (TWAI)"
+    default n
+    help
+        Sends one DeskNode frame per wake cycle on a CAN bus through an external
+        3.3 V CAN transceiver. The frame layout is can_monitor/desk_node.dbc.
+
+config DESK_CAN_TX_GPIO
+    int "TWAI TX GPIO (to transceiver TXD)"
+    default 19
+    range 0 39
+    depends on DESK_CAN_ENABLE
+
+config DESK_CAN_RX_GPIO
+    int "TWAI RX GPIO (from transceiver RXD)"
+    default 4
+    range 0 39
+    depends on DESK_CAN_ENABLE
+
+endmenu

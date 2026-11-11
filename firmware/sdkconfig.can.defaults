@@ -1,0 +1,2 @@
+# CI-only overlay: builds the firmware with the CAN link enabled.
+CONFIG_DESK_CAN_ENABLE=y

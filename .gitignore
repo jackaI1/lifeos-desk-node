@@ -69,3 +69,8 @@ anomaly_int8/c/build/
 rtl/build/
 rtl/tests/cocotb/sim_build/
 rtl/tests/cocotb/results.xml
+
+# Local bench results and CAN-enabled firmware build (not committed).
+bench/build/
+firmware/build-can/
+firmware/sdkconfig.can
