@@ -14,4 +14,8 @@ trap 'rm -rf "$build_dir"' EXIT HUP INT TERM
   components/desk_core/desk_core.c components/desk_drivers/desk_ssd1306.c \
   "$build_dir/cJSON.o" tests/test_peripherals.c -lm -o "$build_dir/test_peripherals"
 "$build_dir/test_peripherals"
+"${CC:-cc}" -std=c11 -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -g \
+  -Icomponents/desk_can/include \
+  components/desk_can/desk_can.c tests/test_can.c -o "$build_dir/test_can"
+"$build_dir/test_can"
 python3 -m unittest discover -s tests -p 'test_*.py' -v

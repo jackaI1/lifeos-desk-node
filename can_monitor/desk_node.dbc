@@ -1,0 +1,20 @@
+VERSION "Desk node telemetry v1"
+
+NS_ :
+    BA_DEF_
+    BA_
+    VAL_
+
+BS_:
+
+BU_: DeskNode Logger
+
+BO_ 288 DeskNode: 8 DeskNode
+ SG_ Temperature : 0|16@1+ (0.01,-40) [-40|125] "degC" Logger
+ SG_ Humidity : 16|16@1+ (0.01,0) [0|100] "%RH" Logger
+ SG_ Heartbeat : 32|8@1+ (1,0) [0|255] "" Logger
+ SG_ SensorFault : 40|1@1+ (1,0) [0|1] "" Logger
+ SG_ QueueLoss : 41|1@1+ (1,0) [0|1] "" Logger
+
+CM_ BO_ 288 "Telemetry and heartbeat. Sent once per wake cycle by the desk node over TWAI at 500 kbit/s. Raw 0xFFFF means no valid reading and is outside the physical range, so the analyzer flags it.";
+CM_ SG_ 288 Heartbeat "Counter that increases by one per frame and wraps from 255 to 0. A jump means frames were lost.";

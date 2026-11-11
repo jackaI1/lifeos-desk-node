@@ -38,6 +38,22 @@ jobs:
         with:
           name: can-report-${{ matrix.python }}
           path: /tmp/can-report.json
+      - name: Analyze the example candump logs (clean passes, corrupted is flagged)
+        run: |
+          python -m can_monitor.analyze can_monitor/examples/candump/desk_node_clean.log --json /tmp/can-clean.json
+          python -m can_monitor.virtual_node --seconds 60 --silent 20:30 --log /tmp/can-sim-gap.log
+          set +e
+          python -m can_monitor.analyze can_monitor/examples/candump/desk_node_faults.log --json /tmp/can-faults.json
+          faults_status=$?
+          python -m can_monitor.analyze /tmp/can-sim-gap.log --json /tmp/can-sim-gap.json
+          gap_status=$?
+          set -e
+          test "$faults_status" = "1"
+          test "$gap_status" = "1"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: candump-reports-${{ matrix.python }}
+          path: /tmp/can-*.json
       - name: Remove owned interface
         if: always()
         run: sudo ip link delete deskcan0 || true

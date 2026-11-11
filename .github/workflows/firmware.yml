@@ -36,6 +36,14 @@ jobs:
           fi
           idf.py build
           idf.py size
+      - name: Build with the CAN link enabled
+        shell: bash
+        working-directory: firmware
+        run: |
+          . "$IDF_PATH/export.sh"
+          idf.py -B build-can -D SDKCONFIG=sdkconfig.can -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.defaults;sdkconfig.spi.defaults;sdkconfig.can.defaults" set-target esp32
+          grep -q '^CONFIG_DESK_CAN_ENABLE=y$' sdkconfig.can
+          idf.py -B build-can build
       - name: Upload flashable firmware (no credentials)
         uses: actions/upload-artifact@v4
         with:

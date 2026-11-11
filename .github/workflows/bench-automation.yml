@@ -1,0 +1,38 @@
+name: Bench automation
+on:
+  push:
+    branches: [main]
+    paths: ['bench/**', '.github/workflows/bench-automation.yml']
+  pull_request:
+    paths: ['bench/**', '.github/workflows/bench-automation.yml']
+permissions:
+  contents: read
+jobs:
+  simulated-bench:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python }}'
+      - run: python -m pip install -r bench/requirements.txt
+      - name: Limit logic, device-file and simulator-run tests
+        run: python -m pytest bench/tests -q
+      - name: Nominal run passes; injected ripple and late rail are flagged
+        run: |
+          python -m bench --out bench/build/runs
+          set +e
+          python -m bench --out bench/build/runs --inject ripple
+          ripple_status=$?
+          python -m bench --out bench/build/runs --inject late-rail
+          late_status=$?
+          set -e
+          test "$ripple_status" = "1"
+          test "$late_status" = "1"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bench-report-${{ matrix.python }}
+          path: bench/build/runs

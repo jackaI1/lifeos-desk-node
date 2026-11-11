@@ -1,4 +1,5 @@
 #include "desk_core.h"
+#include "desk_can.h"
 #include "desk_drivers.h"
 #include "desk_network.h"
 #include "desk_ble.h"
@@ -23,6 +24,8 @@ static RTC_DATA_ATTR struct {
     char session[17];
     desk_ring_t ring;
     desk_event_t event;
+    uint8_t can_heartbeat;      /* kept across deep sleep for the CAN monitor */
+    uint32_t can_dropped_seen;  /* ring drops already reported on CAN */
 } retained;
 static desk_drivers_t drivers;
 static void new_session(void) {
@@ -44,6 +47,26 @@ static void sample_task(void *arg) {
     xQueueSend(queue,&sample,0);
     vTaskDelete(NULL);
 }
+#if CONFIG_DESK_CAN_ENABLE
+/* One DeskNode frame per wake cycle. A lone node gets no acknowledgement, so
+   the bus monitor should flag bus-off; the second node's ACK prevents that. */
+static void publish_can(const desk_reading_t *reading) {
+    desk_can_status_t status={
+        .reading_valid=reading!=NULL,
+        .temperature_mc=reading?reading->temperature_mc:0,
+        .humidity_mpermil=reading?reading->humidity_mpermil:0,
+        .heartbeat=retained.can_heartbeat++,
+        .queue_loss=retained.ring.dropped!=retained.can_dropped_seen,
+    };
+    retained.can_dropped_seen=retained.ring.dropped;
+    if (desk_can_start(CONFIG_DESK_CAN_TX_GPIO,CONFIG_DESK_CAN_RX_GPIO)!=ESP_OK) {
+        ESP_LOGW(TAG,"CAN driver unavailable"); return;
+    }
+    if (desk_can_send(&status)!=ESP_OK) ESP_LOGW(TAG,"CAN frame not sent");
+    desk_can_stop();
+}
+#endif
+
 static void sleep_now(void) {
     /* Also safe on a deadline path where the network task has not cleaned up. */
     esp_wifi_stop();
@@ -87,6 +110,9 @@ void app_main(void) {
         desk_ring_push(&retained.ring,sample.reading);
     }
     if (sample.valid && desk_ble_start(&sample.reading)!=ESP_OK) ESP_LOGW(TAG,"BLE sample service unavailable");
+#if CONFIG_DESK_CAN_ENABLE
+    publish_can(sample.valid?&sample.reading:NULL);
+#endif
     uint8_t mac[6]; ESP_ERROR_CHECK(esp_read_mac(mac,ESP_MAC_WIFI_STA));
     char device[13];
     snprintf(device,sizeof device,"%02x%02x%02x%02x%02x%02x",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
