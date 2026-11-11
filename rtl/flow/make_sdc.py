@@ -12,7 +12,7 @@ def sdc_text(period_ns):
     return (
         f'create_clock -name core_clock -period {period_ns} [get_ports clk]\n'
         f'set_input_delay {budget} -clock core_clock '
-        '[remove_from_collection [all_inputs] [get_ports clk]]\n'
+        '[delete_from_list [all_inputs] [get_ports clk]]\n'
         f'set_output_delay {budget} -clock core_clock [all_outputs]\n'
     )
 
