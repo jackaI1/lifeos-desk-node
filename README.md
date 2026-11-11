@@ -378,6 +378,21 @@ make synth               # FPGA-style synthesis and logic depth
 
 I ran the sensor block through OpenROAD, an open-source chip design flow, to check that it can run at the speeds I would need for a chip or an FPGA version of the sensor path. The flow does synthesis, placement and routing on the open Nangate45 cell library. I swept the clock period and the core utilization and recorded the timing slack, area and power for each run. Every run meets timing, the tightest at 1.2 ns with 0.080 ns to spare, and CI fails if the chosen 1.2 ns constraint ever stops closing. The table and the commands are in [rtl/README.md](rtl/README.md) and [rtl/docs/openroad-sweep.md](rtl/docs/openroad-sweep.md).
 
+## Run the sensor check on an FPGA board
+
+I wanted the sensor checksum logic to run on a real FPGA, a chip you can reprogram, and not only in a simulator. The sensor check in `rtl/` is written in Verilog, so I added a board version of it for the iCEBreaker, a small board with an iCE40 UltraPlus FPGA, a 12 MHz clock and a USB serial port. Its FPGA is one of the open-source chip families, so I can build the program for it with free tools.
+
+The computer sends sensor bytes over the USB serial port. Each transfer starts with a length byte, then the bytes. The board checks each six-byte frame in the same hardware block as before, keeps the good ones and sends back six bytes with the good, bad and cut-short counts. The green LED is on while a transfer is arriving. The red LED comes on after any bad or cut-short frame.
+
+```sh
+cd rtl && python3 -m venv .venv && . .venv/bin/activate && python -m pip install pyserial
+python3 board/icebreaker/host.py --port /dev/tty.usbserial-XXXX --demo
+```
+
+Replace the port with the one your computer shows for the board. The demo sends one good frame, one frame with a wrong checksum and one cut-short frame. The counts are running totals, so the three lines should read `good=1 bad=0 truncated=0`, then `good=1 bad=1 truncated=0`, then `good=1 bad=1 truncated=1`. I have not yet flashed an assembled board from this build; the FPGA file is built and checked in CI, and the simulation runs the same logic the board runs.
+
+The FPGA top level is `rtl/board/icebreaker/desk_board_top.v`. It reuses the frame checker and reading buffer from `rtl/src/`, and two small serial blocks, `uart_rx.v` and `uart_tx.v`, which receive and send bytes at 115200 baud. The pin file `icebreaker.pcf` maps the clock, serial lines and LEDs to the board's pins. A Verilator testbench (`rtl/tests/verilator/board_tb.cpp`) plays the computer side: it sends six transfers, including a zero length byte, a cut-short frame and two frames in one transfer, and checks every reply and the LEDs. CI runs that testbench on macOS, and a separate Ubuntu job runs Yosys, nextpnr and icepack to build the bitstream and fails if the design misses the 12 MHz clock. The [rtl README](rtl/README.md) has the register-level details and the pin list.
+
 ## Checks and remaining hardware work
 
 Run the software tests from the repository root:

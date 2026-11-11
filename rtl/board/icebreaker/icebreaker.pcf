@@ -1,0 +1,12 @@
+# Pin constraints for the iCEBreaker board (iCE40UP5K-SG48).
+# Pin numbers follow the icestorm example icebreaker.pcf:
+#   clk      12 MHz oscillator
+#   ftdi_rxd serial data from the computer (the FTDI RX pin on the FPGA)
+#   ftdi_txd serial data to the computer
+#   ledg     green LED, ledr red LED
+# Check against your board revision before flashing.
+set_io -nowarn clk 35
+set_io -nowarn ftdi_rxd 6
+set_io -nowarn ftdi_txd 9
+set_io -nowarn ledg 37
+set_io -nowarn ledr 11

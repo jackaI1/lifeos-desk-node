@@ -34,3 +34,21 @@ jobs:
           name: rtl-reports
           path: rtl/build
           if-no-files-found: ignore
+  board-bitstream:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Yosys, nextpnr and the icestorm tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yosys nextpnr-ice40 fpga-icestorm
+      - name: Build the iCEBreaker bitstream and check the 12 MHz clock target
+        working-directory: rtl
+        run: make board
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: iCEBreaker-bitstream
+          path: rtl/build/board
+          if-no-files-found: ignore
