@@ -22,6 +22,7 @@ There is no concurrent mutation of the retained FIFO. Defaults:
 | Sensor I²C transaction | 100 ms; sample task deadline 2 s |
 | HTTP response / batch | 2 KiB / 12 KiB |
 | Display frame | 1024 bytes, 21 characters × 8 rows |
+| BLE window (optional build) | 30 s after each wake (10 to 120 s); sensor read every 10 s; at most one notification per 10 s |
 
 CRC failures do not enqueue fabricated readings. A full FIFO drops the oldest
 sample and increments `LOST` on screen. Only a matching full-batch acknowledgment
@@ -90,6 +91,29 @@ for the legacy variant; no server launched):
 docker run --rm -v "$PWD:/project" -w /project/firmware espressif/idf:v5.4.2 \
   bash -c '. "$IDF_PATH/export.sh" && idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ci.defaults;sdkconfig.spi.defaults" set-target esp32 && idf.py build && idf.py size'
 ```
+
+## Bluetooth Low Energy (optional build)
+
+The Bluetooth build adds a NimBLE peripheral that advertises as `Desk room sensor`.
+It serves the standard Environmental Sensing service (UUID `0x181A`) with temperature
+(`0x2A6E`, signed 16-bit, 0.01 °C) and humidity (`0x2A6F`, unsigned 16-bit, 0.01 %RH).
+It also keeps the original 16-byte custom sample (`0xFFF1`), which `tools/check_radio.py` decodes.
+Default builds leave Bluetooth out entirely.
+
+Enable it with the overlay, or with `CONFIG_DESK_BLE_ENABLE` and NimBLE in menuconfig:
+
+```sh
+idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.ble.defaults" set-target esp32
+idf.py build
+```
+
+The window runs after the Wi-Fi upload and before deep sleep. It is bounded by
+`CONFIG_DESK_BLE_WINDOW_SECONDS`, and Wi-Fi is already off by then. Notifications are
+sent only when a value moves by 0.10 °C or 0.50 %RH, and never more often than every
+10 s. Encoding and the notification rule live in `components/desk_ess`, with host tests
+under AddressSanitizer and UBSan in `tests/test_ess.c`. Decode bytes read from a phone
+with `tools/ess_decode.py`. CI builds this overlay next to the default firmware. No
+board has run it yet.
 
 ## LifeOS API adapter
 

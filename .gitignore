@@ -74,3 +74,5 @@ rtl/tests/cocotb/results.xml
 bench/build/
 firmware/build-can/
 firmware/sdkconfig.can
+firmware/build-ble/
+firmware/sdkconfig.ble

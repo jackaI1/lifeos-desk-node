@@ -1,115 +1,249 @@
-/* One immutable sample per wake cycle. No personal event/calendar data in BLE. */
+/* Bluetooth Low Energy peripheral on the NimBLE stack. Only the wake window is on the air:
+   the node advertises, serves reads and notifications, then the caller goes to deep sleep. */
 #include "desk_ble.h"
+#include "desk_ess.h"
 #include "desk_radio.h"
-#include "esp_bt.h"
-#include "esp_bt_main.h"
-#include "esp_gap_ble_api.h"
-#include "esp_gatts_api.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "host/ble_att.h"
+#include "host/ble_gatt.h"
+#include "host/ble_hs.h"
+#include "host/ble_uuid.h"
+#include "nimble/hci_common.h"
+#include "nimble/nimble_port.h"
+#include "nimble/nimble_port_freertos.h"
+#include "os/os_mbuf.h"
+#include "services/gap/ble_svc_gap.h"
+#include "services/gatt/ble_svc_gatt.h"
 #include "esp_timer.h"
 #include <string.h>
-static uint8_t payload[DESK_BLE_SIZE];
-static uint16_t service_handle, value_handle, descriptor_handle;
-static uint8_t notification_config[2];
-static uint64_t last_notify;
-static bool notified;
-static esp_ble_adv_params_t advertising = {.adv_int_min = 0x40,
-                                           .adv_int_max = 0x80,
-                                           .adv_type = ADV_TYPE_IND,
-                                           .own_addr_type = BLE_ADDR_TYPE_PUBLIC,
-                                           .channel_map = ADV_CHNL_ALL,
-                                           .adv_filter_policy = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY};
-static void gap(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param) {
-    (void)param;
-    if (event == ESP_GAP_BLE_ADV_DATA_SET_COMPLETE_EVT)
-        esp_ble_gap_start_advertising(&advertising);
+
+#define DESK_BLE_SAMPLE_MS 10000U
+#define DESK_BLE_ENVIRONMENTAL_SENSING 0x181AU
+#define DESK_BLE_TEMPERATURE 0x2A6EU
+#define DESK_BLE_HUMIDITY 0x2A6FU
+
+static const char *TAG = "desk_ble";
+static int gap_event(struct ble_gap_event *event, void *arg);
+static const char *device_name = "Desk room sensor";
+static const ble_uuid16_t environmental_uuid = BLE_UUID16_INIT(DESK_BLE_ENVIRONMENTAL_SENSING);
+static portMUX_TYPE value_lock = portMUX_INITIALIZER_UNLOCKED;
+static uint8_t own_addr_type;
+static volatile bool window_open;
+static uint16_t connection = BLE_HS_CONN_HANDLE_NONE;
+static uint16_t temperature_handle, humidity_handle, sample_handle;
+static uint8_t temperature_bytes[2], humidity_bytes[2], sample_bytes[DESK_BLE_SIZE];
+
+static int read_bytes(const uint8_t *value, size_t length, struct ble_gatt_access_ctxt *ctxt) {
+    if (ctxt->op != BLE_GATT_ACCESS_OP_READ_CHR)
+        return BLE_ATT_ERR_UNLIKELY;
+    uint8_t copy[DESK_BLE_SIZE];
+    portENTER_CRITICAL(&value_lock);
+    memcpy(copy, value, length);
+    portEXIT_CRITICAL(&value_lock);
+    return os_mbuf_append(ctxt->om, copy, length) == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
 }
-static void gatt(esp_gatts_cb_event_t event, esp_gatt_if_t interface, esp_ble_gatts_cb_param_t *p) {
-    if (event == ESP_GATTS_REG_EVT && p->reg.status == ESP_GATT_OK) {
-        esp_gatt_srvc_id_t service = {
-            .is_primary = true,
-            .id = {.inst_id = 0, .uuid = {.len = ESP_UUID_LEN_16, .uuid = {.uuid16 = 0xfff0}}}};
-        esp_ble_gap_set_device_name("Desk room sensor");
-        esp_ble_gatts_create_service(interface, &service, 4);
-    } else if (event == ESP_GATTS_CREATE_EVT && p->create.status == ESP_GATT_OK) {
-        service_handle = p->create.service_handle;
-        esp_bt_uuid_t uuid = {.len = ESP_UUID_LEN_16, .uuid = {.uuid16 = 0xfff1}};
-        esp_attr_value_t value = {
-            .attr_max_len = DESK_BLE_SIZE, .attr_len = DESK_BLE_SIZE, .attr_value = payload};
-        esp_attr_control_t control = {.auto_rsp = ESP_GATT_AUTO_RSP};
-        esp_ble_gatts_add_char(service_handle, &uuid, ESP_GATT_PERM_READ,
-                               ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_NOTIFY, &value,
-                               &control);
-    } else if (event == ESP_GATTS_ADD_CHAR_EVT && p->add_char.status == ESP_GATT_OK) {
-        value_handle = p->add_char.attr_handle;
-        esp_bt_uuid_t uuid = {.len = ESP_UUID_LEN_16,
-                              .uuid = {.uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG}};
-        esp_ble_gatts_add_char_descr(service_handle, &uuid,
-                                     ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, NULL, NULL);
-        esp_ble_gatts_start_service(service_handle);
-        esp_ble_adv_data_t data = {.set_scan_rsp = false,
-                                   .include_name = true,
-                                   .flag =
-                                       ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_BREDR_NOT_SPT};
-        esp_ble_gap_config_adv_data(&data);
-    } else if (event == ESP_GATTS_ADD_CHAR_DESCR_EVT && p->add_char_descr.status == ESP_GATT_OK) {
-        descriptor_handle = p->add_char_descr.attr_handle;
-    } else if (event == ESP_GATTS_READ_EVT) {
-        esp_gatt_rsp_t response = {0};
-        response.attr_value.handle = p->read.handle;
-        const uint8_t *value = p->read.handle == descriptor_handle ? notification_config : payload;
-        uint16_t length = p->read.handle == descriptor_handle ? 2 : DESK_BLE_SIZE;
-        esp_gatt_status_t status = ESP_GATT_OK;
-        if (p->read.handle != descriptor_handle && p->read.handle != value_handle) {
-            status = ESP_GATT_READ_NOT_PERMIT;
-        } else if (p->read.offset > length) {
-            status = ESP_GATT_INVALID_OFFSET;
-        } else {
-            response.attr_value.offset = p->read.offset;
-            response.attr_value.len = length - p->read.offset;
-            memcpy(response.attr_value.value, value + p->read.offset, response.attr_value.len);
-        }
-        esp_ble_gatts_send_response(interface, p->read.conn_id, p->read.trans_id, status,
-                                    &response);
-    } else if (event == ESP_GATTS_WRITE_EVT) {
-        bool valid = p->write.handle == descriptor_handle && !p->write.is_prep &&
-                     p->write.offset == 0 && p->write.len == 2 && p->write.value[0] <= 1 &&
-                     p->write.value[1] == 0;
-        bool subscribe = valid && p->write.value[0] == 1;
-        if (valid)
-            memcpy(notification_config, p->write.value, 2);
-        if (p->write.need_rsp)
-            esp_ble_gatts_send_response(interface, p->write.conn_id, p->write.trans_id,
-                                        valid ? ESP_GATT_OK : ESP_GATT_INVALID_ATTR_LEN, NULL);
-        if (subscribe &&
-            desk_notify_due((uint64_t)esp_timer_get_time() / 1000, &last_notify, &notified)) {
-            esp_ble_gatts_send_indicate(interface, p->write.conn_id, value_handle, DESK_BLE_SIZE,
-                                        payload, false);
-        }
-    } else if (event == ESP_GATTS_DISCONNECT_EVT) {
-        memset(notification_config, 0, sizeof notification_config);
-        esp_ble_gap_start_advertising(&advertising);
+
+static int access_temperature(uint16_t conn, uint16_t attr, struct ble_gatt_access_ctxt *ctxt, void *arg) {
+    (void)conn; (void)attr; (void)arg;
+    return read_bytes(temperature_bytes, sizeof temperature_bytes, ctxt);
+}
+
+static int access_humidity(uint16_t conn, uint16_t attr, struct ble_gatt_access_ctxt *ctxt, void *arg) {
+    (void)conn; (void)attr; (void)arg;
+    return read_bytes(humidity_bytes, sizeof humidity_bytes, ctxt);
+}
+
+static int access_sample(uint16_t conn, uint16_t attr, struct ble_gatt_access_ctxt *ctxt, void *arg) {
+    (void)conn; (void)attr; (void)arg;
+    return read_bytes(sample_bytes, sizeof sample_bytes, ctxt);
+}
+
+/* Environmental Sensing (0x181A) temperature and humidity, plus the original custom
+   16-byte sample (0xFFF0/0xFFF1) that tools/check_radio.py still decodes. NimBLE adds the
+   client configuration descriptor for each notifying characteristic. */
+static const struct ble_gatt_svc_def gatt_services[] = {
+    {
+        .type = BLE_GATT_SVC_TYPE_PRIMARY,
+        .uuid = BLE_UUID16_DECLARE(DESK_BLE_ENVIRONMENTAL_SENSING),
+        .characteristics = (struct ble_gatt_chr_def[]){
+            {
+                .uuid = BLE_UUID16_DECLARE(DESK_BLE_TEMPERATURE),
+                .access_cb = access_temperature,
+                .val_handle = &temperature_handle,
+                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+            },
+            {
+                .uuid = BLE_UUID16_DECLARE(DESK_BLE_HUMIDITY),
+                .access_cb = access_humidity,
+                .val_handle = &humidity_handle,
+                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+            },
+            {0},
+        },
+    },
+    {
+        .type = BLE_GATT_SVC_TYPE_PRIMARY,
+        .uuid = BLE_UUID16_DECLARE(0xFFF0),
+        .characteristics = (struct ble_gatt_chr_def[]){
+            {
+                .uuid = BLE_UUID16_DECLARE(0xFFF1),
+                .access_cb = access_sample,
+                .val_handle = &sample_handle,
+                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+            },
+            {0},
+        },
+    },
+    {0},
+};
+
+static void advertise(void) {
+    struct ble_hs_adv_fields fields = {0};
+    fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
+    fields.uuids16 = &environmental_uuid;
+    fields.num_uuids16 = 1;
+    fields.uuids16_is_complete = 1;
+    fields.name = (const uint8_t *)device_name;
+    fields.name_len = (uint8_t)strlen(device_name);
+    fields.name_is_complete = 1;
+    if (ble_gap_adv_set_fields(&fields) != 0) {
+        ESP_LOGW(TAG, "advertising fields rejected");
+        return;
+    }
+    struct ble_gap_adv_params params = {0};
+    params.conn_mode = BLE_GAP_CONN_MODE_UND;
+    params.disc_mode = BLE_GAP_DISC_MODE_GEN;
+    if (ble_gap_adv_start(own_addr_type, NULL, BLE_HS_FOREVER, &params, gap_event, NULL) != 0)
+        ESP_LOGW(TAG, "advertising did not start");
+}
+
+static int gap_event(struct ble_gap_event *event, void *arg) {
+    (void)arg;
+    switch (event->type) {
+    case BLE_GAP_EVENT_CONNECT:
+        if (event->connect.status == 0)
+            connection = event->connect.conn_handle;
+        else if (window_open)
+            advertise();
+        break;
+    case BLE_GAP_EVENT_DISCONNECT:
+        connection = BLE_HS_CONN_HANDLE_NONE;
+        if (window_open)
+            advertise();
+        break;
+    case BLE_GAP_EVENT_ADV_COMPLETE:
+        if (window_open)
+            advertise();
+        break;
+    case BLE_GAP_EVENT_SUBSCRIBE:
+        /* A new subscriber gets the current value straight away. */
+        if (event->subscribe.cur_notify)
+            ble_gatts_chr_updated(event->subscribe.attr_handle);
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
+static void on_sync(void) {
+    if (ble_hs_id_infer_auto(0, &own_addr_type) != 0) {
+        ESP_LOGW(TAG, "no Bluetooth address");
+        return;
+    }
+    advertise();
+}
+
+static void on_reset(int reason) {
+    ESP_LOGW(TAG, "NimBLE reset, reason=%d", reason);
+}
+
+static void host_task(void *param) {
+    (void)param;
+    nimble_port_run();
+    nimble_port_freertos_deinit();
+}
+
+static void store_values(const desk_ess_value_t *value) {
+    portENTER_CRITICAL(&value_lock);
+    desk_ess_encode(value, temperature_bytes, humidity_bytes);
+    portEXIT_CRITICAL(&value_lock);
+}
+
+static void publish(const desk_reading_t *reading, desk_ess_notify_t *state, uint64_t now_ms) {
+    desk_ess_value_t value;
+    if (!desk_ess_from_reading(reading, &value)) {
+        ESP_LOGW(TAG, "sample outside the service range; not published");
+        return;
+    }
+    store_values(&value);
+    if (!desk_ess_should_notify(state, &value, now_ms, DESK_BLE_SAMPLE_MS))
+        return;
+    desk_ess_mark_notified(state, &value, now_ms);
+    if (connection != BLE_HS_CONN_HANDLE_NONE) {
+        ble_gatts_chr_updated(temperature_handle);
+        ble_gatts_chr_updated(humidity_handle);
     }
 }
-esp_err_t desk_ble_start(const desk_reading_t *sample) {
-    if (!sample)
+
+static uint64_t now_ms(void) {
+    return (uint64_t)esp_timer_get_time() / 1000U;
+}
+
+esp_err_t desk_ble_window(desk_ble_sampler_t sampler, void *context, const desk_reading_t *first,
+                          uint32_t seconds) {
+    if (!sampler || !first || seconds == 0)
         return ESP_ERR_INVALID_ARG;
-    desk_radio_reading_t reading = {sample->sequence, sample->temperature_mc,
-                                    (uint32_t)sample->humidity_mpermil};
-    if (!desk_ble_encode(payload, sizeof payload, &reading))
+    desk_ess_value_t value;
+    if (!desk_ess_from_reading(first, &value))
         return ESP_ERR_INVALID_ARG;
-    esp_bt_controller_config_t config = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
-    esp_err_t err = esp_bt_controller_init(&config);
-    if (err == ESP_OK)
-        err = esp_bt_controller_enable(ESP_BT_MODE_BLE);
-    if (err == ESP_OK)
-        err = esp_bluedroid_init();
-    if (err == ESP_OK)
-        err = esp_bluedroid_enable();
-    if (err == ESP_OK)
-        err = esp_ble_gap_register_callback(gap);
-    if (err == ESP_OK)
-        err = esp_ble_gatts_register_callback(gatt);
-    if (err == ESP_OK)
-        err = esp_ble_gatts_app_register(0x42);
-    return err;
+    desk_radio_reading_t legacy = {first->sequence, first->temperature_mc, (uint32_t)first->humidity_mpermil};
+    if (!desk_ble_encode(sample_bytes, sizeof sample_bytes, &legacy))
+        return ESP_ERR_INVALID_ARG;
+    store_values(&value);
+
+    esp_err_t err = nimble_port_init();
+    if (err != ESP_OK)
+        return err;
+    ble_hs_cfg.sync_cb = on_sync;
+    ble_hs_cfg.reset_cb = on_reset;
+    ble_svc_gap_init();
+    ble_svc_gatt_init();
+    int rc = ble_gatts_count_cfg(gatt_services);
+    if (rc == 0)
+        rc = ble_gatts_add_svcs(gatt_services);
+    if (rc == 0)
+        rc = ble_svc_gap_device_name_set(device_name);
+    if (rc != 0) {
+        ESP_LOGE(TAG, "GATT table rejected, rc=%d", rc);
+        return ESP_FAIL;
+    }
+
+    uint64_t start = now_ms();
+    uint64_t deadline = start + (uint64_t)seconds * 1000U;
+    desk_ess_notify_t notify = {0};
+    desk_ess_mark_notified(&notify, &value, start);
+    window_open = true;
+    nimble_port_freertos_init(host_task);
+
+    while (now_ms() < deadline) {
+        uint64_t remaining = deadline - now_ms();
+        vTaskDelay(pdMS_TO_TICKS(remaining < DESK_BLE_SAMPLE_MS ? remaining : DESK_BLE_SAMPLE_MS));
+        if (now_ms() >= deadline)
+            break;
+        desk_reading_t reading;
+        if (sampler(context, &reading))
+            publish(&reading, &notify, now_ms());
+        else
+            ESP_LOGW(TAG, "sensor sample skipped");
+    }
+
+    /* Stop advertising and end any connection. The deep sleep that follows also powers the radio down. */
+    window_open = false;
+    ble_gap_adv_stop();
+    if (connection != BLE_HS_CONN_HANDLE_NONE)
+        ble_gap_terminate(connection, BLE_ERR_REM_USER_CONN_TERM);
+    return ESP_OK;
 }

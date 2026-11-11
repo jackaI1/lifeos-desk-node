@@ -33,4 +33,18 @@ menu "LifeOS Desk Node"
     config DESK_SNTP_SERVER
         string "SNTP server"
         default "pool.ntp.org"
+    config DESK_BLE_ENABLE
+        bool "Advertise temperature and humidity over Bluetooth Low Energy"
+        default n
+        help
+            Adds the standard Environmental Sensing service (0x181A) through NimBLE.
+            Use together with sdkconfig.ble.defaults, which turns on the Bluetooth stack.
+    config DESK_BLE_WINDOW_SECONDS
+        int "BLE window after each wake (seconds)"
+        depends on DESK_BLE_ENABLE
+        range 10 120
+        default 30
+        help
+            How long the node advertises after each wake. Sensor reads run during this
+            window, so the node stays awake this much longer per cycle.
 endmenu
