@@ -1,0 +1,36 @@
+name: RTL checksum and self-test checks
+on:
+  push:
+    branches: [main]
+    paths: ['rtl/**', 'replay/**', 'capture/examples/*.scm', '.github/workflows/rtl-checksum-selftest.yml']
+  pull_request:
+    paths: ['rtl/**', 'replay/**', 'capture/examples/*.scm', '.github/workflows/rtl-checksum-selftest.yml']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  simulate:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Verilator, Yosys and Guile
+        run: brew install verilator yosys guile
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install cocotb and pytest
+        working-directory: rtl
+        run: python3 -m pip install -r requirements.txt
+      - name: Lint, replay the scenarios, and run every simulation and cross-check
+        working-directory: rtl
+        run: make test PY=python3
+      - name: Synthesize for an iCE40 FPGA-style target
+        working-directory: rtl
+        run: make synth
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rtl-reports
+          path: rtl/build
+          if-no-files-found: ignore
