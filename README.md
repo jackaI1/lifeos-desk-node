@@ -294,6 +294,33 @@ sensor, and USB-C power supply. The screen plugs into it. A separate USB-to-UART
 adapter loads the firmware and lets me read its logs. The
 [board guide](hardware/README.md) explains the connections, parts and files needed to order or build one. This version has not been manufactured yet.
 
+## Export the light-input circuit for OrCAD
+
+I built an OrCAD export because I wanted to learn Cadence OrCAD, a circuit
+design and simulation program that many electronics teams use. My light-input
+circuit is in KiCad, so I wrote a script that turns it into an OrCAD PSpice
+netlist. A netlist is a plain text file that lists each part and the points it
+connects to. The script takes the feedback resistor and capacitor values from the
+KiCad drawing, so the netlist cannot drift from the drawing. It also refuses to
+write a netlist if those two parts are not wired to the amplifier's output and
+input pins.
+
+To check the file, the script runs it in ngspice, a free simulator that runs on
+my Mac. It runs DC, frequency and time-step analyses from the same file and
+compares the results with my hand calculations.
+
+```sh
+python3 -m hardware.simulation.orcad --out hardware/simulation/build/orcad
+```
+
+This needs `kicad-cli` and `ngspice` installed. It writes `light-front-end.cir`,
+the OrCAD netlist, and `check.json`, the measured results. On my last local run
+the gain was 99,999 ohms, the bandwidth was 16.8 kHz against a hand value of
+15.9 kHz, and the step settled at 1.74998 V. The [circuit report](hardware/simulation/report.md)
+explains what the model leaves out. OrCAD is a desktop program, and I have not
+opened this netlist in it yet, so the checks I have are the ngspice run and the
+tests in `hardware/simulation/tests/test_orcad.py`.
+
 ## Build and flash
 
 Install [ESP-IDF v5.4.2](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32/get-started/index.html)

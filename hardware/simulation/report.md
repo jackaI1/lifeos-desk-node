@@ -47,3 +47,10 @@ The leak-board nodal sweep varies probe resistance from 100 kilohms to
 the ideal crossing is the parallel value of 1 and 10 megohms, about 909 kilohms;
 ngspice's 10 kilohm grid finds 910 kilohms. It checks the analog input threshold,
 not an electrical model of water or a real comparator's propagation delay.
+
+## OrCAD netlist
+
+`python3 -m hardware.simulation.orcad` writes the same light-input circuit as a
+PSpice netlist for OrCAD, then runs each analysis from that file in ngspice. The
+feedback values come from the KiCad drawing. The [README](../../README.md#export-the-light-input-circuit-for-orcad)
+explains the steps. The model assumptions above apply to the OrCAD file too.
