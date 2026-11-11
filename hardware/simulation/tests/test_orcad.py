@@ -57,6 +57,28 @@ def test_netlist_is_pspice_shaped():
     assert ".control" not in text and "wrdata" not in text
 
 
+def test_behavioral_sources_use_pspice_value_syntax():
+    # PSpice does not accept ngspice's B-source form (B name n+ n- V=expr). Behavioral
+    # sources must be E cards with VALUE {expr}, which both PSpice and ngspice read.
+    cards = [line for line in orcad.netlist(100000, 100e-12).splitlines() if line and not line.startswith(".")]
+    assert not [c for c in cards if c.startswith("B") or " V=" in c or " I=" in c]
+    behavioral = [c for c in cards if c.startswith("E") and "VALUE" in c]
+    assert {c.split()[0] for c in behavioral} == {"Ereg", "Eoutput"}
+    for card in behavioral:
+        parts = card.split(None, 3)
+        assert len(parts) == 4 and parts[3].startswith("VALUE {") and parts[3].endswith("}"), card
+        assert parts[3].count("(") == parts[3].count(")"), card
+
+
+def test_element_cards_are_pspice_types():
+    # Element cards allowed in the file: R, C, V, I and E (voltage-controlled sources).
+    for line in orcad.netlist(100000, 100e-12).splitlines():
+        if line and not line.startswith("."):
+            if line == orcad.TITLE:
+                continue
+            assert line[0] in "RCVIE", line
+
+
 def test_each_deck_keeps_one_analysis():
     text = orcad.netlist(100000, 100e-12)
     for kind, (analysis, printed) in orcad.ANALYSES.items():
