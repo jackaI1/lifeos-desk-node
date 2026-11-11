@@ -344,6 +344,12 @@ reading is dropped and the screen shows a loss count. Turning the power off lose
 those pending readings; they are not saved to flash. Invalid sensor readings
 are not turned into made-up values.
 
+## Check the case before printing
+
+I built a set of simulations for the case because I wanted to know whether it fits the board and survives being knocked before I print it. The scripts in [mechanical/](mechanical/README.md) draw the case from its dimensions, load it on a computer the way a lid screw or a drop would, and report the peak stress, how far it bends and its safety factor against yielding. A second script adds up the size errors of the board, the standoffs and the printed case to check the screw fit.
+
+The first run found one thing to change: with the 3.2 mm mounting holes on my board, an M3 screw misses the worst-case fit by 0.115 mm, and a 3.5 mm hole passes. The numbers are in [mechanical/docs/study.md](mechanical/docs/study.md), and the setup steps are in the [mechanical README](mechanical/README.md). The checks run in GitHub Actions on every change to that folder.
+
 ## Checks and remaining hardware work
 
 Run the software tests from the repository root:

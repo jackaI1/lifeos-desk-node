@@ -1,0 +1,43 @@
+name: Enclosure FEA checks
+on:
+  push:
+    branches: [main]
+    paths: ['mechanical/**', '.github/workflows/mechanical-enclosure-fea.yml', 'README.md']
+  pull_request:
+    paths: ['mechanical/**', '.github/workflows/mechanical-enclosure-fea.yml', 'README.md']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: mechanical/requirements.txt
+      - name: Install CalculiX (ccx) and the graphics libraries gmsh loads
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y calculix-ccx libglu1-mesa libxrender1 libxcursor1 libxinerama1
+          command -v ccx
+      - run: python -m pip install -r mechanical/requirements.txt
+      - name: Mesh, load, stack-up, solver and command-line tests (with CalculiX)
+        working-directory: mechanical
+        env:
+          CCX: ccx
+        run: python -m pytest -v
+      - name: Write the STEP file and stack-up report
+        working-directory: mechanical
+        run: |
+          python -m enclosure_fea step --out "$RUNNER_TEMP/desk-node-case.step"
+          python -m enclosure_fea stackup > "$RUNNER_TEMP/stackup.json"
+          test -s "$RUNNER_TEMP/stackup.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: enclosure-fea-step-and-stackup
+          path: ${{ runner.temp }}/desk-node-case.step
+          retention-days: 14

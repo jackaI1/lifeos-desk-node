@@ -1,0 +1,14 @@
+{
+  "PETG printed": {
+    "youngs_mpa": 2100,
+    "poisson": 0.38,
+    "yield_mpa": 50,
+    "source": "typical PETG datasheet values; check your filament's sheet, and note that printed layers are weaker across layers"
+  },
+  "6061-T6 machined": {
+    "youngs_mpa": 68900,
+    "poisson": 0.33,
+    "yield_mpa": 276,
+    "source": "6061-T6 handbook values, the same yield value used in calculix-bracket-fea"
+  }
+}

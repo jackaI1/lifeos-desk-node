@@ -1,0 +1,25 @@
+{
+  "units": "mm",
+  "note": "Tolerances are +/- values. Items marked 'assumption' are typical values to replace with measured or datasheet numbers before printing.",
+  "vertical": {
+    "description": "Space above the board inside the case, from the floor to the rim (lid underside).",
+    "required_min_clearance_mm": 0.5,
+    "items": [
+      {"name": "cavity height, floor top to rim", "nominal": 12.0, "tol": 0.2, "sign": 1, "source": "case print, assumption"},
+      {"name": "standoff height", "nominal": 5.0, "tol": 0.15, "sign": -1, "source": "case print, assumption"},
+      {"name": "board thickness", "nominal": 1.6, "tol": 0.16, "sign": -1, "source": "PCB, 10 percent"},
+      {"name": "tallest part above board top", "nominal": 3.3, "tol": 0.2, "sign": -1, "source": "USB-C receptacle, assumption: check datasheet"}
+    ]
+  },
+  "radial": {
+    "description": "Sideways room between an M3 screw and a board mounting hole, after the case boss is placed.",
+    "required_min_clearance_mm": 0.0,
+    "hole_nominal_mm": 3.2,
+    "hole_tol_mm": 0.05,
+    "screw_major_max_mm": 2.98,
+    "position_items": [
+      {"name": "board hole position", "tol": 0.05, "source": "PCB fabrication"},
+      {"name": "case boss position", "tol": 0.15, "source": "FDM print, assumption"}
+    ]
+  }
+}
