@@ -83,7 +83,7 @@ def circuit(rf, cf):
     """The circuit cards, with the feedback values written as plain numbers."""
     return f"""{TITLE}
 Vinput vin 0 SIN(5 .05 1000)
-Breg vcc 0 V=3.3+(V(vin)-5)*.001
+Ereg vcc 0 VALUE {{3.3+(V(vin)-5)*.001}}
 Rtop vcc ref 100k
 Rbottom ref 0 100k
 Cref ref 0 1n
@@ -94,7 +94,7 @@ Cdiode sum 0 70p
 Eerror drive 0 ref sum 100000
 Rdominant drive pole 1k
 Cdominant pole 0 15.915494u
-Boutput out 0 V=min(max(V(ref)+V(pole),.05),V(vcc)-.05)
+Eoutput out 0 VALUE {{min(max(V(ref)+V(pole),.05),V(vcc)-.05)}}
 """
 
 

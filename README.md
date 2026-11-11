@@ -321,6 +321,12 @@ explains what the model leaves out. OrCAD is a desktop program, and I have not
 opened this netlist in it yet, so the checks I have are the ngspice run and the
 tests in `hardware/simulation/tests/test_orcad.py`.
 
+Syntax note: the two behavioral sources (the supply reference and the output
+clamp) are written as PSpice `VALUE {...}` cards, not the `V=` form that ngspice
+accepts on its own. PSpice does not read `V=`, so I changed them. The tests check
+the card shapes, but no PSpice program has read the file yet, so importing it into
+OrCAD is still the next step.
+
 ## Build and flash
 
 Install [ESP-IDF v5.4.2](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32/get-started/index.html)
