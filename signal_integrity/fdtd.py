@@ -188,10 +188,16 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     folder = Path(tempfile.mkdtemp(prefix="desk-openems-")) if owned else Path(sim_dir)
     folder.mkdir(parents=True, exist_ok=True)
     try:
-        fdtd.Run(str(folder), cleanup=True, verbose=0)
-        for p in port:
-            # Refer S-parameters to 50 ohm. Without this, openEMS uses the line's own impedance.
-            p.CalcPort(str(folder), freq, ref_impedance=Z_REF)
+        # Write the geometry explicitly, then solve. The solver's log goes to the console.
+        csx.Write2XML(str(folder / "csx.xml"))
+        fdtd.Run(str(folder), cleanup=True, verbose=2)
+        try:
+            for p in port:
+                # Refer S-parameters to 50 ohm. Without this, openEMS uses the line's own impedance.
+                p.CalcPort(str(folder), freq, ref_impedance=Z_REF)
+        except AttributeError as exc:
+            raise RuntimeError(
+                "openEMS wrote no port data; the solver log above shows why") from exc
         s11 = port[0].uf_ref / port[0].uf_inc
         s21 = port[1].uf_ref / port[0].uf_inc
     finally:
