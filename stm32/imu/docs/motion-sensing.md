@@ -16,7 +16,7 @@ Every value is an `int32`. The biquad keeps its sum in 64 bits, rounds it, and c
 
 1. Saturation: any raw axis at 32767 or -32768 sets `IMU_FLAG_SATURATED`.
 2. Bump: on the raw accelerometer, `4|a|^2` is compared with `(3 g)^2` and `(1 g)^2`. A gyro spike above 200 deg/s also sets BUMP.
-3. Low-pass: a 2nd-order Butterworth filter at 10 Hz, sampled at 100 Hz, in Q30 direct form I. It runs on each accelerometer and gyro axis. The first sample primes the filter state, so there is no start-up transient.
+3. Low-pass: a 2nd-order Butterworth filter at 10 Hz, sampled at 100 Hz, run by CMSIS-DSP's `arm_biquad_cascade_df1_q31` with postShift = 1. Raw counts are shifted to q31 (`raw << 14`, so full scale sits at +-0.25, the range this filter is specified for) and shifted back after. Each accelerometer and gyro axis has its own instance. The first sample primes the state to the input, so there is no start-up transient.
 4. Accelerometer angles: roll = atan2(ay, az), pitch = atan2(ax, az), from the filtered values.
 5. Complementary filter: `angle = (251 * (angle + gyro * dt) + 5 * accel + 128) >> 8`. The gyro weight is 251/256, about 0.98. The rounding term keeps the steady drift from a floor shift near zero.
 6. Gaps: a sequence number that skips n samples adds `n` to `dropped` and sets `GAP`. The gyro rate is held across the gap. A gap above 50 samples restarts the angle from the accelerometer and sets `RESET`.
@@ -29,11 +29,11 @@ A gyro with a constant bias b adds a steady angle error of `b * dt * alpha / (1 
 
 ## Where the constants come from
 
-`tools/gen_tables.py` computes the biquad coefficients and the arctangent table, and writes both `src/imu_tables.h` and `reference/imu_tables.py`. The C and Python code read the same numbers. CI regenerates them and fails if the committed files differ.
+`tools/gen_tables.py` computes the biquad coefficients (in the CMSIS order `b0, b1, b2, -a1, -a2`) and the arctangent table, and writes both `src/imu_tables.h` and `reference/imu_tables.py`. The Python reference reproduces the CMSIS q31 arithmetic: a 64-bit accumulator, shifted right by 30 and truncated to 32 bits. The C and Python code read the same numbers. CI regenerates them and fails if the committed files differ.
 
 ## What is not done
 
 - No physical IMU recording. The traces come from a seeded model in `tools/make_traces.py`.
 - The HAL port is checked for compile errors on Cortex-M4 in CI. It has not run on a Nucleo board or been checked for sample timing on hardware.
-- The biquad is written in plain C. The port does not call the CMSIS-DSP library.
+- The CMSIS-DSP sources are fetched at a pinned tag (v1.18.0), not vendored.
 - The desk-node enclosure has no mounting or wiring for the IMU yet.

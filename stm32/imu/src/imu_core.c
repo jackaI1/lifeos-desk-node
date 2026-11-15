@@ -2,6 +2,8 @@
 
 #include "imu_tables.h"
 
+#include "arm_math.h"
+
 #include <string.h>
 
 /* C division truncates toward zero. The Python reference uses the same rule. */
@@ -11,14 +13,6 @@ static int64_t div_trunc(int64_t numerator, int64_t denominator) {
 
 static int64_t abs64(int64_t value) {
     return value < 0 ? -value : value;
-}
-
-static int32_t clamp_i32(int64_t value, int64_t low, int64_t high) {
-    if (value < low)
-        return (int32_t)low;
-    if (value > high)
-        return (int32_t)high;
-    return (int32_t)value;
 }
 
 /* atan(num / den) in millidegrees for 0 <= num <= den, den > 0. */
@@ -53,22 +47,29 @@ void imu_init(imu_state_t *state) {
     memset(state, 0, sizeof *state);
 }
 
-/* Direct form I biquad in Q30. The sum is computed in 64 bits, rounded, and
- * clamped so an extreme input cannot overflow the int32 state. */
-static int32_t biquad_step(imu_biquad_t *f, int32_t x) {
-    int64_t acc = (int64_t)IMU_B0 * x + (int64_t)IMU_B1 * f->x1 + (int64_t)IMU_B2 * f->x2 -
-                  (int64_t)IMU_A1 * f->y1 - (int64_t)IMU_A2 * f->y2 + ((int64_t)1 << 29);
-    int32_t y = clamp_i32(acc >> 30, -32768, 32767);
-    f->x2 = f->x1;
-    f->x1 = x;
-    f->y2 = f->y1;
-    f->y1 = y;
-    return y;
+/* Raw counts are scaled into q31 so the full +-32768 range sits at +-0.25, which is
+ * the input range the CMSIS q31 biquad is specified for (it wraps above that). */
+#define IMU_Q31_SHIFT 14
+
+static int32_t raw_to_q31(int32_t raw) {
+    return (int32_t)(raw * (1 << IMU_Q31_SHIFT));
 }
 
-static void biquad_prime(imu_biquad_t *f, int32_t x) {
-    f->x1 = f->x2 = x;
-    f->y1 = f->y2 = x;
+/* arm_biquad_cascade_df1_q31 with postShift = 1: the 2nd-order Butterworth low-pass.
+ * The output keeps the q31 scale, so shifting back gives counts again. */
+static int32_t biquad_step(imu_biquad_t *f, int32_t raw) {
+    q31_t in = raw_to_q31(raw);
+    q31_t out = 0;
+    arm_biquad_cascade_df1_q31(&f->inst, &in, &out, 1);
+    return out >> IMU_Q31_SHIFT;
+}
+
+/* A constant input at steady state (DC gain 1) means every state equals that input,
+ * so the filter starts with no step transient. */
+static void biquad_prime(imu_biquad_t *f, int32_t raw) {
+    q31_t x = raw_to_q31(raw);
+    arm_biquad_cascade_df1_init_q31(&f->inst, 1, IMU_COEFFS_Q31, f->state, 1);
+    f->state[0] = f->state[1] = f->state[2] = f->state[3] = x;
 }
 
 static int32_t lsb_to_mg(int32_t lsb) {

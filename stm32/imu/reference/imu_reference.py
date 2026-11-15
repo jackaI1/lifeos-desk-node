@@ -56,19 +56,39 @@ def atan2_mdeg(y, x):
     return angle
 
 
+Q31_SHIFT = 14
+
+
+def wrap64(value):
+    return ((value + (1 << 63)) % (1 << 64)) - (1 << 63)
+
+
+def wrap32(value):
+    return ((value + (1 << 31)) % (1 << 32)) - (1 << 31)
+
+
+def raw_to_q31(raw):
+    return wrap32(raw * (1 << Q31_SHIFT))
+
+
 class Biquad:
+    """Mirror of arm_biquad_cascade_df1_q31 (generic C path) with postShift = 1.
+
+    The CMSIS code keeps a 64-bit accumulator, shifts it right by 30 bits and keeps the
+    low 32 bits. The states are x[n-1], x[n-2], y[n-1], y[n-2].
+    """
+
     def __init__(self):
         self.x1 = self.x2 = self.y1 = self.y2 = 0
 
-    def prime(self, x):
-        self.x1 = self.x2 = x
-        self.y1 = self.y2 = x
+    def prime(self, x_q31):
+        self.x1 = self.x2 = self.y1 = self.y2 = x_q31
 
-    def step(self, x):
-        acc = (t.IMU_B0 * x + t.IMU_B1 * self.x1 + t.IMU_B2 * self.x2
-               - t.IMU_A1 * self.y1 - t.IMU_A2 * self.y2 + (1 << 29))
-        y = clamp(acc >> 30, -32768, 32767)
-        self.x2, self.x1 = self.x1, x
+    def step(self, x_q31):
+        c0, c1, c2, c3, c4 = t.IMU_COEFFS_Q31
+        acc = wrap64(c0 * x_q31 + c1 * self.x1 + c2 * self.x2 + c3 * self.y1 + c4 * self.y2)
+        y = wrap32(acc >> 30)
+        self.x2, self.x1 = self.x1, x_q31
         self.y2, self.y1 = self.y1, y
         return y
 
@@ -101,8 +121,8 @@ class Filter:
 
         if not self.started:
             for axis in range(3):
-                self.accel[axis].prime(raw_accel[axis])
-                self.gyro[axis].prime(raw_gyro[axis])
+                self.accel[axis].prime(raw_to_q31(raw_accel[axis]))
+                self.gyro[axis].prime(raw_to_q31(raw_gyro[axis]))
             accel, gyro = list(raw_accel), list(raw_gyro)
         else:
             if seq <= self.last_seq:
@@ -110,8 +130,8 @@ class Filter:
                     "roll": self.roll, "pitch": self.pitch, "gyro": [0, 0, 0],
                     "accel": [0, 0, 0], "dropped": self.dropped, "flags": FLAG_DUPLICATE,
                 }
-            accel = [self.accel[a].step(raw_accel[a]) for a in range(3)]
-            gyro = [self.gyro[a].step(raw_gyro[a]) for a in range(3)]
+            accel = [self.accel[a].step(raw_to_q31(raw_accel[a])) >> Q31_SHIFT for a in range(3)]
+            gyro = [self.gyro[a].step(raw_to_q31(raw_gyro[a])) >> Q31_SHIFT for a in range(3)]
 
         accel_mg = [div_trunc(v * 1000, t.IMU_G_LSB) for v in accel]
         gyro_mdps = [div_trunc(v * 1000, t.IMU_GYRO_LSB_PER_DPS) for v in gyro]
