@@ -89,7 +89,7 @@ def default_model(width_mm: float, h_mm: float, er: float, tand: float,
     return TraceModel(
         width_mm=width_mm, h_mm=h_mm, er=er, tand=tand,
         length_mm=via_x[1] + 8.0,
-        ground_width_mm=12.0,
+        ground_width_mm=30.0,   # the absorbing faces sit 15 mm from the trace, as in the probe
         ground_clearance_mm=clearance_mm,
         via=ViaModel(via_x, drill_mm, pad_mm, antipad),
     )
