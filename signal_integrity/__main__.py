@@ -47,7 +47,7 @@ def main(argv=None) -> int:
     except OpenEMSUnavailable as exc:
         print(f"signal-integrity error: {exc}", file=sys.stderr)
         return 2
-    except (ValueError, OSError, KeyError) as exc:
+    except (ValueError, OSError, KeyError, RuntimeError) as exc:
         print(f"signal-integrity error: {exc}", file=sys.stderr)
         return 2
     report = write_report(out, board=board, stackup=stackup, net=net, width_mm=width,

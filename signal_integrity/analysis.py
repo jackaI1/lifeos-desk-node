@@ -142,11 +142,11 @@ def simulate(board: Board, stackup: Stackup, width_mm: float, out: Path) -> Dict
     line's, at each frequency of the reference (the same frequency grid for both).
     """
     model = model_for(board, stackup, width_mm)
-    freq, s11, s21 = fdtd.build_and_run(model)
+    freq, s11, s21 = fdtd.run_isolated(model)
     net = network_from_s(freq, s11, s21, path=out / "desk_node_via.s2p")
     result = metrics(net)
     result["touchstone"] = str(out / "desk_node_via.s2p")
-    freq_t, s11_t, s21_t = fdtd.build_and_run(model, through=True)
+    freq_t, s11_t, s21_t = fdtd.run_isolated(model, through=True)
     through_net = network_from_s(freq_t, s11_t, s21_t, path=out / "through_line.s2p")
     through = metrics(through_net)
     result["through"] = through

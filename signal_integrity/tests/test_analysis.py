@@ -99,3 +99,13 @@ def test_report_with_simulated_results_writes_tables_and_plots(tmp_path):
     assert "| 3 GHz | 0.92 dB | 0.92 dB | +0.00 dB | 26.02 dB |" in text
     assert (tmp_path / "losses.png").stat().st_size > 1000
     assert (tmp_path / "tdr.png").stat().st_size > 1000
+
+
+def test_model_survives_the_json_hand_off_to_the_worker():
+    import dataclasses
+    import json
+
+    model = fdtd.default_model(0.25, 1.6, 4.5, 0.02, 0.3, 0.6, 0.3)
+    text = json.dumps({"model": dataclasses.asdict(model), "through": False})
+    back = fdtd.model_from_dict(json.loads(text)["model"])
+    assert back == model

@@ -1,5 +1,6 @@
 """The 3D run itself. Skipped unless openEMS and CSXCAD import (CI installs them)."""
 
+import importlib.util
 from pathlib import Path
 
 import numpy as np
@@ -10,12 +11,9 @@ from signal_integrity.kicad_pcb import parse_board
 
 BOARD = Path(__file__).resolve().parents[2] / "hardware" / "desk-node.kicad_pcb"
 
-try:
-    import CSXCAD  # noqa: F401
-    import openEMS  # noqa: F401
-    HAVE_OPENEMS = True
-except ImportError:
-    HAVE_OPENEMS = False
+# Look for the modules without importing them, so this process never loads the solver.
+HAVE_OPENEMS = (importlib.util.find_spec("CSXCAD") is not None
+                and importlib.util.find_spec("openEMS") is not None)
 
 needs_openems = pytest.mark.skipif(not HAVE_OPENEMS, reason="openEMS/CSXCAD not installed")
 

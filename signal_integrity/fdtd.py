@@ -26,11 +26,16 @@ port 1 excited.
 
 from __future__ import annotations
 
+import dataclasses
+import importlib.util
+import json
 import math
 import shutil
+import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -88,6 +93,43 @@ def default_model(width_mm: float, h_mm: float, er: float, tand: float,
         ground_clearance_mm=clearance_mm,
         via=ViaModel(via_x, drill_mm, pad_mm, antipad),
     )
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def model_from_dict(data: dict) -> "TraceModel":
+    """Rebuild a TraceModel from its JSON form (tuples come back as lists)."""
+    via = dict(data["via"])
+    via["x_mm"] = tuple(via["x_mm"])
+    fields = dict(data)
+    fields["via"] = ViaModel(**via)
+    return TraceModel(**fields)
+
+
+def run_isolated(model: TraceModel, *, through: bool = False,
+                 timeout_s: Optional[float] = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Run build_and_run in a fresh Python process and return (freq, S11, S21)."""
+    if importlib.util.find_spec("CSXCAD") is None or importlib.util.find_spec("openEMS") is None:
+        raise OpenEMSUnavailable(
+            "openEMS and CSXCAD are needed for the 3D run. On Ubuntu 22.04: "
+            "sudo apt-get install openems python3-openems")
+    workdir = Path(tempfile.mkdtemp(prefix="desk-openems-run-"))
+    try:
+        spec = workdir / "spec.json"
+        result = workdir / "result.npz"
+        spec.write_text(json.dumps({"model": dataclasses.asdict(model), "through": through}),
+                        encoding="utf-8")
+        proc = subprocess.run(
+            [sys.executable, "-m", "signal_integrity.fdtd_worker", str(spec), str(result)],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=timeout_s, check=False)
+        if proc.returncode != 0 or not result.exists():
+            tail = (proc.stderr or proc.stdout)[-1500:]
+            raise RuntimeError(f"openEMS run failed (exit {proc.returncode}): {tail}")
+        data = np.load(result)
+        return data["freq"], data["s11"], data["s21"]
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
 
 
 def _require_openems():
