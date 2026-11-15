@@ -33,6 +33,8 @@ def run(variant: str, res: float = 0.5, n_ts: int = 12000):
     pec = csx.AddMetal("pec")
     if variant != "pec_bottom":
         pec.AddBox([x_lo, -15.0, 0.0], [x_hi, 15.0, 0.0], priority=10)
+    # The strip between the ports. The port boxes cover the two ends, without overlap.
+    pec.AddBox([0.0, -W / 2, H], [L, W / 2, H], priority=10)
     port = [None, None]
     port[0] = fdtd.AddMSLPort(1, pec, [-10.0, -W / 2, H], [0.0, W / 2, 0.0], "x", "z",
                               excite=-1, FeedShift=0.5, priority=10)
