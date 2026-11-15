@@ -52,7 +52,7 @@ arm-check: deps build/arm/imu_mpu6050_hal.o build/arm/imu_core.o build/arm/arm_b
 	arm-none-eabi-size build/arm/*.o
 
 build/arm/imu_mpu6050_hal.o: hal/imu_mpu6050_hal.c hal/imu_mpu6050_hal.h hal/stm32f4xx_hal_conf.h include/imu_core.h src/imu_tables.h | build/arm
-	$(ARM_CC) $(ARM_FLAGS) -Ihal -Iinclude -isystem $(HAL_INC) -isystem $(CMSIS_DEVICE) -isystem $(CMSIS_CORE) -c $< -o $@
+	$(ARM_CC) $(ARM_FLAGS) -Ihal -Iinclude -I$(DSP)/Include -I$(DSP)/PrivateInclude -isystem $(HAL_INC) -isystem $(CMSIS_DEVICE) -isystem $(CMSIS_CORE) -c $< -o $@
 
 build/arm/imu_core.o: src/imu_core.c include/imu_core.h src/imu_tables.h | build/arm
 	$(ARM_CC) $(ARM_FLAGS) -Iinclude -Isrc -I$(DSP)/Include -I$(DSP)/PrivateInclude -isystem $(CMSIS_CORE) -c $< -o $@
