@@ -1,0 +1,67 @@
+"""Command-line entry point: python -m signal_integrity [--simulate] [--out DIR]
+
+Without --simulate, the run reads the board and writes the closed-form impedance
+table (no openEMS needed). With --simulate it also runs the 3D FDTD model, reads
+the result with scikit-rf, and adds the S-parameters, TDR and plots to the report.
+
+Exit status: 0 the run finished, 2 the run could not finish (bad board file,
+openEMS missing when --simulate is set, or an impedance that cannot be met).
+"""
+
+import argparse
+import sys
+from pathlib import Path
+
+from signal_integrity import analysis, impedance
+from signal_integrity.fdtd import OpenEMSUnavailable
+from signal_integrity.kicad_pcb import parse_board
+from signal_integrity.report import write_report
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+DEFAULT_PCB = ROOT / "hardware" / "desk-node.kicad_pcb"
+DEFAULT_OUT = HERE / "build"
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Signal-integrity check of the desk-node board.")
+    parser.add_argument("--pcb", default=str(DEFAULT_PCB), help="KiCad board file")
+    parser.add_argument("--out", default=str(DEFAULT_OUT), help="output folder")
+    parser.add_argument("--net", help="signal net to model (default: longest signal net)")
+    parser.add_argument("--width", type=float, help="trace width in mm (default: most used on the net)")
+    parser.add_argument("--simulate", action="store_true", help="run the openEMS 3D model")
+    args = parser.parse_args(argv)
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    try:
+        board = parse_board(args.pcb)
+        stackup = analysis.default_stackup(board)
+        rep_net, _ = analysis.pick_representative(board)
+        net = args.net or rep_net
+        widths = board.track_widths(net)
+        if not widths:
+            raise ValueError(f"net {net!r} has no tracks on the board")
+        width = args.width or max(sorted(widths), key=lambda w: widths[w])
+        closed = analysis.closed_form(board, stackup)
+        simulated = analysis.simulate(board, stackup, width, out) if args.simulate else None
+    except OpenEMSUnavailable as exc:
+        print(f"signal-integrity error: {exc}", file=sys.stderr)
+        return 2
+    except (ValueError, OSError, KeyError) as exc:
+        print(f"signal-integrity error: {exc}", file=sys.stderr)
+        return 2
+    report = write_report(out, board=board, stackup=stackup, net=net, width_mm=width,
+                          closed=closed, simulated=simulated, pcb=args.pcb)
+    z_trace = impedance.microstrip_z0(width, stackup.h_mm, stackup.er, stackup.t_mm)
+    print(f"representative trace: {net} at {width:g} mm -> {z_trace:.1f} ohm")
+    print(f"via: {closed['via']['z0_ohm']:.1f} ohm; 50 ohm needs {closed['width_for_50_mm']:.2f} mm of trace")
+    if simulated:
+        print(f"TDR: {simulated['tdr_min_ohm']:.1f} to {simulated['tdr_max_ohm']:.1f} ohm "
+              f"(0.2 to 2 ns); insertion loss at 3 GHz "
+              f"{simulated['at_ghz'][3.0]['il_db']:.2f} dB")
+    print(f"report: {report}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
