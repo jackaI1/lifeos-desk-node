@@ -2,7 +2,7 @@
 import subprocess
 import sys
 
-VARIANTS = ["probe", "probe_via", "probe_antipad"]
+VARIANTS = ["probe", "probe_air6", "probe_noy"]
 
 
 def build(variant: str) -> None:
@@ -23,6 +23,10 @@ def build(variant: str) -> None:
     xs = [xl, 0.0, L, xh, xv - rv, xv + rv, xv - ra, xv + ra]
     ys = [-w / 2, 0.0, w / 2, -wg, wg, -rv, rv, -ra, ra]
     zs = [-8.0, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + 8.0]
+    if variant == "probe_air6":
+        zs = [-6.0, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + 8.0]
+    if variant == "probe_noy":
+        ys = [-w / 2, 0.0, w / 2, -wg, wg]
     mesh.AddLine("x", xs)
     mesh.AddLine("y", ys)
     mesh.AddLine("z", zs)
@@ -31,7 +35,7 @@ def build(variant: str) -> None:
     sub.SetMaterialProperty(epsilon=er)
     sub.AddBox([xl, -wg, 0.0], [xh, wg, h], priority=0)
     pec = csx.AddMetal("pec")
-    if variant == "probe_antipad":
+    if False:
         pec.AddBox([xl, -wg, 0.0], [xv - ra, wg, 0.0], priority=10)
         pec.AddBox([xv + ra, -wg, 0.0], [xh, wg, 0.0], priority=10)
         pec.AddBox([xv - ra, ra, 0.0], [xv + ra, wg, 0.0], priority=10)
@@ -39,7 +43,7 @@ def build(variant: str) -> None:
     else:
         pec.AddBox([xl, -wg, 0.0], [xh, wg, 0.0], priority=10)
     pec.AddBox([0.0, -w / 2, h], [L, w / 2, h], priority=10)
-    if variant == "probe_via":
+    if False:
         pec.AddBox([xv - rv, -rv, 0.0], [xv + rv, rv, h], priority=20)
     port = [None, None]
     port[0] = fdtd.AddMSLPort(1, pec, [xl, -w / 2, h], [0.0, w / 2, 0.0], "x", "z", excite=-1, FeedShift=0.5,
