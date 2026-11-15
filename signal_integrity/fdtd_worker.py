@@ -24,7 +24,7 @@ def main(argv=None) -> int:
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
     model = fdtd.model_from_dict(spec["model"])
     raw = spec.get("raw_dir")
-    freq, s11, s21 = fdtd.build_and_run(model, sim_dir=Path(raw) if raw else None, keep=bool(raw))
+    freq, s11, s21 = fdtd.build_and_run(model, keep_ports_in=Path(raw) if raw else None)
     np.savez(out_path, freq=freq, s11=s11, s21=s21)
     sys.stdout.flush()
     sys.stderr.flush()

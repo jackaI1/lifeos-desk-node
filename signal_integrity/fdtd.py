@@ -158,8 +158,12 @@ def _require_openems():
 
 
 def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
-                  keep: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays."""
+                  keep: bool = False, keep_ports_in: Optional[Path] = None
+                  ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays.
+
+    keep_ports_in, when given, receives a copy of the solver's raw port traces, for inspection.
+    """
     _require_openems()
     from CSXCAD import ContinuousStructure
     from openEMS import openEMS
@@ -269,6 +273,10 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
         fdtd.Run(str(folder), cleanup=False, verbose=2)
         # The reference is passed as an array, one value per frequency. A plain float makes the
         # Debian bindings read a field that only the other port types set (ut_tot).
+        if keep_ports_in is not None:
+            Path(keep_ports_in).mkdir(parents=True, exist_ok=True)
+            for trace in folder.glob("port_*"):
+                shutil.copy(trace, Path(keep_ports_in) / trace.name)
         z_ref = np.full(len(freq), Z_REF)
         for p in port:
             # Refer S-parameters to 50 ohm, not to the line's own impedance.
