@@ -267,17 +267,6 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
         fdtd.Run(str(folder), cleanup=False, verbose=2)
         # The reference is passed as an array, one value per frequency. A plain float makes the
         # Debian bindings read a field that only the other port types set (ut_tot).
-        # The reference is passed as an array, one value per frequency. A plain float makes the
-        # Debian bindings read a field that only the other port types set (ut_tot).
-        for trace in sorted(folder.glob("port_*")):
-            data = np.loadtxt(trace, comments="%")
-            k = int(np.argmax(np.abs(data[:, 1])))
-            print(f"PORTTRACE {trace.name} peak {data[k, 1]:.4e} at {data[k, 0] * 1e9:.3f} ns",
-                  flush=True)
-        if keep_ports_in is not None:
-            Path(keep_ports_in).mkdir(parents=True, exist_ok=True)
-            for trace in folder.glob("port_*"):
-                shutil.copy(trace, Path(keep_ports_in) / trace.name)
         z_ref = np.full(len(freq), Z_REF)
         for p in port:
             # Refer S-parameters to 50 ohm, not to the line's own impedance.
