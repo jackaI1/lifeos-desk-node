@@ -48,18 +48,3 @@ jobs:
         with:
           name: signal-integrity-openems
           path: signal_integrity/build/openems
-  msl-probe:
-    # TEMPORARY diagnostic job: one microstrip line in two boundary setups.
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y openems python3-openems python3-pip python3-numpy python3-scipy \
-            python3-matplotlib python3-pandas python3-h5py python3-pytest
-      - run: python3 -m signal_integrity.experiments.msl_probe pec_bottom air_pml
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: msl-probe-traces
-          path: signal_integrity/build/probe

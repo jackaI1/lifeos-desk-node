@@ -72,7 +72,7 @@ class TraceModel:
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
     air_mm: float = 6.0
     end_criteria: float = 1e-3
-    time_steps: int = 20000
+    time_steps: int = 30000
 
     @property
     def freq_hz(self) -> np.ndarray:
@@ -174,11 +174,11 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None, keep: bool 
     x_hi = model.length_mm + 4.0
     wg = model.ground_width_mm / 2.0
     ws = (w + 2.0 * model.ground_clearance_mm) / 2.0
-    # Each port box spans 1.5 mm: openEMS needs at least five mesh lines along it.
-    # The boxes mirror each other about the board centre, so the model stays symmetric.
-    port_len = 1.5
-    x_port1 = (-port_len, 0.0)
-    x_port2 = (model.length_mm, model.length_mm + port_len)
+    # Each port box runs from the outer edge of the mesh (inside the absorbing boundary) to its
+    # device plane, as the openEMS MSL tutorial does. The strip between the ports is drawn
+    # separately, without overlapping the port boxes: overlapping copper was flagged as unused.
+    x_port1 = (x_lo, 0.0)
+    x_port2 = (x_hi, model.length_mm)
 
     fdtd = openEMS(NrTS=model.time_steps, EndCriteria=model.end_criteria)
     f_center = 0.5 * model.f_stop_hz
@@ -213,13 +213,13 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None, keep: bool 
     ]
     if through:
         copper.AddBox(start=[x_lo, -wg, 0], stop=[x_hi, wg, 0], priority=10)
-        copper.AddBox(start=[x_lo, -w / 2, h], stop=[x_hi, w / 2, h], priority=10)
+        copper.AddBox(start=[0.0, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
     else:
         for start, stop in ground_slices:
             copper.AddBox(start=start, stop=stop, priority=10)
-        # Top trace: port 1 to via 1, and via 2 to port 2.
-        copper.AddBox(start=[x_lo, -w / 2, h], stop=[via1, w / 2, h], priority=10)
-        copper.AddBox(start=[via2, -w / 2, h], stop=[x_hi, w / 2, h], priority=10)
+        # Top trace: device plane 1 to via 1, and via 2 to device plane 2.
+        copper.AddBox(start=[0.0, -w / 2, h], stop=[via1, w / 2, h], priority=10)
+        copper.AddBox(start=[via2, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
         # Bottom trace inside the slot, joining the two via barrels.
         copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
         # Vias: a barrel through the substrate. Pads are left out; the antipad sets the
@@ -242,10 +242,10 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None, keep: bool 
     # strip height, stop points towards the device at the ground plane.
     port_start1 = [x_port1[0], -w / 2, h]
     port_stop1 = [x_port1[1], w / 2, 0]
-    port_start2 = [x_port2[1], -w / 2, h]
-    port_stop2 = [x_port2[0], w / 2, 0]
+    port_start2 = [x_port2[0], -w / 2, h]
+    port_stop2 = [x_port2[1], w / 2, 0]
     port = [None, None]
-    port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=1,
+    port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=-1,
                               FeedShift=0.5, priority=10)
     port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0, priority=10)
 
