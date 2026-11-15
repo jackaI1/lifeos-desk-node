@@ -54,6 +54,8 @@ def c_text():
         "#ifndef IMU_TABLES_H",
         "#define IMU_TABLES_H",
         "",
+        "#include <stdint.h>",
+        "",
     ]
     for name, value in PARAMS.items():
         lines.append(f"#define {name} {value}")
@@ -67,6 +69,11 @@ def c_text():
         f"#define IMU_B2 {b2}",
         f"#define IMU_A1 ({a1})",
         f"#define IMU_A2 ({a2})",
+        "",
+        "/* CMSIS-DSP arm_biquad_cascade_df1_q31 coefficient order {b0, b1, b2, a1, a2}.",
+        "   The CMSIS filter adds its a terms, so they are the negated denominator terms,",
+        "   and it reads each q31 value as half its nominal size (postShift = 1 undoes that). */",
+        f"static const int32_t IMU_COEFFS_Q31[5] = {{{b0}, {b1}, {b2}, {-a1}, {-a2}}};",
         "",
         "/* atan(i/256) in millidegrees, i = 0..256. */",
         "static const int32_t IMU_ATAN_TABLE[257] = {",
@@ -93,6 +100,7 @@ def py_text():
         f"IMU_B2 = {b2}",
         f"IMU_A1 = {a1}",
         f"IMU_A2 = {a2}",
+        f"IMU_COEFFS_Q31 = [{b0}, {b1}, {b2}, {-a1}, {-a2}]",
         f"IMU_ATAN_TABLE = {atan_table()!r}",
         "",
     ]

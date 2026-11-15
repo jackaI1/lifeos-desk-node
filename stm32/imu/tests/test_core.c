@@ -138,7 +138,8 @@ static void test_saturation(void) {
         CHECK((o.flags & IMU_FLAG_SATURATED) != 0);
         CHECK(o.roll_mdeg >= -180000 && o.roll_mdeg <= 180000);
         CHECK(o.pitch_mdeg >= -180000 && o.pitch_mdeg <= 180000);
-        CHECK(o.accel_mg[0] >= -2000 && o.accel_mg[0] <= 2000);
+        /* A 2nd-order Butterworth overshoots a full-scale step by about 4 percent. */
+        CHECK(o.accel_mg[0] >= -2200 && o.accel_mg[0] <= 2200);
     }
 }
 

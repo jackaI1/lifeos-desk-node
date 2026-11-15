@@ -43,5 +43,5 @@ jobs:
           echo "HAL_INC=$root/hal/Inc" >> "$GITHUB_ENV"
           echo "CMSIS_DEVICE=$root/device/Include" >> "$GITHUB_ENV"
           echo "CMSIS_CORE=$root/cube/Drivers/CMSIS/Include" >> "$GITHUB_ENV"
-      - name: Compile the HAL port and the filter core for Cortex-M4 with warnings as errors
+      - name: Compile the HAL port, the filter core and CMSIS-DSP's biquad for Cortex-M4 with warnings as errors
         run: make -C stm32/imu arm-check ARM_CC=arm-none-eabi-gcc HAL_INC="$HAL_INC" CMSIS_DEVICE="$CMSIS_DEVICE" CMSIS_CORE="$CMSIS_CORE"

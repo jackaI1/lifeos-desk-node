@@ -2,6 +2,8 @@
 #ifndef IMU_TABLES_H
 #define IMU_TABLES_H
 
+#include <stdint.h>
+
 #define IMU_SAMPLE_RATE_HZ 100
 #define IMU_SAMPLE_MS 10
 #define IMU_LPF_CORNER_HZ 10
@@ -21,6 +23,11 @@
 #define IMU_B2 72429549
 #define IMU_A1 (-1227265970)
 #define IMU_A2 (443242341)
+
+/* CMSIS-DSP arm_biquad_cascade_df1_q31 coefficient order {b0, b1, b2, a1, a2}.
+   The CMSIS filter adds its a terms, so they are the negated denominator terms,
+   and it reads each q31 value as half its nominal size (postShift = 1 undoes that). */
+static const int32_t IMU_COEFFS_Q31[5] = {72429549, 144859098, 72429549, 1227265970, -443242341};
 
 /* atan(i/256) in millidegrees, i = 0..256. */
 static const int32_t IMU_ATAN_TABLE[257] = {

@@ -12,6 +12,8 @@
 #ifndef IMU_CORE_H
 #define IMU_CORE_H
 
+#include "arm_math.h" /* CMSIS-DSP: arm_biquad_cascade_df1_q31 */
+
 #include <stdint.h>
 
 enum {
@@ -38,8 +40,11 @@ typedef struct {
     uint32_t flags;       /* IMU_FLAG_* bits for this sample */
 } imu_out_t;
 
+/* One CMSIS-DSP q31 biquad per axis. The instance points at its own state array, so
+ * imu_state_t must not be copied after the first sample. */
 typedef struct {
-    int32_t x1, x2, y1, y2;
+    arm_biquad_casd_df1_inst_q31 inst;
+    q31_t state[4];
 } imu_biquad_t;
 
 typedef struct {
