@@ -100,9 +100,13 @@ def _require_openems():
             "sudo apt-get install openems python3-openems") from exc
 
 
-def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
-                  keep: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays."""
+def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None, keep: bool = False,
+                  through: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays.
+
+    through=True builds the same board without the via pair: one continuous top trace over
+    a solid ground pour. It is the reference the via transition is compared with.
+    """
     _require_openems()
     from CSXCAD import ContinuousStructure
     from openEMS import openEMS
@@ -127,7 +131,9 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     fdtd = openEMS(NrTS=model.time_steps, EndCriteria=model.end_criteria)
     f_center = 0.5 * model.f_stop_hz
     fdtd.SetGaussExcite(f_center, f_center)
-    fdtd.SetBoundaryCond(["PML_8", "PML_8", "PML_8", "PML_8", "PEC", "PML_8"])
+    # Absorbing boundaries on all six faces. The ground is drawn explicitly below, so the
+    # bottom face must not be a PEC wall: that would short the bottom trace and the antipads.
+    fdtd.SetBoundaryCond(["PML_8"] * 6)
 
     csx = ContinuousStructure()
     fdtd.SetCSX(csx)
@@ -153,25 +159,28 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
         ([via1 + ra, ws, 0], [via2 - ra, wg, 0]),
         ([via1 + ra, -wg, 0], [via2 - ra, -ws, 0]),
     ]
-    for start, stop in ground_slices:
-        copper.AddBox(start=start, stop=stop, priority=10)
-
-    # Top trace: port 1 to via 1, and via 2 to port 2.
-    copper.AddBox(start=[x_lo, -w / 2, h], stop=[via1, w / 2, h], priority=10)
-    copper.AddBox(start=[via2, -w / 2, h], stop=[x_hi, w / 2, h], priority=10)
-    # Bottom trace inside the slot, joining the two via barrels.
-    copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
-    # Vias: a barrel through the substrate. Pads are left out; the antipad sets the
-    # clearance that the impedance depends on.
-    for x in (via1, via2):
-        copper.AddCylinder(start=[x, 0, 0], stop=[x, 0, h], radius=rd, priority=20)
+    if through:
+        copper.AddBox(start=[x_lo, -wg, 0], stop=[x_hi, wg, 0], priority=10)
+        copper.AddBox(start=[x_lo, -w / 2, h], stop=[x_hi, w / 2, h], priority=10)
+    else:
+        for start, stop in ground_slices:
+            copper.AddBox(start=start, stop=stop, priority=10)
+        # Top trace: port 1 to via 1, and via 2 to port 2.
+        copper.AddBox(start=[x_lo, -w / 2, h], stop=[via1, w / 2, h], priority=10)
+        copper.AddBox(start=[via2, -w / 2, h], stop=[x_hi, w / 2, h], priority=10)
+        # Bottom trace inside the slot, joining the two via barrels.
+        copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
+        # Vias: a barrel through the substrate. Pads are left out; the antipad sets the
+        # clearance that the impedance depends on.
+        for x in (via1, via2):
+            copper.AddCylinder(start=[x, 0, 0], stop=[x, 0, h], radius=rd, priority=20)
 
 
     # Mesh: lines at every feature edge, smoothed to the target resolution.
     x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2,
                via1 - ra, via1 + ra, via2 - ra, via2 + ra]
     y_lines = [-wg, wg, -w / 2, w / 2, -ws, ws, -ra, ra, 0.0]
-    z_lines = [0.0, h, h + model.air_mm]
+    z_lines = [-model.air_mm, 0.0, h, h + model.air_mm]
     mesh.AddLine("x", x_lines)
     mesh.AddLine("y", y_lines)
     mesh.AddLine("z", z_lines)

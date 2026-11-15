@@ -136,10 +136,23 @@ def metrics(net, z_points_ns: Tuple[float, ...] = (0.5, 1.0, 2.0)) -> Dict[str, 
 
 
 def simulate(board: Board, stackup: Stackup, width_mm: float, out: Path) -> Dict[str, object]:
-    """Run the openEMS model, write the Touchstone file, and return the scikit-rf metrics."""
+    """Run the via model and the through-line reference, and return both sets of metrics.
+
+    The via transition's excess loss is the via model's insertion loss minus the through
+    line's, at each frequency of the reference (the same frequency grid for both).
+    """
     model = model_for(board, stackup, width_mm)
     freq, s11, s21 = fdtd.build_and_run(model)
     net = network_from_s(freq, s11, s21, path=out / "desk_node_via.s2p")
     result = metrics(net)
     result["touchstone"] = str(out / "desk_node_via.s2p")
+    freq_t, s11_t, s21_t = fdtd.build_and_run(model, through=True)
+    through_net = network_from_s(freq_t, s11_t, s21_t, path=out / "through_line.s2p")
+    through = metrics(through_net)
+    result["through"] = through
+    result["through_touchstone"] = str(out / "through_line.s2p")
+    result["excess_db_at_ghz"] = {
+        ghz: result["at_ghz"][ghz]["il_db"] - through["at_ghz"][ghz]["il_db"]
+        for ghz in result["at_ghz"]
+    }
     return result

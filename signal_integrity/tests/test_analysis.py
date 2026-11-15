@@ -89,6 +89,9 @@ def test_report_with_simulated_results_writes_tables_and_plots(tmp_path):
     net = analysis.network_from_s(FREQ, s11, s21, path=tmp_path / "synthetic.s2p")
     simulated = analysis.metrics(net)
     simulated["touchstone"] = str(tmp_path / "synthetic.s2p")
+    simulated["through_touchstone"] = str(tmp_path / "synthetic.s2p")
+    simulated["through"] = simulated
+    simulated["excess_db_at_ghz"] = {g: 0.0 for g in simulated["at_ghz"]}
     report = write_report(tmp_path, board=board, stackup=stackup, net="/I2C_SCL", width_mm=0.25,
                           closed=closed, simulated=simulated, pcb=str(BOARD))
     text = report.read_text(encoding="utf-8")

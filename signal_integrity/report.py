@@ -18,8 +18,10 @@ from signal_integrity.kicad_pcb import Board  # noqa: E402
 def _plot_losses(simulated: Dict[str, object], path: Path) -> None:
     fig, ax = plt.subplots(figsize=(7, 4))
     f = simulated["freq_ghz"]
-    ax.plot(f, simulated["il_db"], label="insertion loss |S21| (dB)", color="#1f77b4")
-    ax.plot(f, simulated["rl_db"], label="return loss |S11| (dB)", color="#d62728")
+    ax.plot(f, simulated["il_db"], label="via transition, insertion loss", color="#1f77b4")
+    ax.plot(simulated["through"]["freq_ghz"], simulated["through"]["il_db"], "--",
+            label="through line, insertion loss", color="#7f7f7f")
+    ax.plot(f, simulated["rl_db"], label="via transition, return loss", color="#d62728")
     ax.set_xlabel("frequency (GHz)")
     ax.set_ylabel("loss (dB)")
     ax.set_title("Simulated via transition, 50 ohm reference")
@@ -98,11 +100,14 @@ def write_report(out: Path, *, board: Board, stackup: Stackup, net: str, width_m
             "A top-layer trace drops through one via into a bottom-layer trace that crosses a slot in the "
             "ground pour, then climbs back through a second via. Ports are at both ends of the top trace.",
             "",
-            "| frequency | insertion loss (S21) | return loss (S11) |",
-            "| --- | --- | --- |",
+            "| frequency | via insertion loss | through-line insertion loss | via excess loss | return loss (S11) |",
+            "| --- | --- | --- | --- | --- |",
         ]
+        through = simulated["through"]["at_ghz"]
+        excess = simulated["excess_db_at_ghz"]
         for ghz in sorted(at):
-            lines.append(f"| {ghz:g} GHz | {at[ghz]['il_db']:.2f} dB | {at[ghz]['rl_db']:.2f} dB |")
+            lines.append(f"| {ghz:g} GHz | {at[ghz]['il_db']:.2f} dB | {through[ghz]['il_db']:.2f} dB | "
+                         f"{excess[ghz]:+.2f} dB | {at[ghz]['rl_db']:.2f} dB |")
         z_at = simulated["z_at_ns"]
         lines += [
             "",
@@ -110,7 +115,8 @@ def write_report(out: Path, *, board: Board, stackup: Stackup, net: str, width_m
             f"{simulated['tdr_max_ohm']:.1f} ohm, lowest at {simulated['tdr_min_at_ns']:.2f} ns. "
             f"At 0.5 / 1 / 2 ns: {z_at[0.5]:.1f} / {z_at[1.0]:.1f} / {z_at[2.0]:.1f} ohm.",
             "",
-            "Touchstone file: `desk_node_via.s2p`. Plots: `losses.png`, `tdr.png`.",
+            "Touchstone files: `desk_node_via.s2p` (via) and `through_line.s2p` (reference). "
+            "Plots: `losses.png`, `tdr.png`.",
             "",
             "![Insertion and return loss](losses.png)",
             "![TDR impedance](tdr.png)",
