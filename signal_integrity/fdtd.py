@@ -195,14 +195,12 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
         # Write the geometry explicitly, then solve. The solver's log goes to the console.
         csx.Write2XML(str(folder / "csx.xml"))
         fdtd.Run(str(folder), cleanup=False, verbose=2)
-        try:
-            for p in port:
-                # Refer S-parameters to 50 ohm. Without this, openEMS uses the line's own impedance.
-                p.CalcPort(str(folder), freq, ref_impedance=Z_REF)
-        except AttributeError as exc:
-            listing = sorted(item.name for item in folder.iterdir())
-            raise RuntimeError(
-                f"openEMS wrote no port data in {folder}; files there: {listing[:40]}") from exc
+        # The reference is passed as an array, one value per frequency. A plain float makes the
+        # Debian bindings read a field that only the other port types set (ut_tot).
+        z_ref = np.full(len(freq), Z_REF)
+        for p in port:
+            # Refer S-parameters to 50 ohm, not to the line's own impedance.
+            p.CalcPort(str(folder), freq, ref_impedance=z_ref)
         s11 = port[0].uf_ref / port[0].uf_inc
         s21 = port[1].uf_ref / port[0].uf_inc
     finally:
