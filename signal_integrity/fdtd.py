@@ -244,9 +244,11 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     port_start2 = [x_port2[0], -w / 2, h]
     port_stop2 = [x_port2[1], w / 2, 0]
     port = [None, None]
+    # Each port carries a 50 ohm feed resistance, so the source absorbs what returns to it.
     port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=-1,
-                              FeedShift=0.5, priority=10)
-    port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0, priority=10)
+                              FeedShift=0.5, Feed_R=Z_REF, priority=10)
+    port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0,
+                              Feed_R=Z_REF, priority=10)
 
     owned = sim_dir is None
     folder = Path(tempfile.mkdtemp(prefix="desk-openems-")) if owned else Path(sim_dir)
