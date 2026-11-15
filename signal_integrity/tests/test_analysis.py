@@ -59,9 +59,9 @@ def test_closed_form_table_matches_the_board():
 
 def test_default_model_geometry_is_symmetric():
     model = fdtd.default_model(0.25, 1.6, 4.5, 0.02, 0.3, 0.6, 0.3)
-    x1, x2 = model.via.x_mm
-    assert model.length_mm == pytest.approx(x2 + 8.0)
-    assert x1 - 0.0 == pytest.approx(model.length_mm - x2)     # same run on both ends
+    assert model.length_mm == pytest.approx(24.0)
+    # The via sits in the middle, so both device planes are the same distance from it.
+    assert model.via.x_mm == pytest.approx(model.length_mm / 2)
     assert model.via.antipad_mm == pytest.approx(1.2)
     assert len(model.freq_hz) == model.n_freq
     assert model.freq_hz[0] == pytest.approx(50e6)

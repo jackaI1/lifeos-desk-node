@@ -51,7 +51,7 @@ class OpenEMSUnavailable(RuntimeError):
 
 @dataclass(frozen=True)
 class ViaModel:
-    x_mm: Tuple[float, float]   # positions of via 1 and via 2 along the trace
+    x_mm: float                 # position of the via along the trace
     drill_mm: float
     pad_mm: float
     antipad_mm: float
@@ -84,16 +84,18 @@ class TraceModel:
 
 def default_model(width_mm: float, h_mm: float, er: float, tand: float,
                   drill_mm: float, pad_mm: float, clearance_mm: float) -> TraceModel:
-    """Build the model from the board's stackup and via values."""
-    spacing = 8.0
-    via_x = (8.0, 8.0 + spacing)
+    """Build the model from the board's stackup and via values.
+
+    The via sits in the middle of a 24 mm line, so each device plane is 12 mm from it.
+    """
+    length = 24.0
     antipad = pad_mm + 2.0 * clearance_mm
     return TraceModel(
         width_mm=width_mm, h_mm=h_mm, er=er, tand=tand,
-        length_mm=via_x[1] + 8.0,
+        length_mm=length,
         ground_width_mm=30.0,   # the absorbing faces sit 15 mm from the trace, as in the probe
         ground_clearance_mm=clearance_mm,
-        via=ViaModel(via_x, drill_mm, pad_mm, antipad),
+        via=ViaModel(length / 2.0, drill_mm, pad_mm, antipad),
     )
 
 
@@ -103,7 +105,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def model_from_dict(data: dict) -> "TraceModel":
     """Rebuild a TraceModel from its JSON form (tuples come back as lists)."""
     via = dict(data["via"])
-    via["x_mm"] = tuple(via["x_mm"])
+    via["x_mm"] = float(via["x_mm"])
     fields = dict(data)
     fields["via"] = ViaModel(**via)
     return TraceModel(**fields)
@@ -164,7 +166,6 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     freq = model.freq_hz
     w = model.width_mm
     h = model.h_mm
-    via1, via2 = model.via.x_mm
     ra = model.via.antipad_mm / 2.0
     rv = 0.3   # half-width of the modelled via conductor (0.6 mm, the pad size)
     # Each port's outer section is 10 mm, so its measurement plane (the middle of the port box)
@@ -199,48 +200,35 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     substrate.AddBox(priority=0, start=[x_lo, -wg, 0], stop=[x_hi, wg, h])
 
     copper = csx.AddMetal("copper")
-    # Ground pour on the bottom layer, with antipads around both vias and a slot
-    # for the bottom trace. Built from rectangles, since CSXCAD has no subtraction.
-    # The bottom trace is wider than the antipad, so the pour is cut to the slot width (ws) at
-    # each via: between the slot edges there is no copper, and the trace does not touch the pour.
+    # Ground pour on the bottom layer, with a square antipad around the via. The via lands on a
+    # bottom pad under the antipad; nothing else on the bottom layer touches the pour.
+    xv = model.via.x_mm
+    rv = 0.3   # half-width of the modelled via conductor (0.6 mm, the pad size)
     ground_slices = [
-        ([x_lo, -wg, 0], [via1 - ra, wg, 0]),
-        ([via2 + ra, -wg, 0], [x_hi, wg, 0]),
-        ([via1 - ra, ws, 0], [via1 + ra, wg, 0]),
-        ([via1 - ra, -wg, 0], [via1 + ra, -ws, 0]),
-        ([via2 - ra, ws, 0], [via2 + ra, wg, 0]),
-        ([via2 - ra, -wg, 0], [via2 + ra, -ws, 0]),
-        ([via1 + ra, ws, 0], [via2 - ra, wg, 0]),
-        ([via1 + ra, -wg, 0], [via2 - ra, -ws, 0]),
+        ([x_lo, -wg, 0], [xv - ra, wg, 0]),
+        ([xv + ra, -wg, 0], [x_hi, wg, 0]),
+        ([xv - ra, ra, 0], [xv + ra, wg, 0]),
+        ([xv - ra, -wg, 0], [xv + ra, -ra, 0]),
     ]
     for start, stop in ground_slices:
         copper.AddBox(start=start, stop=stop, priority=10)
-    # Top trace: device plane 1 to via 1, and via 2 to device plane 2.
-    copper.AddBox(start=[0.0, -w / 2, h], stop=[via1, w / 2, h], priority=10)
-    copper.AddBox(start=[via2, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
-    # Bottom trace inside the slot, joining the two via barrels.
-    copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
-    # Vias: a square conductor through the substrate, 0.6 mm wide (the pad diameter). A round
-    # barrel of drill size is below the mesh, and a 0.3 mm square puts lines 0.15 mm apart, which
-    # forces a tiny time step and a run that ends before the energy has left. The drill and
-    # antipad still set the via impedance in the closed-form check.
-    for x in (via1, via2):
-        copper.AddBox(start=[x - rv, -rv, 0], stop=[x + rv, rv, h], priority=20)
-
+    # The signal stays on the top layer, from device plane 1 to device plane 2.
+    copper.AddBox(start=[0.0, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
+    # The via: a square conductor from the bottom pad to the top trace, 0.6 mm wide (the pad
+    # size). A round barrel of drill size is below the mesh, and a 0.3 mm square puts lines
+    # 0.15 mm apart, which forces a tiny time step. The drill and antipad still set the via
+    # impedance in the closed-form check.
+    copper.AddBox(start=[xv - rv, -rv, 0], stop=[xv + rv, rv, h], priority=20)
 
     # Mesh: lines at every feature edge, smoothed to the target resolution.
-    # Fine lines where the fields change fastest: the 0.25 mm strip, the via barrels and the
-    # antipads, and four layers of substrate. The smoothing grows the cells away from them.
-    x_via = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
-             for d in (rv, ra)]
+    x_via = [xv + sign * d for sign in (-1.0, 1.0) for d in (rv, ra)]
     y_via = [-rv, rv, -ra, ra]
     x_fine, y_fine = [], []
     if model.fine_mesh:
-        x_fine = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
-                  for d in (0.3, 0.6)]
+        x_fine = [xv + sign * d for sign in (-1.0, 1.0) for d in (0.3, 0.6)]
         y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.15, 0.3)]
-    x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2] + x_via + x_fine
-    y_lines = [-wg, wg, -w / 2, w / 2, -ws, ws] + y_via + y_fine
+    x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], xv] + x_via + x_fine
+    y_lines = [-wg, wg, -w / 2, w / 2] + y_via + y_fine
     z_lines = [-model.air_mm, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + model.air_mm]
     mesh.AddLine("x", x_lines)
     mesh.AddLine("y", y_lines)
@@ -254,9 +242,7 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     port_start2 = [x_port2[0], -w / 2, h]
     port_stop2 = [x_port2[1], w / 2, 0]
     port = [None, None]
-    # Each port carries a 50 ohm feed resistance. Without it the excitation is a bare voltage
-    # source that reflects whatever returns from the via, so the energy bounces between the
-    # source and the via and the run cannot end.
+    # Each port carries a 50 ohm feed resistance, so returning waves are absorbed at the ports.
     port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=-1,
                               FeedShift=0.5, Feed_R=Z_REF, priority=10)
     port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0,
