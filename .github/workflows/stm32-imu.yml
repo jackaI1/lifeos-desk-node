@@ -1,0 +1,47 @@
+name: STM32 IMU filter
+on:
+  push:
+    branches: [main]
+    paths: ['stm32/imu/**', '.github/workflows/stm32-imu.yml']
+  pull_request:
+    paths: ['stm32/imu/**', '.github/workflows/stm32-imu.yml']
+permissions:
+  contents: read
+jobs:
+  host-sanitizers:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Filter tests under AddressSanitizer and UndefinedBehaviorSanitizer, and the Python reference
+        run: make -C stm32/imu test
+      - name: Generated tables and traces are committed and current
+        run: |
+          python3 stm32/imu/tools/gen_tables.py --check
+          cp -r stm32/imu/traces "$RUNNER_TEMP/traces-before"
+          python3 stm32/imu/tools/make_traces.py
+          diff -r "$RUNNER_TEMP/traces-before" stm32/imu/traces
+
+  arm-hal-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the pinned ARM bare-metal compiler
+        run: sudo apt-get update -qq && sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi
+      - name: Fetch STM32 HAL, device and core headers (headers only, sparse)
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/stm32-headers"
+          mkdir -p "$root"
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/STMicroelectronics/STM32F4xx_HAL_Driver.git "$root/hal"
+          git -C "$root/hal" sparse-checkout set Inc
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/STMicroelectronics/cmsis_device_f4.git "$root/device"
+          git -C "$root/device" sparse-checkout set Include
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/STMicroelectronics/STM32CubeF4.git "$root/cube"
+          git -C "$root/cube" sparse-checkout set Drivers/CMSIS/Include
+          echo "HAL_INC=$root/hal/Inc" >> "$GITHUB_ENV"
+          echo "CMSIS_DEVICE=$root/device/Include" >> "$GITHUB_ENV"
+          echo "CMSIS_CORE=$root/cube/Drivers/CMSIS/Include" >> "$GITHUB_ENV"
+      - name: Compile the HAL port and the filter core for Cortex-M4 with warnings as errors
+        run: make -C stm32/imu arm-check ARM_CC=arm-none-eabi-gcc HAL_INC="$HAL_INC" CMSIS_DEVICE="$CMSIS_DEVICE" CMSIS_CORE="$CMSIS_CORE"
