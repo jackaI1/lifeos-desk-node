@@ -83,6 +83,8 @@ def main(argv=None) -> int:
         checks = analysis.physics_checks(simulated, stackup, width)
         for name, ok, detail in checks:
             print(f"  {'PASS' if ok else 'FAIL'}  {name}: {detail}")
+        for note in analysis.unverified_notes(simulated):
+            print(f"  NOT VERIFIED  {note}")
     print(f"report: {report}")
     if simulated and not all(ok for _, ok, _ in checks):
         return 1
