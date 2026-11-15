@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import math
 import shutil
+import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -190,17 +191,18 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     try:
         # Write the geometry explicitly, then solve. The solver's log goes to the console.
         csx.Write2XML(str(folder / "csx.xml"))
-        fdtd.Run(str(folder), cleanup=True, verbose=2)
+        fdtd.Run(str(folder), cleanup=False, verbose=2)
         try:
             for p in port:
                 # Refer S-parameters to 50 ohm. Without this, openEMS uses the line's own impedance.
                 p.CalcPort(str(folder), freq, ref_impedance=Z_REF)
         except AttributeError as exc:
+            listing = sorted(item.name for item in folder.iterdir())
             raise RuntimeError(
-                "openEMS wrote no port data; the solver log above shows why") from exc
+                f"openEMS wrote no port data in {folder}; files there: {listing[:40]}") from exc
         s11 = port[0].uf_ref / port[0].uf_inc
         s21 = port[1].uf_ref / port[0].uf_inc
     finally:
-        if owned and not keep:
+        if owned and not keep and sys.exc_info()[0] is None:
             shutil.rmtree(folder, ignore_errors=True)
     return freq, np.asarray(s11, dtype=complex), np.asarray(s21, dtype=complex)
