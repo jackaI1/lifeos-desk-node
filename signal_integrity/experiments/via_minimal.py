@@ -1,8 +1,8 @@
-"""Temporary diagnostic: through trace and via pair, 10 mm port sections, S11 and S21."""
+"""Temporary diagnostic: one-factor changes from the probe that worked."""
 import subprocess
 import sys
 
-VARIANTS = ["through", "via_pair"]
+VARIANTS = ["probe", "probe_L24", "probe_zfine", "probe_xylines"]
 
 
 def build(variant: str) -> None:
@@ -10,45 +10,39 @@ def build(variant: str) -> None:
     import numpy as np
     from CSXCAD import ContinuousStructure
     from openEMS import openEMS
-    h, er, w, L = 1.6, 4.5, 2.97, 24.0
+    h, er, w = 1.6, 4.5, 3.0
+    L = 24.0 if variant == "probe_L24" else 16.0
     xl, xh = -10.0, L + 10.0
-    fdtd = openEMS(NrTS=15000, EndCriteria=1e-3)
+    fdtd = openEMS(NrTS=12000, EndCriteria=1e-3)
     fdtd.SetGaussExcite(3e9, 3e9)
-    fdtd.SetBoundaryCond(["PML_8"] * 6)
+    fdtd.SetBoundaryCond(["PML_8", "PML_8", "PML_8", "PML_8", "PML_8", "PML_8"])
     csx = ContinuousStructure()
     fdtd.SetCSX(csx)
     mesh = csx.GetGrid()
     mesh.SetDeltaUnit(1e-3)
     wg = 15.0
-    mesh.AddLine("x", [xl, 0.0, 8.0, 16.0, L, xh, 7.85, 8.15, 15.85, 16.15, 7.4, 8.6, 15.4, 16.6])
-    mesh.AddLine("y", [-wg, wg, -w / 2, w / 2, -1.785, 1.785, -0.15, 0.15, -0.6, 0.6, 0.0])
-    mesh.AddLine("z", [-8.0, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + 8.0])
+    xs = [xl, 0.0, L, xh]
+    ys = [-w / 2, 0.0, w / 2, -wg, wg]
+    zs = [-6.0, 0.0, h, h + 8.0]
+    if variant == "probe_zfine":
+        zs = [-6.0, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + 8.0]
+    if variant == "probe_xylines":
+        xs = xs + [7.85, 8.15, 15.85, 16.15, 7.4, 8.6, 15.4, 16.6]
+        ys = ys + [-1.785, 1.785, -0.15, 0.15, -0.6, 0.6]
+    mesh.AddLine("x", xs)
+    mesh.AddLine("y", ys)
+    mesh.AddLine("z", zs)
     mesh.SmoothMeshLines("all", 0.5, ratio=1.4)
     sub = csx.AddMaterial("FR4")
     sub.SetMaterialProperty(epsilon=er)
     sub.AddBox([xl, -wg, 0.0], [xh, wg, h], priority=0)
-    cu = csx.AddMetal("copper")
-    if variant == "through":
-        cu.AddBox([xl, -wg, 0.0], [xh, wg, 0.0], priority=10)
-        cu.AddBox([0.0, -w / 2, h], [L, w / 2, h], priority=10)
-    else:
-        cu.AddBox([xl, -wg, 0.0], [8 - 0.6, wg, 0.0], priority=10)
-        cu.AddBox([16 + 0.6, -wg, 0.0], [xh, wg, 0.0], priority=10)
-        cu.AddBox([8 - 0.6, 1.785, 0.0], [8 + 0.6, wg, 0.0], priority=10)
-        cu.AddBox([8 - 0.6, -wg, 0.0], [8 + 0.6, -1.785, 0.0], priority=10)
-        cu.AddBox([16 - 0.6, 1.785, 0.0], [16 + 0.6, wg, 0.0], priority=10)
-        cu.AddBox([16 - 0.6, -wg, 0.0], [16 + 0.6, -1.785, 0.0], priority=10)
-        cu.AddBox([8 + 0.6, 1.785, 0.0], [16 - 0.6, wg, 0.0], priority=10)
-        cu.AddBox([8 + 0.6, -wg, 0.0], [16 - 0.6, -1.785, 0.0], priority=10)
-        cu.AddBox([0.0, -w / 2, h], [8.0, w / 2, h], priority=10)
-        cu.AddBox([16.0, -w / 2, h], [L, w / 2, h], priority=10)
-        cu.AddBox([8.0, -w / 2, 0.0], [16.0, w / 2, 0.0], priority=10)
-        cu.AddBox([8 - 0.15, -0.15, 0.0], [8 + 0.15, 0.15, h], priority=20)
-        cu.AddBox([16 - 0.15, -0.15, 0.0], [16 + 0.15, 0.15, h], priority=20)
+    pec = csx.AddMetal("pec")
+    pec.AddBox([xl, -wg, 0.0], [xh, wg, 0.0], priority=10)
+    pec.AddBox([0.0, -w / 2, h], [L, w / 2, h], priority=10)
     port = [None, None]
-    port[0] = fdtd.AddMSLPort(1, cu, [xl, -w / 2, h], [0.0, w / 2, 0.0], "x", "z", excite=-1, FeedShift=0.5, priority=10)
-    port[1] = fdtd.AddMSLPort(2, cu, [xh, -w / 2, h], [L, w / 2, 0.0], "x", "z", excite=0, priority=10)
-    folder = tempfile.mkdtemp(prefix="via-min-")
+    port[0] = fdtd.AddMSLPort(1, pec, [xl, -w / 2, h], [0.0, w / 2, 0.0], "x", "z", excite=-1, FeedShift=0.5, priority=10)
+    port[1] = fdtd.AddMSLPort(2, pec, [xh, -w / 2, h], [L, w / 2, 0.0], "x", "z", excite=0, priority=10)
+    folder = tempfile.mkdtemp(prefix="probe-")
     fdtd.Run(folder, cleanup=False, verbose=1)
     f = np.arange(1, 13) * 0.5e9
     for p in port:
