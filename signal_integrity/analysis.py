@@ -142,11 +142,12 @@ def simulate(board: Board, stackup: Stackup, width_mm: float, out: Path) -> Dict
     line's, at each frequency of the reference (the same frequency grid for both).
     """
     model = model_for(board, stackup, width_mm)
-    freq, s11, s21 = fdtd.run_isolated(model)
+    freq, s11, s21 = fdtd.run_isolated(model, log_path=out / "openems-via.log")
     net = network_from_s(freq, s11, s21, path=out / "desk_node_via.s2p")
     result = metrics(net)
     result["touchstone"] = str(out / "desk_node_via.s2p")
-    freq_t, s11_t, s21_t = fdtd.run_isolated(model, through=True)
+    freq_t, s11_t, s21_t = fdtd.run_isolated(model, through=True,
+                                              log_path=out / "openems-through.log")
     through_net = network_from_s(freq_t, s11_t, s21_t, path=out / "through_line.s2p")
     through = metrics(through_net)
     result["through"] = through
@@ -156,3 +157,24 @@ def simulate(board: Board, stackup: Stackup, width_mm: float, out: Path) -> Dict
         for ghz in result["at_ghz"]
     }
     return result
+
+
+def physics_checks(result: Dict[str, object], stackup: Stackup, width_mm: float) -> List[Tuple[str, bool, str]]:
+    """Plain checks on a simulated result. Each is (name, passed, what was measured).
+
+    The limits are physical, not tuned: a passive two-port cannot gain power; the 16 mm
+    reference line on this stackup is low loss at 1 GHz; the two vias add a modest excess
+    loss at 3 GHz; and the TDR must show the vias as a dip below the trace impedance.
+    """
+    trace_z = impedance.microstrip_z0(width_mm, stackup.h_mm, stackup.er, stackup.t_mm)
+    through_1 = result["through"]["at_ghz"][1.0]["il_db"]
+    excess_3 = result["excess_db_at_ghz"][3.0]
+    tdr_min = result["tdr_min_ohm"]
+    return [
+        ("passive", min(result["il_db"]) > -0.1, f"least gain {min(result['il_db']):.2f} dB"),
+        ("reference line low loss at 1 GHz", through_1 < 1.0, f"{through_1:.2f} dB (limit 1 dB)"),
+        ("via excess loss at 3 GHz modest", -0.2 < excess_3 < 3.0,
+         f"{excess_3:+.2f} dB (limit -0.2 to 3 dB)"),
+        ("TDR dip below trace impedance", 10.0 < tdr_min < trace_z,
+         f"{tdr_min:.1f} ohm (trace {trace_z:.1f} ohm)"),
+    ]

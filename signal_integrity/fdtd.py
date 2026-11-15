@@ -67,12 +67,12 @@ class TraceModel:
     ground_width_mm: float
     ground_clearance_mm: float  # gap between the bottom trace and the ground pour
     via: ViaModel
-    mesh_mm: float = 0.25
+    mesh_mm: float = 0.3
     f_stop_hz: float = 6e9
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
     air_mm: float = 6.0
-    end_criteria: float = 1e-4
-    time_steps: int = 40000
+    end_criteria: float = 1e-3
+    time_steps: int = 20000
 
     @property
     def freq_hz(self) -> np.ndarray:
@@ -107,9 +107,13 @@ def model_from_dict(data: dict) -> "TraceModel":
     return TraceModel(**fields)
 
 
-def run_isolated(model: TraceModel, *, through: bool = False,
+def run_isolated(model: TraceModel, *, through: bool = False, log_path: Optional[Path] = None,
                  timeout_s: Optional[float] = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Run build_and_run in a fresh Python process and return (freq, S11, S21)."""
+    """Run build_and_run in a fresh Python process and return (freq, S11, S21).
+
+    The solver's console output goes to log_path when given, so a failed or slow run can be
+    read afterwards.
+    """
     if importlib.util.find_spec("CSXCAD") is None or importlib.util.find_spec("openEMS") is None:
         raise OpenEMSUnavailable(
             "openEMS and CSXCAD are needed for the 3D run. On Ubuntu 22.04: "
@@ -120,12 +124,18 @@ def run_isolated(model: TraceModel, *, through: bool = False,
         result = workdir / "result.npz"
         spec.write_text(json.dumps({"model": dataclasses.asdict(model), "through": through}),
                         encoding="utf-8")
-        proc = subprocess.run(
-            [sys.executable, "-m", "signal_integrity.fdtd_worker", str(spec), str(result)],
-            cwd=str(ROOT), capture_output=True, text=True, timeout=timeout_s, check=False)
+        log = workdir / "openems.log"
+        with log.open("w", encoding="utf-8") as handle:
+            proc = subprocess.run(
+                [sys.executable, "-m", "signal_integrity.fdtd_worker", str(spec), str(result)],
+                cwd=str(ROOT), stdout=handle, stderr=subprocess.STDOUT, timeout=timeout_s,
+                check=False)
+        text = log.read_text(encoding="utf-8", errors="replace")
+        if log_path is not None:
+            Path(log_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(log_path).write_text(text, encoding="utf-8")
         if proc.returncode != 0 or not result.exists():
-            tail = (proc.stderr or proc.stdout)[-1500:]
-            raise RuntimeError(f"openEMS run failed (exit {proc.returncode}): {tail}")
+            raise RuntimeError(f"openEMS run failed (exit {proc.returncode}); last output:\n{text[-1500:]}")
         data = np.load(result)
         return data["freq"], data["s11"], data["s21"]
     finally:

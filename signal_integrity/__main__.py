@@ -4,8 +4,9 @@ Without --simulate, the run reads the board and writes the closed-form impedance
 table (no openEMS needed). With --simulate it also runs the 3D FDTD model, reads
 the result with scikit-rf, and adds the S-parameters, TDR and plots to the report.
 
-Exit status: 0 the run finished, 2 the run could not finish (bad board file,
-openEMS missing when --simulate is set, or an impedance that cannot be met).
+Exit status: 0 the run finished and every physics check passed, 1 a physics check
+failed, 2 the run could not finish (bad board file, openEMS missing when --simulate
+is set, or an impedance that cannot be met).
 """
 
 import argparse
@@ -21,6 +22,15 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 DEFAULT_PCB = ROOT / "hardware" / "desk-node.kicad_pcb"
 DEFAULT_OUT = HERE / "build"
+
+
+def _nearest(simulated, ghz):
+    """(via S21 dB, through S21 dB, via S11 dB) at the grid point nearest ghz."""
+    import numpy as np
+
+    f = np.asarray(simulated["freq_ghz"])
+    i = int(np.argmin(np.abs(f - ghz)))
+    return (-simulated["il_db"][i], -simulated["through"]["il_db"][i], -simulated["rl_db"][i])
 
 
 def main(argv=None) -> int:
@@ -56,10 +66,19 @@ def main(argv=None) -> int:
     print(f"representative trace: {net} at {width:g} mm -> {z_trace:.1f} ohm")
     print(f"via: {closed['via']['z0_ohm']:.1f} ohm; 50 ohm needs {closed['width_for_50_mm']:.2f} mm of trace")
     if simulated:
+        print("   GHz   via S21 dB   through S21 dB   via S11 dB")
+        for ghz in (0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0):
+            via = _nearest(simulated, ghz)
+            print(f"  {ghz:5.1f}  {via[0]:11.2f}  {via[1]:14.2f}  {via[2]:12.2f}")
         print(f"TDR: {simulated['tdr_min_ohm']:.1f} to {simulated['tdr_max_ohm']:.1f} ohm "
               f"(0.2 to 2 ns); insertion loss at 3 GHz "
               f"{simulated['at_ghz'][3.0]['il_db']:.2f} dB")
+        checks = analysis.physics_checks(simulated, stackup, width)
+        for name, ok, detail in checks:
+            print(f"  {'PASS' if ok else 'FAIL'}  {name}: {detail}")
     print(f"report: {report}")
+    if simulated and not all(ok for _, ok, _ in checks):
+        return 1
     return 0
 
 
