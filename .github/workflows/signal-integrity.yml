@@ -59,3 +59,8 @@ jobs:
             python3-matplotlib python3-pandas python3-h5py python3-pytest
       - run: python3 -m pip install --user scikit-rf==2.2.0
       - run: python3 -m signal_integrity.experiments.unused_probe
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unused-probe-logs
+          path: signal_integrity/build/unused
