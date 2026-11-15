@@ -116,7 +116,9 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     x_hi = model.length_mm + 4.0
     wg = model.ground_width_mm / 2.0
     ws = (w + 2.0 * model.ground_clearance_mm) / 2.0
-    port_len = 0.25
+    # Each port box spans 1.5 mm: openEMS needs at least five mesh lines along it.
+    # The boxes mirror each other about the board centre, so the model stays symmetric.
+    port_len = 1.5
     x_port1 = (-port_len, 0.0)
     x_port2 = (model.length_mm, model.length_mm + port_len)
 
