@@ -96,6 +96,6 @@ def test_report_with_simulated_results_writes_tables_and_plots(tmp_path):
                           closed=closed, simulated=simulated, pcb=str(BOARD))
     text = report.read_text(encoding="utf-8")
     assert "3D FDTD model (openEMS) and scikit-rf" in text
-    assert "| 3 GHz | 0.92 dB | 26.02 dB |" in text
+    assert "| 3 GHz | 0.92 dB | 0.92 dB | +0.00 dB | 26.02 dB |" in text
     assert (tmp_path / "losses.png").stat().st_size > 1000
     assert (tmp_path / "tdr.png").stat().st_size > 1000
