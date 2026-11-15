@@ -43,8 +43,8 @@ def build(variant: str) -> None:
         pec.AddBox([xv - rv, -rv, 0.0], [xv + rv, rv, h], priority=20)
     port = [None, None]
     port[0] = fdtd.AddMSLPort(1, pec, [xl, -w / 2, h], [0.0, w / 2, 0.0], "x", "z", excite=-1, FeedShift=0.5,
-                              Feed_R=50, priority=10)
-    port[1] = fdtd.AddMSLPort(2, pec, [xh, -w / 2, h], [L, w / 2, 0.0], "x", "z", excite=0, Feed_R=50,
+                              priority=10)
+    port[1] = fdtd.AddMSLPort(2, pec, [xh, -w / 2, h], [L, w / 2, 0.0], "x", "z", excite=0,
                               priority=10)
     folder = tempfile.mkdtemp(prefix="steps-")
     fdtd.Run(folder, cleanup=False, verbose=1)
