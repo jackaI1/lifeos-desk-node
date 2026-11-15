@@ -14,7 +14,8 @@ SAN ?= -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-po
 DSP = third_party/CMSIS-DSP
 DSP_SRC = $(DSP)/Source/FilteringFunctions/arm_biquad_cascade_df1_q31.c \
           $(DSP)/Source/FilteringFunctions/arm_biquad_cascade_df1_init_q31.c
-CFLAGS = -std=c11 -Wall -Wextra -Werror -pedantic -g -O1 $(SAN) -Iinclude -Isrc -I$(DSP)/Include -I$(DSP)/PrivateInclude
+CORE = third_party/CMSIS-Core
+CFLAGS = -std=c11 -Wall -Wextra -Werror -pedantic -g -O1 $(SAN) -Iinclude -Isrc -I$(DSP)/Include -I$(DSP)/PrivateInclude -I$(CORE)/Include -Wno-asm-operand-widths # CMSIS-Core inline asm is ARM-only; clang on x86 warns about it
 
 .PHONY: test tables traces arm-check deps clean
 
