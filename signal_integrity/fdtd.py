@@ -36,6 +36,7 @@ from typing import Optional, Tuple
 import numpy as np
 
 C0 = 299792458.0
+Z_REF = 50.0   # S-parameters are referred to this impedance
 
 
 class OpenEMSUnavailable(RuntimeError):
@@ -164,13 +165,6 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     for x in (via1, via2):
         copper.AddCylinder(start=[x, 0, 0], stop=[x, 0, h], radius=rd, priority=20)
 
-    port_start1 = [x_port1[0], -w / 2, 0]
-    port_stop1 = [x_port1[1], w / 2, h]
-    port_start2 = [x_port2[0], -w / 2, 0]
-    port_stop2 = [x_port2[1], w / 2, h]
-    port = [None, None]
-    port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=1, Feed_R=50)
-    port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0, Feed_R=50)
 
     # Mesh: lines at every feature edge, smoothed to the target resolution.
     x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2,
@@ -181,6 +175,14 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     mesh.AddLine("y", y_lines)
     mesh.AddLine("z", z_lines)
     mesh.SmoothMeshLines("all", model.mesh_mm, ratio=1.4)
+    # Ports are created after the mesh: openEMS checks the mesh lines inside each port box.
+    port_start1 = [x_port1[0], -w / 2, 0]
+    port_stop1 = [x_port1[1], w / 2, h]
+    port_start2 = [x_port2[0], -w / 2, 0]
+    port_stop2 = [x_port2[1], w / 2, h]
+    port = [None, None]
+    port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=1, Feed_R=50)
+    port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0, Feed_R=50)
 
     owned = sim_dir is None
     folder = Path(tempfile.mkdtemp(prefix="desk-openems-")) if owned else Path(sim_dir)
@@ -188,7 +190,8 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     try:
         fdtd.Run(str(folder), cleanup=True, verbose=0)
         for p in port:
-            p.CalcPort(str(folder), freq)
+            # Refer S-parameters to 50 ohm. Without this, openEMS uses the line's own impedance.
+            p.CalcPort(str(folder), freq, ref_impedance=Z_REF)
         s11 = port[0].uf_ref / port[0].uf_inc
         s21 = port[1].uf_ref / port[0].uf_inc
     finally:
