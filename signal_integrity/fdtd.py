@@ -70,7 +70,7 @@ class TraceModel:
     mesh_mm: float = 0.5
     f_stop_hz: float = 6e9
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
-    air_mm: float = 4.0
+    air_mm: float = 6.0
     end_criteria: float = 1e-3
     time_steps: int = 40000
 
@@ -177,7 +177,9 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
 
     fdtd = openEMS(NrTS=model.time_steps, EndCriteria=model.end_criteria)
     f_center = 0.5 * model.f_stop_hz
-    fdtd.SetGaussExcite(f_center, f_center)
+    # A Gaussian pulse centred at 3 GHz with a 1.5 GHz width. A wider pulse puts strong energy
+    # at low frequency, where it stays trapped near the absorbing faces and the run cannot end.
+    fdtd.SetGaussExcite(3.0e9, 1.5e9)
     # Absorbing boundaries on all six faces. The ground is drawn explicitly below, so the
     # bottom face must not be a PEC wall: that would short the bottom trace and the antipads.
     fdtd.SetBoundaryCond(["PML_8"] * 6)
