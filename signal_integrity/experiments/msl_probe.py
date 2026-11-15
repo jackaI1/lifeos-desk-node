@@ -38,7 +38,18 @@ def run(variant: str, res: float = 0.5, n_ts: int = 12000):
                               excite=-1, FeedShift=0.5, priority=10)
     port[1] = fdtd.AddMSLPort(2, pec, [L + 10.0, -W / 2, H], [L, W / 2, 0.0], "x", "z",
                               excite=0, priority=10)
-    fdtd.Run("/tmp/msl-probe-" + variant, cleanup=True, verbose=1)
+    import glob, os, shutil
+    folder = "/tmp/msl-probe-" + variant
+    fdtd.Run(folder, cleanup=False, verbose=1)
+    for path in sorted(glob.glob(os.path.join(folder, "port_*"))):
+        data = np.loadtxt(path, comments="%")
+        k = int(np.argmax(np.abs(data[:, 1])))
+        print(f"PROBEFILE {variant} {os.path.basename(path)} rows={len(data)} "
+              f"peak={data[k,1]:.4e} at t={data[k,0]:.4e} s", flush=True)
+    keep = os.path.join("signal_integrity", "build", "probe", variant)
+    os.makedirs(keep, exist_ok=True)
+    for path in glob.glob(os.path.join(folder, "port_*")):
+        shutil.copy(path, keep)
     f = np.arange(1, 13) * 0.5e9
     ref = np.full(len(f), 50.0)
     for p in port:
@@ -51,5 +62,5 @@ def run(variant: str, res: float = 0.5, n_ts: int = 12000):
 
 
 if __name__ == "__main__":
-    for variant in sys.argv[1:]:
+    for variant in sys.argv[1:]:  # e.g. pec_bottom
         run(variant)
