@@ -74,7 +74,7 @@ class TraceModel:
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
     air_mm: float = 8.0
     end_criteria: float = 1e-3
-    time_steps: int = 15000
+    time_steps: int = 25000
 
     @property
     def freq_hz(self) -> np.ndarray:
@@ -166,7 +166,7 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     h = model.h_mm
     via1, via2 = model.via.x_mm
     ra = model.via.antipad_mm / 2.0
-    rd = model.via.drill_mm / 2.0
+    rv = 0.3   # half-width of the modelled via conductor (0.6 mm, the pad size)
     # Each port's outer section is 10 mm, so its measurement plane (the middle of the port box)
     # sits 5 mm from the absorbing boundary. At 2 mm the near field corrupted the port modes.
     x_lo = -10.0
@@ -220,27 +220,27 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     copper.AddBox(start=[via2, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
     # Bottom trace inside the slot, joining the two via barrels.
     copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
-    # Vias: a square barrel through the substrate, as wide as the drill. A round barrel of this
-    # size falls between mesh lines and is not represented, which leaves the signal open-ended.
-    # Mesh lines sit on its edges (see x_lines and y_lines), so it covers a 2 x 2 cell block.
-    # Pads are left out; the antipad sets the clearance that the impedance depends on.
+    # Vias: a square conductor through the substrate, 0.6 mm wide (the pad diameter). A round
+    # barrel of drill size is below the mesh, and a 0.3 mm square puts lines 0.15 mm apart, which
+    # forces a tiny time step and a run that ends before the energy has left. The drill and
+    # antipad still set the via impedance in the closed-form check.
     for x in (via1, via2):
-        copper.AddBox(start=[x - rd, -rd, 0], stop=[x + rd, rd, h], priority=20)
+        copper.AddBox(start=[x - rv, -rv, 0], stop=[x + rv, rv, h], priority=20)
 
 
     # Mesh: lines at every feature edge, smoothed to the target resolution.
     # Fine lines where the fields change fastest: the 0.25 mm strip, the via barrels and the
     # antipads, and four layers of substrate. The smoothing grows the cells away from them.
     x_via = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
-             for d in (rd, ra)]
-    y_via = [-rd, rd, -ra, ra]
+             for d in (rv, ra)]
+    y_via = [-rv, rv, -ra, ra]
     x_fine, y_fine = [], []
     if model.fine_mesh:
         x_fine = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
                   for d in (0.3, 0.6)]
         y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.15, 0.3)]
     x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2] + x_via + x_fine
-    y_lines = [-wg, wg, 0.0, -ws, ws] + y_via + y_fine
+    y_lines = [-wg, wg, -w / 2, w / 2, -ws, ws] + y_via + y_fine
     z_lines = [-model.air_mm, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + model.air_mm]
     mesh.AddLine("x", x_lines)
     mesh.AddLine("y", y_lines)
