@@ -68,11 +68,11 @@ class TraceModel:
     ground_clearance_mm: float  # gap between the bottom trace and the ground pour
     via: ViaModel
     mesh_mm: float = 0.5
-    fine_mesh: bool = True      # extra 0.1-0.3 mm lines at the strip edges, vias and substrate
-    gauss_fc_hz: float = 1.5e9  # width of the excitation pulse (centre is 3 GHz)
+    fine_mesh: bool = False     # extra 0.3-0.6 mm lines beside the vias (off: the via lines suffice)
+    gauss_fc_hz: float = 3.0e9  # width of the excitation pulse (centre is 3 GHz)
     f_stop_hz: float = 6e9
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
-    air_mm: float = 6.0
+    air_mm: float = 8.0
     end_criteria: float = 1e-3
     time_steps: int = 40000
 
@@ -110,7 +110,7 @@ def model_from_dict(data: dict) -> "TraceModel":
 
 
 def run_isolated(model: TraceModel, *, log_path: Optional[Path] = None,
-                 timeout_s: Optional[float] = None, omit: tuple = ()) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+                 timeout_s: Optional[float] = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Run build_and_run in a fresh Python process and return (freq, S11, S21).
 
     The solver's console output goes to log_path when given, so a failed or slow run can be
@@ -124,8 +124,7 @@ def run_isolated(model: TraceModel, *, log_path: Optional[Path] = None,
     try:
         spec = workdir / "spec.json"
         result = workdir / "result.npz"
-        spec.write_text(json.dumps({"model": dataclasses.asdict(model), "omit": list(omit)}),
-                        encoding="utf-8")
+        spec.write_text(json.dumps({"model": dataclasses.asdict(model)}), encoding="utf-8")
         log = workdir / "openems.log"
         with log.open("w", encoding="utf-8") as handle:
             proc = subprocess.run(
@@ -155,11 +154,8 @@ def _require_openems():
 
 
 def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
-                  keep: bool = False, omit: tuple = ()) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays.
-
-    omit is a diagnostic switch: names of copper groups to leave out of the geometry.
-    """
+                  keep: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays."""
     _require_openems()
     from CSXCAD import ContinuousStructure
     from openEMS import openEMS
@@ -183,8 +179,7 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
 
     fdtd = openEMS(NrTS=model.time_steps, EndCriteria=model.end_criteria)
     f_center = 0.5 * model.f_stop_hz
-    # A Gaussian pulse centred at 3 GHz with a 1.5 GHz width. A wider pulse puts strong energy
-    # at low frequency, where it stays trapped near the absorbing faces and the run cannot end.
+    # A Gaussian pulse centred at 3 GHz, as in the openEMS microstrip tutorial.
     fdtd.SetGaussExcite(3.0e9, model.gauss_fc_hz)
     # Absorbing boundaries on all six faces. The ground is drawn explicitly below, so the
     # bottom face must not be a PEC wall: that would short the bottom trace and the antipads.
@@ -216,34 +211,34 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
         ([via1 + ra, ws, 0], [via2 - ra, wg, 0]),
         ([via1 + ra, -wg, 0], [via2 - ra, -ws, 0]),
     ]
-    if "ground" not in omit:
-        for start, stop in ground_slices:
-            copper.AddBox(start=start, stop=stop, priority=10)
+    for start, stop in ground_slices:
+        copper.AddBox(start=start, stop=stop, priority=10)
     # Top trace: device plane 1 to via 1, and via 2 to device plane 2.
-    if "top" not in omit:
-        copper.AddBox(start=[0.0, -w / 2, h], stop=[via1, w / 2, h], priority=10)
-        copper.AddBox(start=[via2, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
+    copper.AddBox(start=[0.0, -w / 2, h], stop=[via1, w / 2, h], priority=10)
+    copper.AddBox(start=[via2, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
     # Bottom trace inside the slot, joining the two via barrels.
-    if "bottom" not in omit:
-        copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
-    # Vias: a barrel through the substrate. Pads are left out; the antipad sets the
-    # clearance that the impedance depends on.
-    if "vias" not in omit:
-        for x in (via1, via2):
-            copper.AddCylinder(start=[x, 0, 0], stop=[x, 0, h], radius=rd, priority=20)
+    copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
+    # Vias: a square barrel through the substrate, as wide as the drill. A round barrel of this
+    # size falls between mesh lines and is not represented, which leaves the signal open-ended.
+    # Mesh lines sit on its edges (see x_lines and y_lines), so it covers a 2 x 2 cell block.
+    # Pads are left out; the antipad sets the clearance that the impedance depends on.
+    for x in (via1, via2):
+        copper.AddBox(start=[x - rd, -rd, 0], stop=[x + rd, rd, h], priority=20)
 
 
     # Mesh: lines at every feature edge, smoothed to the target resolution.
     # Fine lines where the fields change fastest: the 0.25 mm strip, the via barrels and the
     # antipads, and four layers of substrate. The smoothing grows the cells away from them.
+    x_via = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
+             for d in (rd, ra)]
+    y_via = [-rd, rd, -ra, ra]
+    x_fine, y_fine = [], []
     if model.fine_mesh:
         x_fine = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
-                  for d in (0.15, 0.3, 0.6)]
+                  for d in (0.3, 0.6)]
         y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.15, 0.3)]
-    else:
-        x_fine, y_fine = [], []
-    x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2] + x_fine
-    y_lines = [-wg, wg, 0.0, -ws, ws, -ra, ra] + y_fine
+    x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2] + x_via + x_fine
+    y_lines = [-wg, wg, 0.0, -ws, ws] + y_via + y_fine
     z_lines = [-model.air_mm, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + model.air_mm]
     mesh.AddLine("x", x_lines)
     mesh.AddLine("y", y_lines)
