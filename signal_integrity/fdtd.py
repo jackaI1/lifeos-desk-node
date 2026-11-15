@@ -273,7 +273,11 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
         fdtd.Run(str(folder), cleanup=False, verbose=2)
         # The reference is passed as an array, one value per frequency. A plain float makes the
         # Debian bindings read a field that only the other port types set (ut_tot).
-        print("solver folder:", folder, sorted(p.name for p in folder.iterdir()), flush=True)
+        for trace in sorted(folder.glob("port_*")):
+            data = np.loadtxt(trace, comments="%")
+            k = int(np.argmax(np.abs(data[:, 1])))
+            print(f"PORTTRACE {trace.name} peak {data[k, 1]:.4e} at {data[k, 0] * 1e9:.3f} ns",
+                  flush=True)
         if keep_ports_in is not None:
             Path(keep_ports_in).mkdir(parents=True, exist_ok=True)
             for trace in folder.glob("port_*"):
