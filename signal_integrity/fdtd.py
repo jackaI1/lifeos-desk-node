@@ -72,7 +72,7 @@ class TraceModel:
     gauss_fc_hz: float = 3.0e9  # width of the excitation pulse (centre is 3 GHz)
     f_stop_hz: float = 6e9
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
-    air_mm: float = 8.0
+    air_mm: float = 8.0       # air above the board (the air below is set in build_and_run)
     end_criteria: float = 1e-3
     time_steps: int = 25000
 
@@ -229,7 +229,9 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
         y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.15, 0.3)]
     x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], xv] + x_via + x_fine
     y_lines = [-wg, wg, -w / 2, w / 2] + y_via + y_fine
-    z_lines = [-model.air_mm, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + model.air_mm]
+    # 6 mm of air below and 8 mm above. With 8 mm below, the solver's absorbers and the air
+    # gave a flat 0 dB return loss on a plain line (measured); 6 mm below matches it.
+    z_lines = [-6.0, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + model.air_mm]
     mesh.AddLine("x", x_lines)
     mesh.AddLine("y", y_lines)
     mesh.AddLine("z", z_lines)
@@ -242,11 +244,9 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     port_start2 = [x_port2[0], -w / 2, h]
     port_stop2 = [x_port2[1], w / 2, 0]
     port = [None, None]
-    # Each port carries a 50 ohm feed resistance, so returning waves are absorbed at the ports.
     port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=-1,
-                              FeedShift=0.5, Feed_R=Z_REF, priority=10)
-    port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0,
-                              Feed_R=Z_REF, priority=10)
+                              FeedShift=0.5, priority=10)
+    port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0, priority=10)
 
     owned = sim_dir is None
     folder = Path(tempfile.mkdtemp(prefix="desk-openems-")) if owned else Path(sim_dir)
