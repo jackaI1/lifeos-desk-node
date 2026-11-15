@@ -27,4 +27,3 @@ def test_via_transition_simulation_is_physical(tmp_path):
     failed = [(name, detail) for name, ok, detail in analysis.physics_checks(result, stackup, width) if not ok]
     assert not failed, failed
     assert Path(result["touchstone"]).exists()
-    assert Path(result["through_touchstone"]).exists()

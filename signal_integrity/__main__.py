@@ -25,12 +25,12 @@ DEFAULT_OUT = HERE / "build"
 
 
 def _nearest(simulated, ghz):
-    """(via S21 dB, through S21 dB, via S11 dB) at the grid point nearest ghz."""
+    """(S21 dB, S11 dB) at the grid point nearest ghz."""
     import numpy as np
 
     f = np.asarray(simulated["freq_ghz"])
     i = int(np.argmin(np.abs(f - ghz)))
-    return (-simulated["il_db"][i], -simulated["through"]["il_db"][i], -simulated["rl_db"][i])
+    return (-simulated["il_db"][i], -simulated["rl_db"][i])
 
 
 def main(argv=None) -> int:
@@ -51,7 +51,14 @@ def main(argv=None) -> int:
         widths = board.track_widths(net)
         if not widths:
             raise ValueError(f"net {net!r} has no tracks on the board")
-        width = args.width or max(sorted(widths), key=lambda w: widths[w])
+        if args.width:
+            width = args.width
+        elif args.simulate:
+            # The 3D model uses a 50 ohm trace: the board's 0.25 mm traces are about 128 ohm, and
+            # a strip that narrow cannot be resolved on a practical mesh (see the report).
+            width = analysis.model_width(stackup)
+        else:
+            width = max(sorted(widths), key=lambda w: widths[w])
         closed = analysis.closed_form(board, stackup)
         simulated = analysis.simulate(board, stackup, width, out) if args.simulate else None
     except OpenEMSUnavailable as exc:
@@ -63,13 +70,13 @@ def main(argv=None) -> int:
     report = write_report(out, board=board, stackup=stackup, net=net, width_mm=width,
                           closed=closed, simulated=simulated, pcb=args.pcb)
     z_trace = impedance.microstrip_z0(width, stackup.h_mm, stackup.er, stackup.t_mm)
-    print(f"representative trace: {net} at {width:g} mm -> {z_trace:.1f} ohm")
+    print(f"trace: {net} at {width:g} mm -> {z_trace:.1f} ohm (closed form)")
     print(f"via: {closed['via']['z0_ohm']:.1f} ohm; 50 ohm needs {closed['width_for_50_mm']:.2f} mm of trace")
     if simulated:
-        print("   GHz   via S21 dB   through S21 dB   via S11 dB")
+        print("   GHz   S21 dB   S11 dB")
         for ghz in (0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0):
-            via = _nearest(simulated, ghz)
-            print(f"  {ghz:5.1f}  {via[0]:11.2f}  {via[1]:14.2f}  {via[2]:12.2f}")
+            s21_db, s11_db = _nearest(simulated, ghz)
+            print(f"  {ghz:5.1f}  {s21_db:7.2f}  {s11_db:7.2f}")
         print(f"TDR: {simulated['tdr_min_ohm']:.1f} to {simulated['tdr_max_ohm']:.1f} ohm "
               f"(0.2 to 2 ns); insertion loss at 3 GHz "
               f"{simulated['at_ghz'][3.0]['il_db']:.2f} dB")

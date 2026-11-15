@@ -67,12 +67,12 @@ class TraceModel:
     ground_width_mm: float
     ground_clearance_mm: float  # gap between the bottom trace and the ground pour
     via: ViaModel
-    mesh_mm: float = 0.7
+    mesh_mm: float = 0.5
     f_stop_hz: float = 6e9
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
     air_mm: float = 4.0
     end_criteria: float = 1e-3
-    time_steps: int = 60000
+    time_steps: int = 40000
 
     @property
     def freq_hz(self) -> np.ndarray:
@@ -107,7 +107,7 @@ def model_from_dict(data: dict) -> "TraceModel":
     return TraceModel(**fields)
 
 
-def run_isolated(model: TraceModel, *, through: bool = False, log_path: Optional[Path] = None,
+def run_isolated(model: TraceModel, *, log_path: Optional[Path] = None,
                  timeout_s: Optional[float] = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Run build_and_run in a fresh Python process and return (freq, S11, S21).
 
@@ -122,8 +122,7 @@ def run_isolated(model: TraceModel, *, through: bool = False, log_path: Optional
     try:
         spec = workdir / "spec.json"
         result = workdir / "result.npz"
-        spec.write_text(json.dumps({"model": dataclasses.asdict(model), "through": through}),
-                        encoding="utf-8")
+        spec.write_text(json.dumps({"model": dataclasses.asdict(model)}), encoding="utf-8")
         log = workdir / "openems.log"
         with log.open("w", encoding="utf-8") as handle:
             proc = subprocess.run(
@@ -152,13 +151,9 @@ def _require_openems():
             "sudo apt-get install openems python3-openems") from exc
 
 
-def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None, keep: bool = False,
-                  through: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays.
-
-    through=True builds the same board without the via pair: one continuous top trace over
-    a solid ground pour. It is the reference the via transition is compared with.
-    """
+def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
+                  keep: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays."""
     _require_openems()
     from CSXCAD import ContinuousStructure
     from openEMS import openEMS
@@ -211,29 +206,25 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None, keep: bool 
         ([via1 + ra, ws, 0], [via2 - ra, wg, 0]),
         ([via1 + ra, -wg, 0], [via2 - ra, -ws, 0]),
     ]
-    if through:
-        copper.AddBox(start=[x_lo, -wg, 0], stop=[x_hi, wg, 0], priority=10)
-        copper.AddBox(start=[0.0, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
-    else:
-        for start, stop in ground_slices:
-            copper.AddBox(start=start, stop=stop, priority=10)
-        # Top trace: device plane 1 to via 1, and via 2 to device plane 2.
-        copper.AddBox(start=[0.0, -w / 2, h], stop=[via1, w / 2, h], priority=10)
-        copper.AddBox(start=[via2, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
-        # Bottom trace inside the slot, joining the two via barrels.
-        copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
-        # Vias: a barrel through the substrate. Pads are left out; the antipad sets the
-        # clearance that the impedance depends on.
-        for x in (via1, via2):
-            copper.AddCylinder(start=[x, 0, 0], stop=[x, 0, h], radius=rd, priority=20)
+    for start, stop in ground_slices:
+        copper.AddBox(start=start, stop=stop, priority=10)
+    # Top trace: device plane 1 to via 1, and via 2 to device plane 2.
+    copper.AddBox(start=[0.0, -w / 2, h], stop=[via1, w / 2, h], priority=10)
+    copper.AddBox(start=[via2, -w / 2, h], stop=[model.length_mm, w / 2, h], priority=10)
+    # Bottom trace inside the slot, joining the two via barrels.
+    copper.AddBox(start=[via1, -w / 2, 0], stop=[via2, w / 2, 0], priority=10)
+    # Vias: a barrel through the substrate. Pads are left out; the antipad sets the
+    # clearance that the impedance depends on.
+    for x in (via1, via2):
+        copper.AddCylinder(start=[x, 0, 0], stop=[x, 0, h], radius=rd, priority=20)
 
 
     # Mesh: lines at every feature edge, smoothed to the target resolution.
     # Fine lines where the fields change fastest: the 0.25 mm strip, the via barrels and the
     # antipads, and four layers of substrate. The smoothing grows the cells away from them.
     x_fine = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
-              for d in (0.1, 0.2, 0.3, 0.6)]
-    y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.1, 0.2, 0.3)]
+              for d in (0.15, 0.3, 0.6)]
+    y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.15, 0.3)]
     x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2] + x_fine
     y_lines = [-wg, wg, 0.0, -ws, ws, -ra, ra] + y_fine
     z_lines = [-model.air_mm, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + model.air_mm]
