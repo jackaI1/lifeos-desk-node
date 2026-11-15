@@ -74,3 +74,6 @@ rtl/tests/cocotb/results.xml
 bench/build/
 firmware/build-can/
 firmware/sdkconfig.can
+
+# IMU host build outputs
+stm32/imu/build/
