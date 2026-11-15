@@ -67,12 +67,12 @@ class TraceModel:
     ground_width_mm: float
     ground_clearance_mm: float  # gap between the bottom trace and the ground pour
     via: ViaModel
-    mesh_mm: float = 0.5
+    mesh_mm: float = 0.7
     f_stop_hz: float = 6e9
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
     air_mm: float = 4.0
     end_criteria: float = 1e-3
-    time_steps: int = 25000
+    time_steps: int = 60000
 
     @property
     def freq_hz(self) -> np.ndarray:
