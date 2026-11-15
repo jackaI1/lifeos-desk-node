@@ -196,13 +196,15 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     copper = csx.AddMetal("copper")
     # Ground pour on the bottom layer, with antipads around both vias and a slot
     # for the bottom trace. Built from rectangles, since CSXCAD has no subtraction.
+    # The bottom trace is wider than the antipad, so the pour is cut to the slot width (ws) at
+    # each via: between the slot edges there is no copper, and the trace does not touch the pour.
     ground_slices = [
         ([x_lo, -wg, 0], [via1 - ra, wg, 0]),
         ([via2 + ra, -wg, 0], [x_hi, wg, 0]),
-        ([via1 - ra, ra, 0], [via1 + ra, wg, 0]),
-        ([via1 - ra, -wg, 0], [via1 + ra, -ra, 0]),
-        ([via2 - ra, ra, 0], [via2 + ra, wg, 0]),
-        ([via2 - ra, -wg, 0], [via2 + ra, -ra, 0]),
+        ([via1 - ra, ws, 0], [via1 + ra, wg, 0]),
+        ([via1 - ra, -wg, 0], [via1 + ra, -ws, 0]),
+        ([via2 - ra, ws, 0], [via2 + ra, wg, 0]),
+        ([via2 - ra, -wg, 0], [via2 + ra, -ws, 0]),
         ([via1 + ra, ws, 0], [via2 - ra, wg, 0]),
         ([via1 + ra, -wg, 0], [via2 - ra, -ws, 0]),
     ]
