@@ -1,0 +1,50 @@
+name: Signal integrity and 3D EM
+on:
+  push:
+    branches: [main]
+    paths: ['signal_integrity/**', 'hardware/desk-node.kicad_pcb', 'hardware/docs/design.md', '.github/workflows/signal-integrity.yml']
+  pull_request:
+    paths: ['signal_integrity/**', 'hardware/desk-node.kicad_pcb', 'hardware/docs/design.md', '.github/workflows/signal-integrity.yml']
+permissions:
+  contents: read
+jobs:
+  closed-form:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '${{ matrix.python }}'
+      - run: python -m pip install -r signal_integrity/requirements.txt
+      - name: Closed-form, board-parser, TDR and scikit-rf tests (openEMS test skipped)
+        run: python -m pytest signal_integrity/tests -q
+      - name: Board report without the 3D run
+        run: python -m signal_integrity --out signal_integrity/build/closed-form
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signal-integrity-closed-form-${{ matrix.python }}
+          path: signal_integrity/build/closed-form
+  openems-3d:
+    # openEMS and its Python bindings come from Ubuntu 22.04's packages (python3-openems).
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      # The openEMS bindings are built against the distro's NumPy, so NumPy, SciPy and matplotlib
+      # come from apt. scikit-rf is the only package installed with pip.
+      - run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y openems python3-openems python3-pip python3-numpy python3-scipy \
+            python3-matplotlib python3-pandas python3-h5py python3-pytest
+      - run: python3 -m pip install --user scikit-rf==2.2.0
+      - name: Solve the via transition and the through-line reference in openEMS
+        run: python3 -m signal_integrity --simulate --out signal_integrity/build/openems
+      - name: Run every other test (the 3D checks ran in the step above)
+        run: python3 -m pytest signal_integrity/tests -q -rs -k "not openems"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: signal-integrity-openems
+          path: signal_integrity/build/openems

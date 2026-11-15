@@ -1,0 +1,5 @@
+# Signal-integrity check: scikit-rf reads the S-parameters; openEMS is installed from apt (see the workflow).
+numpy==2.2.6
+scikit-rf==2.2.0
+matplotlib==3.10.3
+pytest==8.3.5

@@ -1,0 +1,24 @@
+# Limits for the temperature sweep.
+#
+# The sht31, rail and ripple numbers are bring-up targets I picked, not datasheet
+# values. The SHT31 datasheet typical accuracy is about +/-0.3 C; the 1 C limit
+# leaves room for the chamber probe and the room. The I2C rise limits are the
+# fast-mode (300 ns) and standard-mode (1000 ns) values from the I2C specification,
+# and they are set in code from bus_hz.
+
+[chamber]
+setpoints_c = [10.0, 25.0, 40.0, 55.0]   # room-to-warm range for a desk
+settle_timeout_s = 600.0                  # give up after 10 minutes at a setpoint
+settle_poll_s = 5.0                       # real instruments; the simulator uses simulated time
+settle_band_c = 0.3                       # probe within this of the setpoint, and SETTLED
+
+[sht31]
+max_error_c = 1.0                         # SHT31 minus the chamber reference
+
+[rail_3v3]
+nominal_v = 3.3
+tolerance_fraction = 0.05                 # mean must stay within +/-5 % of nominal
+max_ripple_mvpp = 30.0                    # same limit as the power-up bench check
+
+[i2c]
+bus_hz = 400000.0                         # 100000.0 or 400000.0

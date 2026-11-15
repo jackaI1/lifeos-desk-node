@@ -19,8 +19,22 @@ jobs:
         with:
           python-version: '${{ matrix.python }}'
       - run: python -m pip install -r bench/requirements.txt
-      - name: Limit logic, device-file and simulator-run tests
+      - name: Limit logic, device-file, simulator-run and temperature-sweep tests
         run: python -m pytest bench/tests -q
+      - name: Temperature sweep passes; ripple and sensor drift are flagged; a stuck chamber is a bench error
+        run: |
+          python -m bench.sweep --out bench/build/sweeps
+          set +e
+          python -m bench.sweep --out bench/build/sweeps --inject ripple
+          ripple_status=$?
+          python -m bench.sweep --out bench/build/sweeps --inject sensor-drift
+          drift_status=$?
+          python -m bench.sweep --out bench/build/sweeps --inject stuck-chamber
+          stuck_status=$?
+          set -e
+          test "$ripple_status" = "1"
+          test "$drift_status" = "1"
+          test "$stuck_status" = "2"
       - name: Nominal run passes; injected ripple and late rail are flagged
         run: |
           python -m bench --out bench/build/runs
@@ -35,4 +49,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: bench-report-${{ matrix.python }}
-          path: bench/build/runs
+          path: |
+            bench/build/runs
+            bench/build/sweeps

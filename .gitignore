@@ -78,3 +78,7 @@ firmware/sdkconfig.can
 # IMU host build outputs
 stm32/imu/build/
 stm32/imu/third_party/
+
+# Desk node SPICE and signal-integrity builds (generated files, not committed).
+spice/build/
+signal_integrity/build/
