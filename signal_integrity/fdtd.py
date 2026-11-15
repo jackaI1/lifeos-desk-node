@@ -67,12 +67,12 @@ class TraceModel:
     ground_width_mm: float
     ground_clearance_mm: float  # gap between the bottom trace and the ground pour
     via: ViaModel
-    mesh_mm: float = 0.3
+    mesh_mm: float = 0.5
     f_stop_hz: float = 6e9
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
-    air_mm: float = 6.0
+    air_mm: float = 4.0
     end_criteria: float = 1e-3
-    time_steps: int = 30000
+    time_steps: int = 25000
 
     @property
     def freq_hz(self) -> np.ndarray:
@@ -229,10 +229,14 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None, keep: bool 
 
 
     # Mesh: lines at every feature edge, smoothed to the target resolution.
-    x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2,
-               via1 - ra, via1 + ra, via2 - ra, via2 + ra]
-    y_lines = [-wg, wg, -w / 2, w / 2, -ws, ws, -ra, ra, 0.0]
-    z_lines = [-model.air_mm, 0.0, h, h + model.air_mm]
+    # Fine lines where the fields change fastest: the 0.25 mm strip, the via barrels and the
+    # antipads, and four layers of substrate. The smoothing grows the cells away from them.
+    x_fine = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
+              for d in (0.1, 0.2, 0.3, 0.6)]
+    y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.1, 0.2, 0.3)]
+    x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2] + x_fine
+    y_lines = [-wg, wg, 0.0, -ws, ws, -ra, ra] + y_fine
+    z_lines = [-model.air_mm, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + model.air_mm]
     mesh.AddLine("x", x_lines)
     mesh.AddLine("y", y_lines)
     mesh.AddLine("z", z_lines)
