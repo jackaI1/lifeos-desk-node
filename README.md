@@ -309,6 +309,120 @@ python3 -m venv .venv
 
 The first run passes all five checks: 8 mVpp of ripple (limit 30), a 1.5 ms delay for the regulator (limit 0.2 to 10 ms) and 60 mA of input current (limit 150 mA). The `--inject` option adds a fault to the simulated board. `ripple` adds 60 mVpp, and `late-rail` starts the regulator 14 ms late. Each fault fails the check it targets and nothing else, and the tests check that. Each run writes a CSV of measurements, a CSV of the captured waveforms and a short report into `bench/build/runs/`. The limits in `bench/limits.toml` are bring-up targets I picked, not datasheet numbers. The [bench guide](docs/bench-automation.md) covers the commands, how the simulator models the board and how to point the script at real instruments.
 
+## Check the trace and via impedance before ordering
+
+I built a signal-integrity check for the desk board because I wanted to know,
+before I pay for boards, whether its copper traces and vias would reflect a fast
+edge. Each trace has an impedance, a resistance-like number for signals, that
+depends on its width and the board's layers. A change in impedance along a path
+reflects part of the signal back toward the source.
+
+The check reads the board file, works out the impedance of each track width and
+via from the board's layers, and then runs a three-dimensional electromagnetic
+model of one trace through a pair of vias. The model is an openEMS simulation, a
+free solver that steps the fields through a 3D grid of space. scikit-rf, a free
+Python library for microwave measurements, reads its results. The model reports
+how much signal gets through and how much is reflected, and a time-domain view of
+where the reflections happen.
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r signal_integrity/requirements.txt
+.venv/bin/python -m signal_integrity
+```
+
+The first run needs no openEMS. It writes `signal_integrity/build/report.md`
+with the impedance table. The board's 0.25 mm tracks are about 128 Ω and a 50 Ω
+trace would need 2.97 mm on this 1.6 mm board. Each via is about 39 Ω, which is
+the low point a fast edge meets first. The stackup values for permittivity and
+loss are typical FR-4 numbers I assumed, not the fabricator's; the
+[signal-integrity guide](docs/signal-integrity.md) lists every assumption.
+
+The 3D run needs openEMS, which Ubuntu installs from apt as `openems` and
+`python3-openems`:
+
+```sh
+python3 -m signal_integrity --simulate --out signal_integrity/build/openems
+```
+
+<!-- SI-SIM-README -->
+
+## Simulate the power input and the I²C line in SPICE
+
+I built a set of SPICE circuit checks because I wanted to see how far the 3.3 V
+rail droops and how much it ripples when the Wi-Fi radio draws current, and how
+fast the sensor's I²C data line rises, before I order a board. SPICE is a circuit
+simulator; ngspice is a free version of it. Each netlist is a text description of
+the parts and their connections, and the Python checker runs it without opening a
+window.
+
+The netlists are in [`spice/`](spice/). One covers the USB-C 5 V input, its
+fuse, the 3.3 V regulator and the capacitors on each rail. The other covers the
+SDA pull-up resistor at 100 kHz and at 400 kHz. The checker reads the values from
+the KiCad schematic, runs both netlists, and compares each result with a hand
+calculation from the same values:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r spice/requirements.txt
+.venv/bin/python -m pytest spice/tests -q
+.venv/bin/python -m spice.checks --out spice/build
+```
+
+All ten checks pass. The simulated and hand values agree to better than 0.1 %:
+
+| Check | Result | Limit | Margin |
+| --- | --- | --- | --- |
+| Plug-in current into the 10 µF input capacitor | 14.2 A peak | none, informational | set by the cable and fuse I assumed |
+| 5 V at the regulator with 615 mA drawn | 4.82 V | at least 4.75 V | 66 mV |
+| 3.3 V droop for a 600 mA step | 60 mV | rail stays within ±5 % | 104 mV |
+| 3.3 V ripple from a 250 mA burst | 25 mV peak to peak | at most 30 mV | 5 mV |
+| SDA rise time, 30 % to 70 %, at 100 kHz | 199 ns | at most 1000 ns | 801 ns |
+| SDA rise time, 30 % to 70 %, at 400 kHz | 199 ns | at most 300 ns | 101 ns |
+| Pull-up R6 and R7 (4.7 kΩ) | inside the allowed range | 967 Ω to 7.08 kΩ | 1.5 × to the upper limit |
+
+The pull-up margin depends on how much capacitance the bus has. I assumed
+50 pF, which covers the sensor pin, the traces and the J2 header. At 100 pF, a
+sensor module on J2 could add that much, and the 4.7 kΩ pull-ups would miss the
+400 kHz limit. Two values I did not have from the schematic, the fuse resistance
+and the regulator's output resistance, are also assumptions; the
+[SPICE guide](docs/spice-checks.md) lists them and says what to replace them with.
+These are simulations, not measurements. The first bench test on a board should
+measure the same five quantities.
+
+## Run a temperature sweep on the bench
+
+I built a sweep harness because I need to qualify the board across a range of
+room temperatures before I trust its readings in my room. It sets a
+programmable chamber to each temperature, waits until the chamber reports it has
+settled, captures the 3.3 V rail and the I²C data line on an oscilloscope, reads
+the SHT31 sensor's temperature from the board, and compares that reading with the
+chamber's own reference probe. It writes a Markdown report with a table and plots.
+
+The instruments are driven with PyVISA, a Python library that sends standard
+text commands called SCPI to lab equipment, and pyvisa-sim, which answers those
+commands from a file that describes simulated instruments. I have no chamber,
+generator or scope here, so the sweep runs against simulated ones. Changing the
+resource strings points it at real equipment, as the
+[sweep guide](docs/temperature-sweep.md) explains.
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r bench/requirements.txt
+.venv/bin/python -m bench.sweep
+```
+
+The default run sweeps 10, 25, 40 and 55 °C at 400 kHz and writes
+`bench/build/sweeps/<stamp>-nominal/report.md`. It passes all four steps: the
+SHT31 is within 0.3 °C of the reference, the rail stays within 3.14 to 3.47 V and
+its ripple is 8 mVpp, and the SDA rise is 193 to 211 ns against a 300 ns limit.
+Three injected faults show the checks catch real problems. `--inject sensor-drift`
+fails the sensor check at 40 and 55 °C. `--inject ripple` fails the ripple check
+at every step. `--inject stuck-chamber` leaves the chamber unsettled, and the run
+stops with a settling timeout and exit status 2, which means the bench could not
+run rather than that the board failed. These are all simulated; they show the
+harness works, not how the board behaves.
+
 ## Export the light-input circuit for OrCAD
 
 I built an OrCAD export because I wanted to learn Cadence OrCAD, a circuit
@@ -535,6 +649,22 @@ The CAN log analyzer adds 45 pytest checks, covering the candump reader, every f
 .venv/bin/python -m pytest can_monitor/tests -q
 .venv/bin/python -m pip install -r bench/requirements.txt
 .venv/bin/python -m pytest bench/tests -q
+```
+
+The signal-integrity, SPICE and sweep checks add more tests. The 34 signal-integrity
+tests cover the closed-form impedances, the board-file parser, the TDR inversion,
+the scikit-rf conversion and the report, and they run the real board file. The one
+openEMS test runs the 3D solver in CI and is skipped on machines without openEMS. The 21 SPICE tests
+run ngspice on both netlists, compare each result with its hand calculation, and
+check that a changed netlist or a changed pull-up fails. The 17 sweep tests cover
+the settling timeout, a refused setpoint, an instrument that does not answer, and the
+three faults. CI runs each suite on every change to its folder.
+
+```sh
+.venv/bin/python -m pip install -r signal_integrity/requirements.txt
+.venv/bin/python -m pytest signal_integrity/tests -q
+.venv/bin/python -m pip install -r spice/requirements.txt
+.venv/bin/python -m pytest spice/tests -q
 ```
 
 ## Other things I've built here
