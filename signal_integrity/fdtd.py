@@ -74,7 +74,7 @@ class TraceModel:
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
     air_mm: float = 8.0
     end_criteria: float = 1e-3
-    time_steps: int = 40000
+    time_steps: int = 15000
 
     @property
     def freq_hz(self) -> np.ndarray:
@@ -124,11 +124,7 @@ def run_isolated(model: TraceModel, *, log_path: Optional[Path] = None,
     try:
         spec = workdir / "spec.json"
         result = workdir / "result.npz"
-        raw = None
-        if log_path is not None:
-            raw = Path(log_path).parent / "raw"
-        spec.write_text(json.dumps({"model": dataclasses.asdict(model),
-                                    "raw_dir": str(raw) if raw else None}), encoding="utf-8")
+        spec.write_text(json.dumps({"model": dataclasses.asdict(model)}), encoding="utf-8")
         log = workdir / "openems.log"
         with log.open("w", encoding="utf-8") as handle:
             proc = subprocess.run(
@@ -158,12 +154,8 @@ def _require_openems():
 
 
 def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
-                  keep: bool = False, keep_ports_in: Optional[Path] = None
-                  ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays.
-
-    keep_ports_in, when given, receives a copy of the solver's raw port traces, for inspection.
-    """
+                  keep: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Run the FDTD simulation. Returns (freq_hz, S11, S21) as complex arrays."""
     _require_openems()
     from CSXCAD import ContinuousStructure
     from openEMS import openEMS
@@ -175,8 +167,10 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     via1, via2 = model.via.x_mm
     ra = model.via.antipad_mm / 2.0
     rd = model.via.drill_mm / 2.0
-    x_lo = -4.0
-    x_hi = model.length_mm + 4.0
+    # Each port's outer section is 10 mm, so its measurement plane (the middle of the port box)
+    # sits 5 mm from the absorbing boundary. At 2 mm the near field corrupted the port modes.
+    x_lo = -10.0
+    x_hi = model.length_mm + 10.0
     wg = model.ground_width_mm / 2.0
     ws = (w + 2.0 * model.ground_clearance_mm) / 2.0
     # Each port box runs from the outer edge of the mesh (inside the absorbing boundary) to its
@@ -271,6 +265,8 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
         # Write the geometry explicitly, then solve. The solver's log goes to the console.
         csx.Write2XML(str(folder / "csx.xml"))
         fdtd.Run(str(folder), cleanup=False, verbose=2)
+        # The reference is passed as an array, one value per frequency. A plain float makes the
+        # Debian bindings read a field that only the other port types set (ut_tot).
         # The reference is passed as an array, one value per frequency. A plain float makes the
         # Debian bindings read a field that only the other port types set (ut_tot).
         for trace in sorted(folder.glob("port_*")):
