@@ -1,0 +1,28 @@
+name: SPICE circuit checks
+on:
+  push:
+    branches: [main]
+    paths: ['spice/**', 'hardware/desk-node.kicad_sch', '.github/workflows/spice-checks.yml']
+  pull_request:
+    paths: ['spice/**', 'hardware/desk-node.kicad_sch', '.github/workflows/spice-checks.yml']
+permissions:
+  contents: read
+jobs:
+  spice:
+    runs-on: ubuntu-24.04
+    container:
+      image: kicad/kicad:8.0
+      options: --user root
+    steps:
+      - uses: actions/checkout@v4
+      - run: apt-get update -qq && apt-get install -y ngspice python3-venv
+      - run: python3 -m venv /tmp/desk-spice && /tmp/desk-spice/bin/pip install -r spice/requirements.txt
+      - name: Unit tests, ngspice drift tests and the schematic pull-up check
+        run: /tmp/desk-spice/bin/python -m pytest spice/tests -q
+      - name: Run every netlist against its hand calculation
+        run: /tmp/desk-spice/bin/python -m spice.checks --out spice/build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spice-checks
+          path: spice/build

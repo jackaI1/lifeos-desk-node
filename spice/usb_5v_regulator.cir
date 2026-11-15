@@ -1,0 +1,71 @@
+* Desk node USB-C 5 V input and AZ1117CH-3.3 regulator (Rev A, hardware/desk-node.kicad_sch)
+*
+* Topology from the KiCad netlist:
+*   VBUS (J1 USB-C) -> F1 resettable fuse -> +5V (C1 10 uF, D1 TVS, U2 VIN)
+*   U2 VOUT -> +3V3 (C2, C3 22 uF, C4/C6/C8 100 nF, ESP32 and SHT31 loads)
+*
+* Values marked ASSUMED are not on the schematic. Replace them with the
+* datasheet values for the exact fuse, cable and regulator before trusting
+* a margin. spice/checks.py rewrites the .param lines marked FROM NETLIST and
+* ASSUMED from the KiCad netlist and its constants, so keep each .param on one line.
+*
+* The regulator is an idealised LDO: 3.3 V behind a fixed output resistance,
+* with dropout modelled as VIN - 0.3 V. It draws only its quiescent current
+* from +5V. It has no loop bandwidth or PSRR, so the ripple result checks the
+* RC network, not the real regulator's rejection of input noise.
+* The TVS (D1) is left out: it does not conduct in these windows.
+
+.param R_CABLE=0.1        ; ASSUMED USB cable and host path resistance, ohm
+.param R_FUSE=0.2         ; ASSUMED resettable-fuse on-resistance, ohm
+.param C_IN=10u           ; FROM NETLIST: C1 (+5V to GND)
+.param C_OUT=44.3u        ; FROM NETLIST: C2+C3 22 uF, C4+C6+C8 100 nF (+3V3 to GND)
+.param R_OUT=0.1          ; ASSUMED LDO output resistance, ohm
+.param I_Q=0.005          ; ASSUMED LDO quiescent current, A
+.param I_IDLE=0.010       ; ESP32 idle load, A
+.param I_BURST=0.300      ; Wi-Fi burst load in the ripple window, A
+
+* Plug-in at 1 ms: the USB source ramps to 5 V in 1 us through the cable.
+Vusb usb 0 PULSE(0 5 1m 1u 1n 1 1)
+Rcable usb vbus {R_CABLE}
+Rfuse vbus vbus_f {R_FUSE}
+* 0 V probe in series with the fuse, so i(Vprobe) is the inrush current.
+Vprobe vbus_f vin DC 0
+
+* +5V node: input capacitor and the regulator's quiescent load.
+* The 0 V probe in series with C1 isolates the input capacitor's own charging current.
+Vcprobe vin vin_c DC 0
+Cin vin_c 0 {C_IN}
+Iq vin 0 DC {I_Q}
+
+* Dropout-limited LDO output behind the output resistance. It is off below about 3.5 V
+* input (an undervoltage lock-out, ramped over 0.2 V), so the plug-in charge is the input capacitor's alone.
+Bldo nreg 0 V='min(3.3, v(vin)-0.3)*min(1, max(0, (v(vin)-3.5)/0.2))'
+Rout nreg vout {R_OUT}
+* The pass element draws the output current from +5V, so the cable and fuse drop it.
+Bpass vin 0 I='((v(nreg)-v(vout))/{R_OUT})*min(1, max(0, (v(vin)-3.5)/0.2))'
+Cout vout 0 {C_OUT}
+
+* Idle load, a 600 mA step at 10 ms (held to 15 ms), and a 1 kHz burst pattern
+* from 15 ms (0.2 ms on in every 1 ms).
+Iidle vout 0 DC {I_IDLE}
+Istep vout 0 PWL(0 0 10m 0 10.001m 0.6 15m 0.6 15.001m 0)
+Iburst vout 0 PULSE(0 {I_BURST} 15m 1u 1u 0.2m 1m)
+
+.tran 5u 20m
+
+.control
+run
+* Inrush: peak charging current of C1 after plug-in (A).
+meas tran i_inrush_peak MAX i(Vcprobe) FROM=1m TO=3m
+* Input voltage under the 600 mA step (divider from cable and fuse drop).
+meas tran vin_under_step AVG v(vin) FROM=14m TO=14.9m
+* Output before and during the step (V).
+meas tran v_before_step AVG v(vout) FROM=9.5m TO=9.99m
+meas tran v_after_step AVG v(vout) FROM=14.5m TO=14.99m
+* Ripple from the burst pattern, peak to peak (V).
+meas tran v_ripple_max MAX v(vout) FROM=17m TO=20m
+meas tran v_ripple_min MIN v(vout) FROM=17m TO=20m
+print i_inrush_peak vin_under_step v_before_step v_after_step v_ripple_max v_ripple_min
+quit
+.endc
+.end

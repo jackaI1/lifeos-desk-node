@@ -1,0 +1,2 @@
+# The SPICE checks use only the standard library. ngspice and KiCad 8's kicad-cli are system tools.
+pytest==8.3.5

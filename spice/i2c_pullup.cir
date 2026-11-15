@@ -1,0 +1,40 @@
+* Desk node I2C SDA line to the SHT31 (Rev A, hardware/desk-node.kicad_sch)
+*
+* R6 (4.7 kohm) pulls SDA from +3V3 up to the open-drain driver. The ESP32
+* releases the line at T_LOW, and the rise is measured between 30 % and
+* 70 % of VDD, the I2C fast-mode and standard-mode timing definition.
+*
+* The driver is a switch with an on-resistance, so the falling edge is fast.
+* The bus capacitance is ASSUMED: the SHT31 pin, board traces and the J2
+* expansion header. It is not extracted from the layout.
+*
+* This is a template. spice/checks.py replaces each name wrapped in at-signs before ngspice
+* runs (the .meas expressions must be plain numbers), using the KiCad pull-up
+* value and the bus speed. The values below are the 100 kHz case, for reference:
+*   @R_PULLUP@ = 4.7k, @C_BUS@ = 50p, @T_LOW@ = 5u, @T_PERIOD@ = 10u,
+*   @LEVEL_LO@ = 0.99 (30 % of 3.3 V), @LEVEL_HI@ = 2.31 (70 %).
+*
+* Standard mode: 100 kHz, rise limit 1000 ns. Fast mode: 400 kHz, rise limit 300 ns.
+
+.param VDD=3.3
+.param R_DRIVE=20         ; ASSUMED open-drain on-resistance, ohm
+
+Vdd vdd 0 {VDD}
+Rpu vdd sda @R_PULLUP@
+Cbus sda 0 @C_BUS@
+
+* The driver pulls SDA low from 1 us until T_LOW, then releases it.
+Vgate gate 0 PULSE(0 {VDD} 1u 1n 1n @T_LOW_MINUS_1U@ @T_PERIOD@)
+Sdrv sda 0 gate 0 SDRV
+.model SDRV SW(RON={R_DRIVE} ROFF=1e9 VT=1.65 VH=0.1)
+
+.tran 5n @T_TWO_PERIODS@
+
+.control
+run
+* 30 % to 70 % rise after the release, in seconds.
+meas tran t_rise TRIG v(sda) VAL=@LEVEL_LO@ RISE=1 TD=@T_LOW@ TARG v(sda) VAL=@LEVEL_HI@ RISE=1 TD=@T_LOW@
+print t_rise
+quit
+.endc
+.end
