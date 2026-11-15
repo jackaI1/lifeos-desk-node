@@ -124,7 +124,11 @@ def run_isolated(model: TraceModel, *, log_path: Optional[Path] = None,
     try:
         spec = workdir / "spec.json"
         result = workdir / "result.npz"
-        spec.write_text(json.dumps({"model": dataclasses.asdict(model)}), encoding="utf-8")
+        raw = None
+        if log_path is not None:
+            raw = Path(log_path).parent / "raw"
+        spec.write_text(json.dumps({"model": dataclasses.asdict(model),
+                                    "raw_dir": str(raw) if raw else None}), encoding="utf-8")
         log = workdir / "openems.log"
         with log.open("w", encoding="utf-8") as handle:
             proc = subprocess.run(
