@@ -1,10 +1,18 @@
-# Signal integrity of the desk board: stackup, closed forms and the 3D model
+# Signal integrity of the desk board: stackup, closed forms and the 3D via model
 
-This guide explains [`signal_integrity/`](../signal_integrity/), the check I run
-on the Rev A board's copper before ordering. It reads the board file, computes
-the impedance of its traces and vias from the stackup, solves a 3D model of one
-trace through a via pair in openEMS, and reads the result with scikit-rf. The
-output is a report with a table, two plots and a Touchstone file.
+This guide explains [`signal_integrity/`](../signal_integrity/), the check I run on
+the Rev A board's copper before ordering. It reads the board file, works out the
+impedance of its traces and vias from the stackup, solves a 3D model of a 50 Ω
+trace with a via in openEMS, and reads the result with scikit-rf. The output is a
+report with a table, two plots and a Touchstone file.
+
+What is verified and what is not is stated up front, because the 3D part is not
+finished:
+
+- **Verified:** the closed-form impedances, the board-file parsing, the TDR math,
+  and the 3D model's **return loss and TDR impedance**, which the CI run reproduces.
+- **Not verified:** the 3D model's **insertion loss**. Its |S21| goes above 1, which
+  a passive via cannot do. I have not found the cause.
 
 ## Run it
 
@@ -22,9 +30,9 @@ openEMS and CSXCAD. On Ubuntu 22.04 they come from apt (`openems` and
 python3 -m signal_integrity --simulate --out signal_integrity/build/openems
 ```
 
-This adds the S-parameters, the TDR and two plots to the report, and writes
-`desk_node_via.s2p`. Tests run the same way: `python3 -m pytest signal_integrity/tests -q`.
-The openEMS test is skipped where openEMS is not installed.
+This runs the 3D model in a separate process (about 10 minutes on a CI runner),
+reads the Touchstone result with scikit-rf, and writes the report, the plots and
+`desk_node_via.s2p`. The command exits with status 1 if a verified check fails.
 
 ## Stackup
 
@@ -37,13 +45,11 @@ The openEMS test is skipped where openEMS is not installed.
 | GND pour clearance | 0.3 mm | The GND zone's `connect_pads` clearance |
 | Via pad and drill | 0.6 mm and 0.3 mm | Every via on the board |
 
-The fabricator's stackup sheet should replace the two assumed values. A different
-permittivity changes the impedances by a few percent; the report says which values
-are assumed.
+The fabricator's stackup sheet should replace the two assumed values.
 
 ## Closed-form impedance
 
-Two standard formulas, both written out in
+Two standard formulas, written out in
 [`signal_integrity/impedance.py`](../signal_integrity/impedance.py) and tested
 against their own equations:
 
@@ -53,7 +59,7 @@ against their own equations:
 - **Via** (a barrel through the board in a clearance hole): the coaxial
   approximation `Z = 60/√er · ln(D_antipad / D_drill)`.
 
-| Track width | Microstrip Z0 | Length on the board |
+| Track width | Microstrip Z0 | Total length on the board |
 | --- | --- | --- |
 | 0.25 mm | 128.4 Ω | 784 mm |
 | 0.30 mm | 123.0 Ω | 195 mm |
@@ -63,74 +69,100 @@ against their own equations:
 - The via has a 0.6 mm pad, 0.3 mm drill and a 1.2 mm antipad (pad plus two
   0.3 mm clearances). Its impedance is **39.2 Ω**.
 
-So the board's ordinary tracks are high impedance (about 120 Ω), and every via is
-low impedance (about 40 Ω). The via is the discontinuity a fast edge meets first.
-The 3D model measures how much of the edge it reflects.
+So the board's ordinary 0.25 mm tracks are about 128 Ω, not controlled 50 Ω. Each
+via is about 39 Ω, which is lower than the 50 Ω reference. The via is where a fast
+edge meets its first impedance step.
 
 ## The 3D model
 
 [`signal_integrity/fdtd.py`](../signal_integrity/fdtd.py) builds the model in
-openEMS. The representative trace is the signal net with the most track length (`/I2C_SCL`)
-at its most common width (0.25 mm). Power and ground nets are skipped, because
-their widths are set by current. The board has no fast digital bus, so this is a
-representative geometry, not a net that needs 50 Ω.
+openEMS. It checks a **50 Ω** trace through one via, not the board's 0.25 mm
+traces. A strip that narrow is far above 50 Ω on this stackup, and it is smaller
+than the mesh cells a 3D model can practically use. The closed-form table still
+reports the board's own widths.
 
 ```
-  port 1  ------ top trace (0.25 mm, z = 1.6 mm) ------ via 1 (x = 8 mm)
-                                                          |
-             bottom trace across a slot in the GND pour (z = 0), 8 mm
-                                                          |
-                             via 2 (x = 16 mm) ----- top trace ------ port 2
+  port 1 ----- 50 ohm trace (2.97 mm, top layer) ----- port 2
+                              |
+                          via (0.6 mm square)
+                              |
+                       bottom pad, in a 1.2 mm
+                       square antipad in the GND pour
 ```
 
-- The substrate is one 1.6 mm FR-4 slab, with a loss tangent at the centre
-  frequency. Air sits above and below it, and all six faces are absorbing (PML).
-  The ground is drawn explicitly, so the bottom face must not be a metal wall.
-- The bottom copper is the GND pour, with an antipad around each via and a slot
-  around the bottom trace. The slot's width is the trace width plus two clearances.
-  CSXCAD has no subtraction, so the pour is built from rectangles.
-- Each via is a PEC barrel through the substrate. The model leaves out the via
-  pads and the solder mask.
-- The two microstrip ports follow openEMS's convention: each starts at the outer end
-  of the line at strip height and points towards the device, 1.5 mm long, and the
-  two boxes mirror each other about the board centre.
-- The mesh is 0.25 mm, smoothed outward, with lines at every feature edge. Ports are
-  created after the mesh, because openEMS checks the mesh inside each port box.
-- The gauss excitation is centred at 3 GHz and covers 0 to 6 GHz. The solver runs
-  until the energy falls to 1 × 10⁻⁴ of its start.
-- The structure is symmetric about its centre, so S22 equals S11 and S12 equals
-  S21. One run with port 1 excited gives the full two-port.
-- Each simulation runs in its own Python process (`signal_integrity/fdtd_worker.py`).
-  Running a second openEMS solve in the same process failed on the Debian build.
-- A second run builds the same board with no vias: one continuous top trace over a
-  solid ground pour. Its insertion loss is the reference, and the via's excess loss
-  is the difference. That is the number the report leads with.
+- The line is 24 mm long, with the via at its centre, so each device plane is 12 mm
+  from the via.
+- The substrate is one 1.6 mm FR-4 slab, with a loss tangent at 3 GHz. The bottom
+  copper is a solid GND pour (30 mm wide) with a square antipad round the via.
+- Each port is a microstrip port whose outer section is 10 mm long, so its
+  measurement plane sits 5 mm from the absorbing boundary. The openEMS microstrip
+  tutorial uses the same layout.
+- All six faces are absorbing (PML). Air is 6 mm below the board and 8 mm above.
+  See the note on the air below.
+- The mesh is 0.5 mm, smoothed outward, with extra lines at the via's edges. Every
+  mesh spacing is at least 0.3 mm. A finer spacing forces a time step too small for
+  the run to finish in a sensible time.
+- The excitation is a Gauss pulse centred at 3 GHz, with a 3 GHz width.
+- The run is 25,000 time steps. It does not reach openEMS's energy target, which is
+  why insertion loss is not verified.
 
-scikit-rf then builds the two-port from S11 and S21 and reads the Touchstone file
-back, so the same numbers come out of the file a reader can open.
+scikit-rf builds the two-port from S11 and S21 and reads the Touchstone file back.
+The model is a single run with port 1 excited; S22 and S12 are not computed.
 
-## Results
+## What the 3D run shows
 
-The numbers below come from the openEMS job in CI, not from my laptop: the
-closed-form run cannot produce them. The CI artifact `signal-integrity-openems`
-holds the report, the plots and the Touchstone file from the run that produced them.
+The numbers below are from the openEMS job in CI, not from my laptop: the closed-form
+run cannot produce them.
 
-<!-- SIM-RESULTS -->
+| Frequency | Return loss (S11) | Insertion loss (S21), not verified |
+| --- | --- | --- |
+| 0.5 GHz | 25.2 dB | −0.9 dB |
+| 1 GHz | 22.0 dB | +6.0 dB |
+| 2 GHz | 21.2 dB | +3.8 dB |
+| 3 GHz | 18.7 dB | +1.8 dB |
+| 4 GHz | 14.1 dB | −0.9 dB |
+| 5 GHz | 10.9 dB | +2.8 dB |
+| 6 GHz | 17.9 dB | +6.9 dB |
 
-## The TDR-style response
+The insertion-loss column is S21 expressed as loss, so a positive value is gain. A
+gain is impossible for a passive network, which is why this column is not verified.
 
-The step response comes from the inverse FFT of S11, with a Hann window in
-frequency. A step in the impedance appears at the round-trip time to the
-discontinuity. [`signal_integrity/tdr.py`](../signal_integrity/tdr.py) checks the
-inversion against a reflection of known impedance (40, 50 and 75 Ω): the recovered
-value is within 1 % of the true value after the step.
+- **Return loss at 1 GHz is 22 dB**, so the 50 Ω trace reflects little at its
+  design frequency. Checked: above 10 dB.
+- **TDR impedance** is 44.2 to 45.9 Ω over the 0.2 to 2 ns window, with its lowest
+  point of 44.2 Ω at about 0.23 ns. That is a dip below the 50 Ω reference, toward the
+  via's 39.2 Ω closed-form value, as the via should produce. Checked: below 47.5 Ω and
+  not below 31.4 Ω (80 % of the via's value). The time resolution of this TDR
+  estimate is about 0.2 ns, so the dip's exact position is not precise.
+
+## What is not verified, and what I tried
+
+The solver stops at its 25,000-step limit before the energy has decayed. The solver
+reports energy relative to its peak, and at the end it is still about 8 dB below that
+peak (roughly 16 % of it). openEMS's target is 30 dB below the peak. The transmitted
+wave is therefore incomplete, and |S21| comes out above 1 by up to 9 dB.
+
+What I tried, in order:
+
+- **Feed resistors** (50 Ω at each port): the printed results did not change.
+- **Longer run** (80,000 steps): the energy at the end was still about 4 dB below
+  its peak, and |S21| still exceeded 1 by up to 15 dB. The run took about 21 minutes, so I did not
+  keep it.
+- **Mesh spacing**: spacings below 0.3 mm forced a time step too small to finish. I
+  kept every spacing at 0.3 mm or more.
+- **Air below the board**: with 8 mm of air below, a plain 50 Ω line gave a return loss
+  of 0 dB at every frequency, and with 6 mm it gave −30 to −49 dB. I did not find the
+  reason, and the model uses 6 mm.
+
+I have not found the cause of the remaining energy. Until it is found, I do not
+report insertion loss as a result.
 
 ## What the check does not show
 
-- It is one representative trace, not every net. The power nets carry current, not
-  impedance, so their widths are not judged here.
+- It is one 50 Ω trace with one via, not every net. The 0.25 mm board traces are
+  described in closed form only.
 - The permittivity and loss tangent are typical values, not the board's.
-- The model has no solder mask, no via pads and no copper roughness. These change
-  the via's impedance and the loss at the top of the band.
+- The model has no solder mask, no via pads beyond the 0.6 mm square, and
+  zero-thickness copper.
 - A simulation is not a measurement. A time-domain reflectometer on an assembled
   board is the test that settles it, and I have not built one yet.

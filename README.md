@@ -319,11 +319,10 @@ reflects part of the signal back toward the source.
 
 The check reads the board file, works out the impedance of each track width and
 via from the board's layers, and then runs a three-dimensional electromagnetic
-model of one trace through a pair of vias. The model is an openEMS simulation, a
-free solver that steps the fields through a 3D grid of space. scikit-rf, a free
-Python library for microwave measurements, reads its results. The model reports
-how much signal gets through and how much is reflected, and a time-domain view of
-where the reflections happen.
+model of a 50 Ω trace with a via. The model is an openEMS simulation, a free solver
+that steps the fields through a 3D grid of space. scikit-rf, a free Python library
+for microwave measurements, reads its results. The model reports how much of the
+signal is reflected, and a time-domain view of where the reflections happen.
 
 ```sh
 python3 -m venv .venv
@@ -332,20 +331,27 @@ python3 -m venv .venv
 ```
 
 The first run needs no openEMS. It writes `signal_integrity/build/report.md`
-with the impedance table. The board's 0.25 mm tracks are about 128 Ω and a 50 Ω
-trace would need 2.97 mm on this 1.6 mm board. Each via is about 39 Ω, which is
-the low point a fast edge meets first. The stackup values for permittivity and
-loss are typical FR-4 numbers I assumed, not the fabricator's; the
+with the impedance table. The board's 0.25 mm tracks are about 128 Ω, far above
+50 Ω, and a 50 Ω trace would need 2.97 mm on this 1.6 mm board. Each via is about
+39 Ω, which is the low point a fast edge meets first. The stackup values for
+permittivity and loss are typical FR-4 numbers I assumed, not the fabricator's; the
 [signal-integrity guide](docs/signal-integrity.md) lists every assumption.
 
 The 3D run needs openEMS, which Ubuntu installs from apt as `openems` and
-`python3-openems`:
+`python3-openems`. It takes about ten minutes:
 
 ```sh
 python3 -m signal_integrity --simulate --out signal_integrity/build/openems
 ```
 
-<!-- SI-SIM-README -->
+In the CI run, the 50 Ω trace reflects 22 dB below the incident wave at 1 GHz,
+and its time-domain impedance dips to 44 Ω near the via, toward the 39 Ω
+calculated for the via. I trust those two results. The insertion loss from the same
+run is **not** trustworthy yet: the transmitted wave is incomplete because the
+solver stops before the energy has left the box, and it reports a gain, which a
+passive via cannot have. The report labels that column as unverified. I tried
+longer runs and feed resistors without fixing it, and the guide lists what I
+tried.
 
 ## Simulate the power input and the I²C line in SPICE
 
