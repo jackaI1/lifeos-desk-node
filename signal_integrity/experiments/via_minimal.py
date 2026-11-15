@@ -2,7 +2,7 @@
 import subprocess
 import sys
 
-VARIANTS = ["probe", "probe_L24", "probe_zfine", "probe_xylines"]
+VARIANTS = ["probe_w297", "probe_L24_w297"]
 
 
 def build(variant: str) -> None:
@@ -10,8 +10,8 @@ def build(variant: str) -> None:
     import numpy as np
     from CSXCAD import ContinuousStructure
     from openEMS import openEMS
-    h, er, w = 1.6, 4.5, 3.0
-    L = 24.0 if variant == "probe_L24" else 16.0
+    h, er, w = 1.6, 4.5, (2.97 if "w297" in variant else 3.0)
+    L = 24.0 if "L24" in variant else 16.0
     xl, xh = -10.0, L + 10.0
     fdtd = openEMS(NrTS=12000, EndCriteria=1e-3)
     fdtd.SetGaussExcite(3e9, 3e9)
