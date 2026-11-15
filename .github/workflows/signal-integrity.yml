@@ -58,7 +58,7 @@ jobs:
           sudo apt-get install -y openems python3-openems python3-pip python3-numpy python3-scipy \
             python3-matplotlib python3-pandas python3-h5py python3-pytest
       - run: python3 -m pip install --user scikit-rf==2.2.0
-      - run: python3 -m signal_integrity.experiments.unused_probe
+      - run: python3 -m signal_integrity.experiments.unused_minimal
       - uses: actions/upload-artifact@v4
         if: always()
         with:
