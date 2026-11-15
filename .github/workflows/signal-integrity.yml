@@ -48,8 +48,8 @@ jobs:
         with:
           name: signal-integrity-openems
           path: signal_integrity/build/openems
-  unused-probe:
-    # TEMPORARY diagnostic job: counts unused-primitive warnings with copper groups left out.
+  coarse-probe:
+    # TEMPORARY diagnostic job: the via model on the coarse, probe-like mesh.
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -58,9 +58,9 @@ jobs:
           sudo apt-get install -y openems python3-openems python3-pip python3-numpy python3-scipy \
             python3-matplotlib python3-pandas python3-h5py python3-pytest
       - run: python3 -m pip install --user scikit-rf==2.2.0
-      - run: python3 -m signal_integrity.experiments.unused_minimal
+      - run: python3 -m signal_integrity.experiments.coarse_via coarse
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: unused-probe-logs
-          path: signal_integrity/build/unused
+          name: coarse-probe-logs
+          path: signal_integrity/build/coarse

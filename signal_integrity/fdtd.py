@@ -68,6 +68,8 @@ class TraceModel:
     ground_clearance_mm: float  # gap between the bottom trace and the ground pour
     via: ViaModel
     mesh_mm: float = 0.5
+    fine_mesh: bool = True      # extra 0.1-0.3 mm lines at the strip edges, vias and substrate
+    gauss_fc_hz: float = 1.5e9  # width of the excitation pulse (centre is 3 GHz)
     f_stop_hz: float = 6e9
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
     air_mm: float = 6.0
@@ -183,7 +185,7 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     f_center = 0.5 * model.f_stop_hz
     # A Gaussian pulse centred at 3 GHz with a 1.5 GHz width. A wider pulse puts strong energy
     # at low frequency, where it stays trapped near the absorbing faces and the run cannot end.
-    fdtd.SetGaussExcite(3.0e9, 1.5e9)
+    fdtd.SetGaussExcite(3.0e9, model.gauss_fc_hz)
     # Absorbing boundaries on all six faces. The ground is drawn explicitly below, so the
     # bottom face must not be a PEC wall: that would short the bottom trace and the antipads.
     fdtd.SetBoundaryCond(["PML_8"] * 6)
@@ -234,9 +236,12 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     # Mesh: lines at every feature edge, smoothed to the target resolution.
     # Fine lines where the fields change fastest: the 0.25 mm strip, the via barrels and the
     # antipads, and four layers of substrate. The smoothing grows the cells away from them.
-    x_fine = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
-              for d in (0.15, 0.3, 0.6)]
-    y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.15, 0.3)]
+    if model.fine_mesh:
+        x_fine = [via + sign * d for via in (via1, via2) for sign in (-1.0, 1.0)
+                  for d in (0.15, 0.3, 0.6)]
+        y_fine = [sign * (w / 2 + d) for sign in (-1.0, 1.0) for d in (0.0, 0.15, 0.3)]
+    else:
+        x_fine, y_fine = [], []
     x_lines = [x_lo, x_hi, x_port1[0], x_port1[1], x_port2[0], x_port2[1], via1, via2] + x_fine
     y_lines = [-wg, wg, 0.0, -ws, ws, -ra, ra] + y_fine
     z_lines = [-model.air_mm, 0.0, 0.25 * h, 0.5 * h, 0.75 * h, h, h + model.air_mm]
