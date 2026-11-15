@@ -177,13 +177,16 @@ def build_and_run(model: TraceModel, sim_dir: Optional[Path] = None,
     mesh.AddLine("z", z_lines)
     mesh.SmoothMeshLines("all", model.mesh_mm, ratio=1.4)
     # Ports are created after the mesh: openEMS checks the mesh lines inside each port box.
-    port_start1 = [x_port1[0], -w / 2, 0]
-    port_stop1 = [x_port1[1], w / 2, h]
-    port_start2 = [x_port2[0], -w / 2, 0]
-    port_stop2 = [x_port2[1], w / 2, h]
+    # Microstrip port boxes follow openEMS's convention: start is the outer end of the line at
+    # strip height, stop points towards the device at the ground plane.
+    port_start1 = [x_port1[0], -w / 2, h]
+    port_stop1 = [x_port1[1], w / 2, 0]
+    port_start2 = [x_port2[1], -w / 2, h]
+    port_stop2 = [x_port2[0], w / 2, 0]
     port = [None, None]
-    port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=1, Feed_R=50)
-    port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0, Feed_R=50)
+    port[0] = fdtd.AddMSLPort(1, copper, port_start1, port_stop1, "x", "z", excite=1,
+                              FeedShift=0.5, priority=10)
+    port[1] = fdtd.AddMSLPort(2, copper, port_start2, port_stop2, "x", "z", excite=0, priority=10)
 
     owned = sim_dir is None
     folder = Path(tempfile.mkdtemp(prefix="desk-openems-")) if owned else Path(sim_dir)
