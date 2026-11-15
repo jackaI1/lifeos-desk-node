@@ -84,16 +84,27 @@ representative geometry, not a net that needs 50 Ω.
 ```
 
 - The substrate is one 1.6 mm FR-4 slab, with a loss tangent at the centre
-  frequency. Air sits above it, with a PML absorbing boundary at the top.
+  frequency. Air sits above and below it, and all six faces are absorbing (PML).
+  The ground is drawn explicitly, so the bottom face must not be a metal wall.
 - The bottom copper is the GND pour, with an antipad around each via and a slot
   around the bottom trace. The slot's width is the trace width plus two clearances.
+  CSXCAD has no subtraction, so the pour is built from rectangles.
 - Each via is a PEC barrel through the substrate. The model leaves out the via
   pads and the solder mask.
-- The mesh is 0.25 mm, smoothed outward, with lines at every feature edge.
-- The gauss excitation is centred at 3 GHz and covers 0 to 6 GHz. The solver
-  runs until the energy criterion is met (1 × 10⁻⁴).
+- The two microstrip ports follow openEMS's convention: each starts at the outer end
+  of the line at strip height and points towards the device, 1.5 mm long, and the
+  two boxes mirror each other about the board centre.
+- The mesh is 0.25 mm, smoothed outward, with lines at every feature edge. Ports are
+  created after the mesh, because openEMS checks the mesh inside each port box.
+- The gauss excitation is centred at 3 GHz and covers 0 to 6 GHz. The solver runs
+  until the energy falls to 1 × 10⁻⁴ of its start.
 - The structure is symmetric about its centre, so S22 equals S11 and S12 equals
   S21. One run with port 1 excited gives the full two-port.
+- Each simulation runs in its own Python process (`signal_integrity/fdtd_worker.py`).
+  Running a second openEMS solve in the same process failed on the Debian build.
+- A second run builds the same board with no vias: one continuous top trace over a
+  solid ground pour. Its insertion loss is the reference, and the via's excess loss
+  is the difference. That is the number the report leads with.
 
 scikit-rf then builds the two-port from S11 and S21 and reads the Touchstone file
 back, so the same numbers come out of the file a reader can open.
