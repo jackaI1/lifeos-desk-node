@@ -74,7 +74,7 @@ class TraceModel:
     n_freq: int = 120           # frequency points, evenly spaced from one step to f_stop
     air_mm: float = 8.0       # air above the board (the air below is set in build_and_run)
     end_criteria: float = 1e-3
-    time_steps: int = 25000
+    time_steps: int = 80000
 
     @property
     def freq_hz(self) -> np.ndarray:
