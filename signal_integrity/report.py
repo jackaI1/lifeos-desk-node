@@ -97,10 +97,14 @@ def write_report(out: Path, *, board: Board, stackup: Stackup, net: str, width_m
         lines += [
             "## 3D FDTD model (openEMS) and scikit-rf",
             "",
-            "A top-layer trace drops through one via into a bottom-layer trace that crosses a slot in the "
-            "ground pour, then climbs back through a second via. Ports are at both ends of the top trace.",
+            "A 50 ohm trace runs 24 mm across the board on the top layer, with a via in the middle "
+            "that drops to a bottom pad under a square antipad in the ground pour. Ports are at both "
+            "ends of the line.",
             "",
-            "| frequency | insertion loss (S21) | return loss (S11) |",
+            "Return loss (S11) is the validated output. Insertion loss (S21) is shown for completeness "
+            "and is not verified (see the note below the checks).",
+            "",
+            "| frequency | insertion loss (S21), not verified | return loss (S11) |",
             "| --- | --- | --- |",
         ]
         for ghz in sorted(at):
@@ -125,7 +129,8 @@ def write_report(out: Path, *, board: Board, stackup: Stackup, net: str, width_m
         "",
         "- The stackup values er and tanδ are typical FR-4 values, not the fabricator's.",
         "- The model has no solder mask, plating or pads on the vias, and zero-thickness copper.",
-        "- It checks one 50 ohm trace through one via pair, not every net. Power nets carry current, not impedance.",
+        "- It checks one 50 ohm trace with one via, not every net. Power nets carry current, not impedance.",
+        "- Insertion loss is not verified: the run ends before the energy leaves, so |S21| can exceed 1.",
         "- A simulation or a closed form is not a measurement. A time-domain reflectometer on the "
         "assembled board is the test that settles it.",
         "",
