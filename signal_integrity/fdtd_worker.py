@@ -23,7 +23,7 @@ def main(argv=None) -> int:
     spec_path, out_path = Path(argv[0]), Path(argv[1])
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
     model = fdtd.model_from_dict(spec["model"])
-    freq, s11, s21 = fdtd.build_and_run(model)
+    freq, s11, s21 = fdtd.build_and_run(model, omit=tuple(spec.get("omit", [])))
     np.savez(out_path, freq=freq, s11=s11, s21=s21)
     sys.stdout.flush()
     sys.stderr.flush()
