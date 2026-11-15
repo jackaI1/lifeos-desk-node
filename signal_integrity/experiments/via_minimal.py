@@ -1,16 +1,17 @@
-"""Temporary diagnostic: does a square via box conduct, and is it reported unused?"""
+"""Temporary diagnostic: S21 of a plain through trace against a trace with a via pair."""
 import subprocess
 import sys
 
-VARIANTS = ["top_bottom_via", "top_bottom_novia", "top_bottom_viacyl"]
+VARIANTS = ["through", "via_pair"]
 
 
 def build(variant: str) -> None:
     import tempfile
+    import numpy as np
     from CSXCAD import ContinuousStructure
     from openEMS import openEMS
     h, er, w, L = 1.6, 4.5, 2.97, 24.0
-    fdtd = openEMS(NrTS=100, EndCriteria=1e-3)
+    fdtd = openEMS(NrTS=12000, EndCriteria=1e-3)
     fdtd.SetGaussExcite(3e9, 3e9)
     fdtd.SetBoundaryCond(["PML_8"] * 6)
     csx = ContinuousStructure()
@@ -26,19 +27,36 @@ def build(variant: str) -> None:
     sub.SetMaterialProperty(epsilon=er)
     sub.AddBox([x_lo, -wg, 0.0], [x_hi, wg, h], priority=0)
     cu = csx.AddMetal("copper")
-    cu.AddBox([x_lo, -wg, 0.0], [x_hi, wg, 0.0], priority=10)
-    cu.AddBox([0.0, -w / 2, h], [8.0, w / 2, h], priority=10)
-    cu.AddBox([16.0, -w / 2, h], [L, w / 2, h], priority=10)
-    cu.AddBox([8.0, -w / 2, 0.0], [16.0, w / 2, 0.0], priority=10)
-    if variant == "top_bottom_via":
+    if variant == "through":
+        cu.AddBox([x_lo, -wg, 0.0], [x_hi, wg, 0.0], priority=10)
+        cu.AddBox([0.0, -w / 2, h], [L, w / 2, h], priority=10)
+    else:
+        cu.AddBox([x_lo, -wg, 0.0], [8 - 0.6, wg, 0.0], priority=10)
+        cu.AddBox([16 + 0.6, -wg, 0.0], [x_hi, wg, 0.0], priority=10)
+        cu.AddBox([8 - 0.6, 1.785, 0.0], [8 + 0.6, wg, 0.0], priority=10)
+        cu.AddBox([8 - 0.6, -wg, 0.0], [8 + 0.6, -1.785, 0.0], priority=10)
+        cu.AddBox([16 - 0.6, 1.785, 0.0], [16 + 0.6, wg, 0.0], priority=10)
+        cu.AddBox([16 - 0.6, -wg, 0.0], [16 + 0.6, -1.785, 0.0], priority=10)
+        cu.AddBox([8 + 0.6, 1.785, 0.0], [16 - 0.6, wg, 0.0], priority=10)
+        cu.AddBox([8 + 0.6, -wg, 0.0], [16 - 0.6, -1.785, 0.0], priority=10)
+        cu.AddBox([0.0, -w / 2, h], [8.0, w / 2, h], priority=10)
+        cu.AddBox([16.0, -w / 2, h], [L, w / 2, h], priority=10)
+        cu.AddBox([8.0, -w / 2, 0.0], [16.0, w / 2, 0.0], priority=10)
         cu.AddBox([8 - 0.15, -0.15, 0.0], [8 + 0.15, 0.15, h], priority=20)
         cu.AddBox([16 - 0.15, -0.15, 0.0], [16 + 0.15, 0.15, h], priority=20)
-    elif variant == "top_bottom_viacyl":
-        for x in (8.0, 16.0):
-            cu.AddCylinder([x, 0, 0], [x, 0, h], 0.15, priority=20)
-    fdtd.AddMSLPort(1, cu, [x_lo, -w / 2, h], [0.0, w / 2, 0.0], "x", "z", excite=-1, FeedShift=0.5, priority=10)
-    fdtd.AddMSLPort(2, cu, [x_hi, -w / 2, h], [L, w / 2, 0.0], "x", "z", excite=0, priority=10)
-    fdtd.Run(tempfile.mkdtemp(prefix="via-min-"), cleanup=False, verbose=2)
+    port = [None, None]
+    port[0] = fdtd.AddMSLPort(1, cu, [x_lo, -w / 2, h], [0.0, w / 2, 0.0], "x", "z", excite=-1, FeedShift=0.5, priority=10)
+    port[1] = fdtd.AddMSLPort(2, cu, [x_hi, -w / 2, h], [L, w / 2, 0.0], "x", "z", excite=0, priority=10)
+    folder = tempfile.mkdtemp(prefix="via-min-")
+    fdtd.Run(folder, cleanup=False, verbose=1)
+    f = np.arange(1, 13) * 0.5e9
+    for p in port:
+        p.CalcPort(folder, f, ref_impedance=np.full(len(f), 50.0))
+    s11 = port[0].uf_ref / port[0].uf_inc
+    s21 = port[1].uf_ref / port[0].uf_inc
+    for i in (1, 3, 5, 7, 9, 11):
+        print(f"VIAMIN {variant} {f[i]/1e9:4.1f} GHz S21 {20*np.log10(abs(s21[i])+1e-30):8.2f} dB "
+              f"S11 {20*np.log10(abs(s11[i])+1e-30):8.2f} dB", flush=True)
 
 
 if __name__ == "__main__":
@@ -47,5 +65,9 @@ if __name__ == "__main__":
     else:
         for v in VARIANTS:
             proc = subprocess.run([sys.executable, __file__, v], capture_output=True, text=True)
-            text = proc.stdout + proc.stderr
-            print(f"VIAMIN {v}: exit={proc.returncode} unused={text.count('Unused primitive')}", flush=True)
+            print((proc.stdout + proc.stderr).count("VIAMIN") and "", end="")
+            for line in (proc.stdout + proc.stderr).splitlines():
+                if line.startswith("VIAMIN"):
+                    print(line, flush=True)
+            if proc.returncode:
+                print(f"VIAMIN {v} exit={proc.returncode}", proc.stderr[-400:], flush=True)
