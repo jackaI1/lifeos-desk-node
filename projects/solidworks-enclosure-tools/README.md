@@ -4,6 +4,16 @@ I wanted to learn how to automate CAD and check a design before making it, so I 
 
 The examples use practice geometry, assumed material properties and virtual printer settings. They are not physically tested assemblies. The native files carry the SolidWorks Student Edition educational designation.
 
+## Enclosure in SolidWorks
+
+| Hatch closed | Hatch open at 90° |
+| --- | --- |
+| ![SolidWorks enclosure with the front opening covered by the hatch](cad/A/assembly.png) | ![The same SolidWorks enclosure with the hatch rotated to uncover the front opening](cad/A/assembly-open.png) |
+
+The same standoff design is used in four locations. The SolidWorks assembly check found no interference in either hatch position.
+
+[View the dimensioned case drawing](cad/A/ED-001_case_A.pdf) · [View the sensor enclosure with its lid removed](cad/B/ED-101_sensor_housing_B.png)
+
 ## Try it
 
 I keep the first enclosure in `cad/A`, a sensor enclosure in `cad/B`, and the bracket, assembly nest, cartridge and clamp examples beside them. Keep each folder together when opening its native files. Design inputs are in `specs/`.
